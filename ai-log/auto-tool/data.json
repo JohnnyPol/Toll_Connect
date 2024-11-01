@@ -1,0 +1,52 @@
+{
+    "definite": {
+      "phase": ["requirements gathering", "requirements specification", "architecture", "design", "coding", "testing", "deployment"],
+      "action": ["problem understanding", "stakeholder statement", "functional requirements", "non-functional requirements", "use case specification", "architectural decision", "design decision","data design", "source code authoring", "unit testing", "functional testing", "integration testing", "performance testing","other testing", "dev-ops", "vm configuration", "container configuration","network configuration", "code management"],
+      "scope": ["uml state", "uml activity", "uml sequence", "uml component", "uml deployment", "uml other", "data management", "frontend", "backend", "api", "messaging design", "messaging deployment", "container configuration", "deployment scripts", "github operations"],
+      "tool option": ["online free", "online full", "open source"]
+    },
+    "numeric": [
+      "action experience",
+      "experience with tool",
+      "quality of ai help",
+      "knowledge acquired",
+      "generic feeling - now",
+      "generic feeling - future",
+      "threat level"
+    ],
+    "possible other": {
+      "language": ["n/a", "js", "js-node", "python", "sql", "nosql", "java", "yaml", "json", "other"],
+      "aimodel": ["chatgpt", "gemini", "copilot", "open source"]
+    },
+    "other": [
+      "other language",
+      "open source aimodel"
+    ],
+    "to fill": [
+      "aimodel version",
+      "time allocated (h)",
+      "time saved estimate (h)", 
+      "notes"
+    ],
+    "order": {
+      "phase": 0,
+      "action": 1,
+      "scope": 2,
+      "action experience": 3,
+      "language": 4,
+      "other language": 5,
+      "aimodel": 6,
+      "aimodel version": 7,
+      "open source aimodel": 8,
+      "tool option": 9,
+      "experience with tool": 10,
+      "time allocated (h)": 11,
+      "time saved estimate (h)": 12, 
+      "quality of ai help": 13,
+      "knowledge acquired": 14,
+      "generic feeling - now": 15,
+      "generic feeling - future": 16,
+      "threat level": 17,
+      "notes": 18
+    }
+  }
