@@ -2,7 +2,7 @@
     "name": "ailog-creator-cli",
     "version": "1.0.0",
     "description": "",
-    "main": "cli.js",
+    "main": "tool.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
