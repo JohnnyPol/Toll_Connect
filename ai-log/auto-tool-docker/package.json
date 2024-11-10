@@ -1,0 +1,29 @@
+{
+  "name": "ailog-creator-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "adm-zip": "^0.5.16",
+    "ailog-creator-cli": "file:",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "day": "^0.0.2",
+    "dayjs": "^1.11.13",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.1.0",
+    "inquirer-autocomplete-prompt": "^3.0.1",
+    "inquirer-file-selector": "^0.4.0",
+    "ora": "^8.1.0",
+    "axios": "^1.7.7",
+    "form-data": "^4.0.1"
+  }
+}
