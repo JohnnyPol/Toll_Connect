@@ -16,3 +16,37 @@
    - Keep logs of past unfinished payments (to me or by me) -> 4 categories: To pay, To be paid, To validate payment, Waiting for validation by receiver
    - Check payment and validate receipt
    - Get an invoice for payment
+
+## ER Diagram Specifics
+
+1. Payment:
+   - PayerID (Foreign key to TollOperator ID)
+   - PayeeID (Foreign key to TollOperator ID)
+   - Amount
+   - Date
+   - Date of Payment (00-00-00 for initialization)
+   - Date of Validation (00-00-00 for initialization)
+2. Toll:
+   - ID
+   - Latitude
+   - Longitude
+   - Road (Foreign key to Road Name)
+   - OperatorID (Foreign key to TollOperator ID)
+   - Prices (array with 4 cells)
+3. TollOperator:
+   - ID
+   - Name
+   - Email
+   - VAT
+   - Address
+4. Tag:
+   - TagReference
+   - OperatorID (Foreign key to TollOperator ID)
+5. Passes:
+   - Timestamp
+   - TollID (Foreign key to Toll ID)
+   - TagReference (Foreign key to Tag TagReference)
+   - OperatorID (Foreign key to TollOperator ID)
+   - Charge  
+6. Road:
+   - Name
