@@ -19,7 +19,7 @@ docker build -t ai-log-auto-tool .
 
 Run the application (spin up a container)
 ```
-docker run -v $(pwd)/..:/usr/src/app/output --dns 8.8.8.8 -it --privileged --rm ai-log-auto-tool create
+docker run -v $(pwd)/..:/usr/src/app/output --dns 8.8.8.8 -it --privileged --rm ai-log-auto-tool 
 ```
 
 This first sets up the vpn connection and then starts the auto-tool. 
