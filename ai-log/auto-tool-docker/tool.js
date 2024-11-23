@@ -58,8 +58,9 @@ program
     .version('1.0.0')
     .description('A CLI helper for NTUA ECE SoftEng AI Log Creation')
     .command('create')
+    .option('-s, --submit', 'Do Submit the new log')
     .description('Create a new Log Entry')
-    .action(async () => {
+    .action(async (options) => {
         // Step 0: Get the available data options loaded
         const spinner = ora('Loading data...').start();
         let choices = await readData();
@@ -245,10 +246,8 @@ program
         zip();
 
         zipSpinner.stop();
-
         // If the user wants to submit the file proceed with submission
-        const doSubmit = await confirm({ message: 'Do you want to submit?' });
-        if (doSubmit) {
+        if (options.submit === true) {
             // Step 4: Ask for Username and Password
             const user = await input({ message: 'Enter your username:' });
             const pass = await password({ message: 'Enter your password:', mask: true });
@@ -279,9 +278,8 @@ program
 
             submissionSpinner.stop();
         }
-        // Step 6: Keep a log of the sent files and their contents
 
-        // Step 7: Cleanup
+        // Step 6: Cleanup
         const cleanupSpinner = ora(`Cleaning up...`);
         fs.rm('./temp', { recursive: true, force: true }, err => {
             if (err) {
@@ -290,6 +288,43 @@ program
         });
         cleanupSpinner.stop();
 
+    });
+
+program
+    .command('submit')
+    .action(async () => {
+
+        const filepath = await fileSelector({
+            message: 'Select the zip file to submit:'
+        });
+
+        const user = await input({ message: 'Enter your username:' });
+        const pass = await password({ message: 'Enter your password:', mask: true });
+
+        const submissionSpinner = ora(`Submitting...`);
+
+        const sendPostRequest = async () => {
+            const form = new FormData();
+
+            form.append('username', user);
+            form.append('password', pass);
+            form.append('file', fs.createReadStream(filepath));
+
+            try {
+                const response = await axios.post('https://ailog.softlab.ntua.gr/backend/upload', form, {
+                    headers: {
+                        ...form.getHeaders()
+                    }
+                });
+                console.log('Response:', response.data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        sendPostRequest();
+
+        submissionSpinner.stop();
     });
 
 program.parse(process.argv);
