@@ -19,6 +19,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { exitCode } from 'process';
 
+import axios from 'axios';
+import FormData from 'form-data';
+
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
