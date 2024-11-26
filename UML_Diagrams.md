@@ -12,7 +12,7 @@
    - Aggregate statistics on how many of my company passed from each of the other companies' tolls
    - Statistics on the average delay of payment from each other company
 3. Invoice: 
-   - Show what I owe and what I am being owed at the end of the day
+   - Show what I owe and what I am owed at the end of the day
    - Keep logs of past unfinished payments (to me or by me) -> 4 categories: To pay, To be paid, To validate payment, Waiting for validation by receiver
    - Check payment and validate receipt
 
@@ -46,15 +46,35 @@ User Groups: Admin (Διαχειριστής Συστήματος), Company Repr
 
 2. Show Map:
    - Anonymous User Accesses Map:
-   After login as anonymous land on to map page
+   After login as anonymous, land on to map page
       - Ability to filter by operator
       - Clicks on toll -> Return in pop up: Name, Road, Company, Cost of toll, Average number of passes per day in the last 30 days
    - Representative Accesses Map:
      Click on "Map" from the start menu
-      - 
+      - Open to heat map showing where clients are
+      - Clicks on toll -> Return in pop up: Name, Road, Company, Cost of toll, Average number of passes per day in the last 30 days +
+        if own toll how many from other companies pass / if from other company how many of own clients pass. 
    - Admin User Accesses Map:
    Click on "Map" from the start menu
-      - 
+     - Ability to filter by operator
+     - Clicks on toll -> Return in pop up: Name, Road, Company, Cost of toll, Average number of passes per day in the last 30 days + show how many from each company pass from the toll.
+    
+3. Show Statistics:
+   After login, you can click on "Aggregate Statistics" from the start menu
+   - Representative Accesses Statistics:
+     - Initial page shows:
+          1. how many from other companies passed from ours the previous day
+          2. how many of our own passed from each of the other companies in the previous day 
+          3. average delay of payment from each company in the last 30 days
+          4. Aggregate of unpaid payments to me and by me (separate for each other company)
+     - For each of the previous cases can filter which companies to include, date range and for the second one which specific tolls to include
+
+   - Admin Accesses Statistics:
+     - Initial page shows:
+          1. Dependency Chart on passes (last day)
+          2. Dependency Chart on debt (current)
+     - For each of the previous cases can filter which companies to include and date range
+     - Can choose to show any of the diagrams that a representative would see by choosing "Rep Company", then any of the filters a rep has and which diagram from the 4 they want
 
 ## ER Diagram Specifics
 
