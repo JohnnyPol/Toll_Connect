@@ -1,8 +1,10 @@
 {
   "tasks": {
-    "dev"     : "deno run  --allow-env --allow-read --allow-net         main.ts",
-    "dev"     : "deno run  --allow-env --allow-read --allow-net --watch main.ts",
-    "dev-test": "deno test --watch"
+    "dev" : "deno run  --allow-env --allow-read --allow-net         main.ts",
+    "dev" : "deno run  --allow-env --allow-read --allow-net --watch main.ts",
+    "db-create" : "docker pull mongodb/mongodb-community-server:latest && docker run --name softeng-mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest",
+    "db": "docker start softeng-mongodb",
+    "db-stop": "docker stop softeng-mongodb"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
