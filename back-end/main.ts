@@ -3,6 +3,8 @@ import express from 'npm:express';
 // SEE: https://docs.deno.com/examples/express_tutorial/
 import { MongoClient } from 'npm:mongodb';
 // SEE: https://docs.deno.com/examples/mongo/
+// TODO: JWT
+// SEE: https://docs.deno.com/examples/creating_and_verifying_jwt/
 
 const client = new MongoClient('mongodb://localhost:27017');
 try {
@@ -20,5 +22,5 @@ app.get('/', (req, res) => {
 });
 
 if (import.meta.main) {
-	app.listen(8000);
+	app.listen(9115);
 }
