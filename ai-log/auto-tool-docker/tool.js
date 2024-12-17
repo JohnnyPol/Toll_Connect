@@ -118,6 +118,7 @@ program
                 type: 'input',
                 name: question,
                 message: `Enter ${question}:`,
+                default: '<fill in>',
             };
         });
 
@@ -161,11 +162,11 @@ program
         let answers = await inquirer.prompt(questions);
 
         if (answers['other language'] === undefined) {
-            answers['other language'] = ''
+            answers['other language'] = '<fill in>'
         }
 
         if (answers['open source aimodel'] === undefined) {
-            answers['open source aimodel'] = ''
+            answers['open source aimodel'] = '<fill in>'
         }
 
         let results = []
