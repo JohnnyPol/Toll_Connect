@@ -121,6 +121,7 @@ program
                 type: 'input',
                 name: question,
                 message: `Enter ${question}:`,
+                default: '<fill in>',
             };
         });
 
