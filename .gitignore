@@ -1,2 +1,4 @@
 *.vpp.bak*
 *.vpp.lck*
+*.luarc.json
+*.nvim.lua
