@@ -7,7 +7,8 @@
     "npm:express@*": "4.21.2",
     "npm:express@^4.21.2": "4.21.2",
     "npm:mongodb@*": "6.12.0",
-    "npm:mongodb@^6.12.0": "6.12.0"
+    "npm:mongodb@^6.12.0": "6.12.0",
+    "npm:mongoose@^8.9.1": "8.9.1"
   },
   "jsr": {
     "@std/assert@1.0.9": {
@@ -115,7 +116,7 @@
       "dependencies": [
         "bytes",
         "content-type",
-        "debug",
+        "debug@2.6.9",
         "depd",
         "destroy",
         "http-errors",
@@ -166,6 +167,12 @@
       "integrity": "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==",
       "dependencies": [
         "ms@2.0.0"
+      ]
+    },
+    "debug@4.4.0": {
+      "integrity": "sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==",
+      "dependencies": [
+        "ms@2.1.3"
       ]
     },
     "depd@2.0.0": {
@@ -219,7 +226,7 @@
         "content-type",
         "cookie",
         "cookie-signature",
-        "debug",
+        "debug@2.6.9",
         "depd",
         "encodeurl@2.0.0",
         "escape-html",
@@ -248,7 +255,7 @@
     "finalhandler@1.3.1": {
       "integrity": "sha512-6BN9trH7bp3qvnrRyzsBz+g3lZxTNZTbVO2EV1CS0WIcDbawYVdYvGflME/9QP0h0pYlCDBCTjYa9nZzMDpyxQ==",
       "dependencies": [
-        "debug",
+        "debug@2.6.9",
         "encodeurl@2.0.0",
         "escape-html",
         "on-finished",
@@ -315,6 +322,9 @@
     "ipaddr.js@1.9.1": {
       "integrity": "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g=="
     },
+    "kareem@2.6.3": {
+      "integrity": "sha512-C3iHfuGUXK2u8/ipq9LfjFfXFxAZMQJJq7vLS45r3D9Y2xQ/m4S8zaR4zMLFWh9AsNPXmcFfUDhTEO8UIC/V6Q=="
+    },
     "math-intrinsics@1.0.0": {
       "integrity": "sha512-4MqMiKP90ybymYvsut0CH2g4XWbfLtmlCkXmtmdcDCxNB+mQcu1w/1+L/VD7vi/PSv7X2JYV7SCcR+jiPXnQtA=="
     },
@@ -355,6 +365,27 @@
         "@mongodb-js/saslprep",
         "bson",
         "mongodb-connection-string-url"
+      ]
+    },
+    "mongoose@8.9.1": {
+      "integrity": "sha512-whM6lWMdeKlUm4d2LSLS/q6cWtTp13lUrL5hy2YTsQdTSN+dsAu8HLdLUQOEgtBE59qp4IqLrjSXCSETbxhkQQ==",
+      "dependencies": [
+        "bson",
+        "kareem",
+        "mongodb",
+        "mpath",
+        "mquery",
+        "ms@2.1.3",
+        "sift"
+      ]
+    },
+    "mpath@0.9.0": {
+      "integrity": "sha512-ikJRQTk8hw5DEoFVxHG1Gn9T/xcjtdnOKIU1JTmGjZZlg9LST2mBLmcX3/ICIbgJydT2GOc15RnNy5mHmzfSew=="
+    },
+    "mquery@5.0.0": {
+      "integrity": "sha512-iQMncpmEK8R8ncT8HJGsGc9Dsp8xcgYMVSbs5jgnm1lFHTZqMJTUWTDx1LBO8+mK3tPNZWFLBghQEIOULSTHZg==",
+      "dependencies": [
+        "debug@4.4.0"
       ]
     },
     "ms@2.0.0": {
@@ -418,7 +449,7 @@
     "send@0.19.0": {
       "integrity": "sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw==",
       "dependencies": [
-        "debug",
+        "debug@2.6.9",
         "depd",
         "destroy",
         "encodeurl@1.0.2",
@@ -481,6 +512,9 @@
         "side-channel-weakmap"
       ]
     },
+    "sift@17.1.3": {
+      "integrity": "sha512-Rtlj66/b0ICeFzYTuNvX/EF1igRbbnGSvEyT79McoZa/DeGhMyC5pWKOEsZKnpkqtSeovd5FL/bjHWC3CIIvCQ=="
+    },
     "sparse-bitfield@3.0.3": {
       "integrity": "sha512-kvzhi7vqKTfkh0PZU+2D2PIllw2ymqJKujUcyPMd9Y75Nv4nPbGJZXNhxsgdQab2BmlDct1YnfQCguEvHr7VsQ==",
       "dependencies": [
@@ -533,7 +567,8 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "npm:express@^4.21.2",
-      "npm:mongodb@^6.12.0"
+      "npm:mongodb@^6.12.0",
+      "npm:mongoose@^8.9.1"
     ]
   }
 }
