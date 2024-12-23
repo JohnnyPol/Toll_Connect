@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import deno from "@deno/vite-plugin";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 
 import "react";
 import "react-dom";
@@ -16,5 +18,13 @@ export default defineConfig({
 	],
 	optimizeDeps: {
 		include: ["react/jsx-runtime"],
+	},
+	css: {
+		postcss: {
+			plugins: [
+				tailwindcss(),
+				autoprefixer(),
+			],
+		},
 	},
 });

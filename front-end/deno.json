@@ -11,9 +11,12 @@
 		"@std/assert": "jsr:@std/assert@1",
 		"@types/react": "npm:@types/react@^18.3.12",
 		"@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.3",
+		"autoprefixer": "npm:autoprefixer@^10.4.20",
+		"postcss": "npm:postcss@^8.4.49",
 		"react": "npm:react@^18.3.1",
 		"react-dom": "npm:react-dom@^18.3.1",
 		"react-router-dom": "npm:react-router-dom@^6.28.0",
+		"tailwindcss": "npm:tailwindcss@^3.4.17",
 		"vite": "npm:vite@^5.4.11"
 	},
 	"compilerOptions": {
