@@ -1,25 +1,23 @@
 import { model, Schema } from 'npm:mongoose';
-import { checkNonNegative, setRequired, TrimmedString } from './util.ts';
+import { TrimmedString } from './util.ts';
 
 const tollOperatorSchema = new Schema({
 	name: { type: String, trimmed: true, unique: true },
-	passwordHash: Number,
+	passwordHash: {type: Number, required: true},
 	email: TrimmedString,
 	VAT: TrimmedString,
 	addressStreet: TrimmedString,
-	addressNumber: Number,
+	addressNumber: {type: Number, min: 0, required: true},
 	addressArea: TrimmedString,
-	addressZIP: Number
+	addressZIP: {type: Number, min: 10000, max: 99999, required: true} 
 });
 
-setRequired(tollOperatorSchema, 'Toll Operator');
 tollOperatorSchema.path('email').validate(val => {
 	return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val);
 }, 'Toll Operator: email is invalid');
-checkNonNegative(tollOperatorSchema, 'Toll Operator', 'addressNumber')
 tollOperatorSchema.path('addressZIP').validate(val => {
-	return Number.isInteger(val) && val >= 10000 && val <= 99999; // Ensure it's a 5-digit integer
-}, 'Toll Operator: ZIP code must be a 5-digit integer');
+	return Number.isInteger(val);
+}, 'Toll Operator: ZIP code must be an integer');
   
 
 export default model('Toll Operator', tollOperatorSchema, 'tollOperator');

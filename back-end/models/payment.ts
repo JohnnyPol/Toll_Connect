@@ -1,12 +1,10 @@
 import { model, Schema } from 'npm:mongoose';
-import { TrimmedString, setRequired, checkNonNegative, foreignKey} from './util.ts';
-import tollOperator from './toll_operator.ts'
 
 const paymentSchema = new Schema({
-  payerID: TrimmedString,
-  payeeID: TrimmedString,
-  dateofCharge: Date,
-  amount: Number,
+  payerRef: {type: Schema.Types.ObjectId, ref: 'Toll Operator', required: true},
+  payeeRef: {type: Schema.Types.ObjectId, ref: 'Toll Operator', required: true},
+  dateofCharge: {type: Date, required: true},
+  amount: {type: Number, min: 0, required: true},
   dateofPayment: { 
     type: Date, 
     default: new Date(0) // Default to epoch time
@@ -16,10 +14,5 @@ const paymentSchema = new Schema({
     default: new Date(0) // Default to or epoch time
   }
 });
-
-setRequired(paymentSchema, 'Payment');
-foreignKey(paymentSchema, 'Payment', 'payerID', tollOperator, 'Toll Operator', 'name');
-foreignKey(paymentSchema, 'Payment', 'payeeID', tollOperator, 'Toll Operator', 'name');
-checkNonNegative(paymentSchema, 'Payment', 'amount');
 
 export default model('Payment', paymentSchema);
