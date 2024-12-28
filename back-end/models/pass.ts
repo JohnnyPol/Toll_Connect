@@ -1,5 +1,4 @@
 import { model, Schema } from 'npm:mongoose';
-import {TrimmedString} from './util.ts';
 
 const passSchema = new Schema({
   tagRef: {type: Schema.Types.ObjectId, ref: 'Tag', required: true},
