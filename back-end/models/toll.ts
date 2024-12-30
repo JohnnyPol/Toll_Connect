@@ -1,15 +1,18 @@
 import { model, Schema } from 'npm:mongoose';
+import { require, trim, unique, range, precision } from './util.ts'
 
 const tollSchema = new Schema({
-  tollRef: { type: String, trimmed: true, unique: true, required: true},
-  latitude: {type: Number, min: -90, max: 90, required: true},
-  longtitude: {type: Number, min: -180, max: 180, required: true},
-  price1: {type: Number, min: 0, required: true},
-  price2: {type: Number, min: 0, required: true},
-  price3: {type: Number, min: 0, required: true},
-  price4: {type: Number, min: 0, required: true},
-  tollOperatorRef: {type: Schema.Types.ObjectId, ref: 'Toll Operator', required: true},
-  roadName: {type: Schema.Types.ObjectId, ref: 'Road', required: true},
+	tollRef: trim(unique(require(String))),
+	latitude: { ...require(Number), validate: range('Latitude', -90, 90) },
+	longitude: {
+		...require(Number), validate: range('Longitude', -180, 180)
+	},
+	price1: { ...require(Number), validate: [ range('Price 1', 0), precision('Price 1', 2) ] },
+	price2: { ...require(Number), validate: [ range('Price 2', 0), precision('Price 2', 2) ] },
+	price3: { ...require(Number), validate: [ range('Price 3', 0), precision('Price 3', 2) ] },
+	price4: { ...require(Number), validate: [ range('Price 4', 0), precision('Price 4', 2) ] },
+	tollOperatorRef: require(Schema.Types.ObjectId, 'Toll Operator'),
+	roadName: require(Schema.Types.ObjectId, 'Road')
 });
 
 export default model('Toll', tollSchema, 'toll');

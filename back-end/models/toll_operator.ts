@@ -1,23 +1,35 @@
 import { model, Schema } from 'npm:mongoose';
-import { TrimmedString } from './util.ts';
+import { require, trim, unique, range, precision } from './util.ts';
+
+const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const tollOperatorSchema = new Schema({
-	name: { type: String, trimmed: true, unique: true },
-	passwordHash: {type: Number, required: true},
-	email: TrimmedString,
-	VAT: TrimmedString,
-	addressStreet: TrimmedString,
-	addressNumber: {type: Number, min: 0, required: true},
-	addressArea: TrimmedString,
-	addressZIP: {type: Number, min: 10000, max: 99999, required: true} 
+	name: unique(trim(require(String))),
+	passwordHash: require(Number),
+	email: {
+		...trim(require(String)),
+		validate: {
+			validator: (mail: string) => emailRegex.test(mail),
+			message: 'Email is of invalid format'
+		}
+	},
+	VAT: trim(require(String)),
+	addressStreet: trim(require(String)),
+	addressNumber: {
+		...require(Number),
+		validate: [
+			range('Address number', 0),
+			precision('Address number', 0),
+		]
+	},
+	addressArea: trim(require(String)),
+	addressZip: {
+		...require(Number),
+		validate: [
+			range('Address ZIP', 10_000, 99_999),
+			precision('Address ZIP', 0),
+		]
+	}
 });
-
-tollOperatorSchema.path('email').validate(val => {
-	return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val);
-}, 'Toll Operator: email is invalid');
-tollOperatorSchema.path('addressZIP').validate(val => {
-	return Number.isInteger(val);
-}, 'Toll Operator: ZIP code must be an integer');
-  
 
 export default model('Toll Operator', tollOperatorSchema, 'tollOperator');

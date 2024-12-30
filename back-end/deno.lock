@@ -8,6 +8,7 @@
     "npm:express@^4.21.2": "4.21.2",
     "npm:mongodb@*": "6.12.0",
     "npm:mongodb@^6.12.0": "6.12.0",
+    "npm:mongoose@*": "8.9.1",
     "npm:mongoose@^8.9.1": "8.9.1"
   },
   "jsr": {

@@ -1,7 +1,8 @@
 import { model, Schema } from 'npm:mongoose';
+import { require, trim, unique } from './util.ts';
 
 const roadSchema = new Schema({
-  roadName: { type: String, trimmed: true, unique: true, required: true}
+	roadName: unique(trim(require(String)))
 });
 
 export default model('Road', roadSchema, 'road');
