@@ -6,16 +6,15 @@ type validator<T> = { validator: (val: T) => boolean; message: string };
 /** Makes field required.
  *
  * @param {T} type - field's type
- * @param {string} [ref] - Only if type is ObjectId: referenced collection
+ * @param {string} [ref=''] - Only if type is ObjectId: referenced collection
  * @returns object { type, ref, required: true }
  */
 function require<T>(
-	type: T, ref?: string
+	type: T, ref: string = ''
 ): { type: T; ref?: string; required: boolean } {
-	assert(typeof ref !== 'undefined' &&
-	       type instanceof Schema.Types.ObjectId);
+	assert(ref === '' || type instanceof Schema.Types.ObjectId);
 
-	if (typeof ref !== 'undefined')
+	if (ref !== '')
 		return { type, ref, required: true };
 	else
 		return { type, required: true };
