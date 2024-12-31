@@ -1,17 +1,23 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LoginPage from "@/pages/login/page.tsx";
+import DashboardPage from "@/pages/dashboard/page.tsx";
+import MapPage from "@/pages/dashboard/map/page.tsx";
+import PaymentsPage from "@/pages/dashboard/payments/page.tsx";
+import StatisticsPage from "@/pages/dashboard/statistics/page.tsx";
 import "@/index.css";
-// @deno-types="@types/react"
-import { useState } from "react";
-// @ts-expect-error Unable to infer type at the moment
-import reactLogo from "@/assets/react.svg";
-import { Button } from "@/components/ui/button.tsx";
 
 function App() {
-	const [count, setCount] = useState(0);
-
 	return (
-		<>
-			<Button variant="outline">Button</Button>
-		</>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<LoginPage />} />
+				<Route path="/login" element={<LoginPage />} />
+				<Route path="/dashboard" element={<DashboardPage />} />
+				<Route path="/dashboard/map" element={<MapPage />} />
+				<Route path="/dashboard/payments" element={<PaymentsPage />} />
+				<Route path="/dashboard/statistics" element={<StatisticsPage />} />
+			</Routes>
+		</BrowserRouter>
 	);
 }
 
