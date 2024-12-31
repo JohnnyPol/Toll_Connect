@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { GalleryVerticalEnd } from "lucide-react";
 
 import {
@@ -17,26 +17,43 @@ import {
 
 import { Link } from "react-router-dom";
 
-const data = {
+type SidebarItemData = {
+	title: string;
+	url: string;
+	isActive: boolean;
+};
+
+type SidebarGroupData = {
+	title: string;
+	url: string;
+	isActive: boolean;
+	items: SidebarItemData[];
+};
+
+type SidebarData = {
+	navMain: SidebarGroupData[];
+};
+
+const data: SidebarData = {
 	navMain: [
 		{
 			title: "Dashboard",
-			url: "/dashboard",
+			url: "/company/dashboard",
 			isActive: true,
 			items: [
 				{
 					title: "Map",
-					url: "/dashboard/map",
+					url: "/company/dashboard/map",
 					isActive: false,
 				},
 				{
 					title: "Statistics",
-					url: "/dashboard/statistics",
+					url: "/company/dashboard/statistics",
 					isActive: false,
 				},
 				{
 					title: "Payments",
-					url: "/dashboard/payments",
+					url: "/company/dashboard/payments",
 					isActive: false,
 				},
 			],
@@ -44,14 +61,23 @@ const data = {
 	],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+function resetActive() {
+	data.navMain.forEach((nav) => {
+		nav.isActive = false;
+		nav.items.forEach((item) => item.isActive = false);
+	});
+}
+
+export function CompanySidebar(
+	{ ...props }: React.ComponentProps<typeof Sidebar>,
+) {
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
-							<Link to="/dashboard">
+							<Link to="/company/dashboard">
 								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
 									<GalleryVerticalEnd className="size-4" />
 								</div>
@@ -69,8 +95,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarMenu>
 						{data.navMain.map((item) => (
 							<SidebarMenuItem key={item.title}>
-								<SidebarMenuButton asChild>
-									<Link to={item.url} className="font-medium">
+								<SidebarMenuButton asChild isActive={item.isActive}>
+									<Link
+										to={item.url}
+										className="font-medium"
+										onClick={() => {
+											resetActive();
+											item.isActive = true;
+										}}
+									>
 										{item.title}
 									</Link>
 								</SidebarMenuButton>
@@ -83,7 +116,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 														asChild
 														isActive={item.isActive}
 													>
-														<Link to={item.url}>{item.title}</Link>
+														<Link
+															to={item.url}
+															onClick={() => {
+																resetActive();
+																item.isActive = true;
+															}}
+														>
+															{item.title}
+														</Link>
 													</SidebarMenuSubButton>
 												</SidebarMenuSubItem>
 											))}

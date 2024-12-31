@@ -16,7 +16,7 @@ export function LoginForm({
 			<div className="flex flex-col items-center gap-2 text-center">
 				<h1 className="text-2xl font-bold">Login to your account</h1>
 				<p className="text-balance text-sm text-muted-foreground">
-					Enter your email below to login to your account
+					Enter your company credentials below to login to your account
 				</p>
 			</div>
 			<div className="grid gap-6">
@@ -28,7 +28,11 @@ export function LoginForm({
 					<Label htmlFor="password" className="text-left">Password</Label>
 					<Input id="password" type="password" required />
 				</div>
-				<Button type="submit" className="w-full">
+				<Button
+					type="submit"
+					className="w-full"
+					onClick={() => navigate("/company/dashboard")}
+				>
 					Login
 				</Button>
 				<div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -40,7 +44,7 @@ export function LoginForm({
 					variant="outline"
 					className="w-full"
 					onClick={() => {
-						navigate("/dashboard");
+						navigate("/anonymous/map");
 					}}
 				>
 					<img src={incognitoLogo} className="h-6 v-6" alt="Vite logo" />

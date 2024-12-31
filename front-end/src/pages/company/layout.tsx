@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AppSidebar } from "@/components/app-sidebar.tsx";
+import { CompanySidebar } from "@/components/company-sidebar.tsx";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar.tsx";
 import { Button } from "@/components/ui/button.tsx";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 
 const Breadcrumbs = () => {
@@ -30,11 +30,11 @@ const Breadcrumbs = () => {
 		<Breadcrumb>
 			<BreadcrumbList>
 				<BreadcrumbItem className="hidden md:block">
-					<BreadcrumbLink to={`/${paths[0]}`}>
-						{breadcrumbs[0]}
+					<BreadcrumbLink to={`/${paths[0]}/${paths[1]}`}>
+						{breadcrumbs[1]}
 					</BreadcrumbLink>
 				</BreadcrumbItem>
-				{breadcrumbs.slice(1).map((breadcrumb, index) => (
+				{breadcrumbs.slice(2).map((breadcrumb, index) => (
 					<React.Fragment key={index}>
 						<BreadcrumbSeparator className="hidden md:block" />
 						<BreadcrumbItem>
@@ -47,7 +47,7 @@ const Breadcrumbs = () => {
 	);
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function CompanyLayout() {
 	const navigate = useNavigate();
 
 	const signOut = () => {
@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<CompanySidebar />
 			<SidebarInset>
 				<header className="flex h-16 shrink-0 items-center gap-2 border-b">
 					<div className="flex items-center gap-2 px-3">
@@ -76,7 +76,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						</Button>
 					</div>
 				</header>
-				{children}
+				<Outlet />
 			</SidebarInset>
 		</SidebarProvider>
 	);
