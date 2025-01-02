@@ -32,4 +32,8 @@ const tollOperatorSchema = new Schema({
 	}
 });
 
+tollOperatorSchema.virtual('address').get(function (): string {
+	return `${this.addressStreet} ${this.addressNumber}, ${this.addressArea} ${this.addressZip}`
+});
+
 export default model('Toll Operator', tollOperatorSchema, 'tollOperator');
