@@ -1,20 +1,22 @@
 import { model, Schema } from 'npm:mongoose';
-import { require, range, precision } from './util.ts';
+import { require, range, precision, idtype } from './util.ts';
+
+import TollOperator from './toll_operator.ts';
 
 const paymentSchema = new Schema({
-	payerRef: require(Schema.Types.ObjectId, 'Toll Operator'),
-	payeeRef: require(Schema.Types.ObjectId, 'Toll Operator'),
+	payer: require(idtype(TollOperator), 'Toll Operator'),
+	payee: require(idtype(TollOperator), 'Toll Operator'),
 	dateofCharge: require(Date),
 	amount: {
 		...require(Number),
 		validate: [ range('Amount', 0), precision('Amount', 2) ]
 	},
-	dateofPayment: { 
-		type: Date, 
+	dateofPayment: {
+		type: Date,
 		default: new Date(0) // Default to epoch time
 	},
-	dateofValidation: { 
-		type: Date, 
+	dateofValidation: {
+		type: Date,
 		default: new Date(0) // Default to or epoch time
 	}
 });

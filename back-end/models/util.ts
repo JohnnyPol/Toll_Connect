@@ -1,4 +1,4 @@
-import { Schema, SchemaType } from 'npm:mongoose';
+import { Schema, SchemaType, SchemaTypeOptions, Model, Document } from 'npm:mongoose';
 import { assert } from '@std/assert';
 
 type validator<T> = { validator: (val: T) => boolean; message: string };
@@ -111,4 +111,12 @@ function precision(
 	}
 }
 
-export { require, range, trim, unique, precision };
+function idtype<T> (model: Model<T>) : typeof SchemaType {
+	const obj = model.schema.paths['_id'];
+	if (obj instanceof Schema.Types.String)
+		return Schema.Types.String;
+	else
+		return Schema.Types.ObjectId;
+}
+
+export { require, range, trim, unique, precision, idtype };

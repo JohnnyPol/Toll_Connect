@@ -1,9 +1,10 @@
-import { model, Schema } from 'npm:mongoose';
+import { Schema, model } from 'npm:mongoose';
 import { require, trim, unique, range, precision } from './util.ts';
 
 const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const tollOperatorSchema = new Schema({
+	_id: unique(trim(require(String))),
 	name: unique(trim(require(String))),
 	passwordHash: require(Number),
 	email: {
@@ -32,7 +33,7 @@ const tollOperatorSchema = new Schema({
 	}
 });
 
-tollOperatorSchema.virtual('address').get(function (): string {
+tollOperatorSchema.virtual('address').get(function () : string {
 	return `${this.addressStreet} ${this.addressNumber}, ${this.addressArea} ${this.addressZip}`
 });
 
