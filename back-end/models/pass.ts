@@ -1,13 +1,16 @@
 import { model, Schema } from 'npm:mongoose';
-import { require, range, precision } from './util.ts';
+import { idtype, precision, range, require } from './util.ts';
+
+import Tag from './tag.ts';
+import Toll from './toll.ts';
 
 const passSchema = new Schema({
-	tagRef: require(Schema.Types.ObjectId, 'Tag'),
-	tollRef: require(Schema.Types.ObjectId, 'Toll'),
+	tag: require(idtype(Tag), 'Tag'),
+	toll: require(idtype(Toll), 'Toll'),
 	time: require(Date),
 	charge: {
 		...require(Number),
-		validate: [ range('Charge', 0), precision('Charge', 2) ]
+		validate: [range('Charge', 0), precision('Charge', 2)],
 	},
 });
 

@@ -2,4 +2,4 @@
 *.vpp.lck*
 *.luarc.json
 *.nvim.lua
-backend/.env
+back-end/.env

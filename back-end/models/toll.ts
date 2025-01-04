@@ -1,18 +1,41 @@
 import { model, Schema } from 'npm:mongoose';
-import { require, trim, unique, range, precision } from './util.ts'
+import { idtype, precision, range, require, trim, unique } from './util.ts';
+
+import TollOperator from './toll_operator.ts';
+import Road from './road.ts';
 
 const tollSchema = new Schema({
-	tollRef: trim(unique(require(String))),
+	_id: trim(unique(require(String))),
+	name: trim(unique(require(String))),
 	latitude: { ...require(Number), validate: range('Latitude', -90, 90) },
 	longitude: {
-		...require(Number), validate: range('Longitude', -180, 180)
+		...require(Number),
+		validate: range('Longitude', -180, 180),
 	},
-	price1: { ...require(Number), validate: [ range('Price 1', 0), precision('Price 1', 2) ] },
-	price2: { ...require(Number), validate: [ range('Price 2', 0), precision('Price 2', 2) ] },
-	price3: { ...require(Number), validate: [ range('Price 3', 0), precision('Price 3', 2) ] },
-	price4: { ...require(Number), validate: [ range('Price 4', 0), precision('Price 4', 2) ] },
-	tollOperatorRef: require(Schema.Types.ObjectId, 'Toll Operator'),
-	roadName: require(Schema.Types.ObjectId, 'Road')
+	locality: trim(require(String)),
+	price: {
+		type: [{
+			...require(Number),
+			validate: [range('Price', 0), precision('Price', 2)],
+		}],
+		validate: {
+			validator: (arr: number[]) => arr.length === 4,
+			message: 'there must be exactly 4 prices',
+		},
+	},
+	PM: {
+		...require(String),
+		enum: ['ΠΛ', 'ΜΤ'],
+	},
+	tollOperator: require(idtype(TollOperator), 'Toll Operator'),
+	road: require(idtype(Road), 'Road'),
+});
+
+tollSchema.virtual('county').get(function (): string {
+	if (this.locality === null || this.locality === undefined) {
+		return ''; // necessary for type-checking
+	}
+	return this.locality.split('-')[0];
 });
 
 export default model('Toll', tollSchema, 'toll');
