@@ -6,7 +6,7 @@ import Road from './road.ts';
 
 const tollSchema = new Schema({
 	_id: trim(unique(require(String))),
-	name: trim(unique(require(String))),
+	name: trim(require(String)),
 	latitude: { ...require(Number), validate: range('Latitude', -90, 90) },
 	longitude: {
 		...require(Number),
