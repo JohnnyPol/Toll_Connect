@@ -17,6 +17,21 @@ const apiDoc = {
 			},
 			required: ['name', 'address', 'id'],
 		},
+		Login: {
+			type: 'object',
+			properties: {
+				username: { type: 'string' },
+				password: { type: 'number' },
+			},
+			required: ['username', 'password'],
+		},
+		Token: {
+			type: 'object',
+			properties: {
+				token: { type: 'string' },
+			},
+			required: ['token'],
+		},
 		Error: {
 			type: 'object',
 			additionalProperties: true,

@@ -4,40 +4,42 @@ import morgan from 'npm:morgan';
 // import cors from 'npm:cors';
 import openapi from 'npm:@wesleytodd/openapi';
 // SEE: https://docs.deno.com/examples/express_tutorial/
-import { MongoClient } from 'npm:mongodb';
+import { connect } from 'npm:mongoose';
 // SEE: https://docs.deno.com/examples/mongo/
 
-// express routes
-import { login, logout } from './routes/login.ts';
-
-/* CONNECTING TO DB */
+import login from './authentication/login.ts';
+import { clearBlacklist } from './authentication/jwt.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
 
-const client = new MongoClient('mongodb://localhost:27017');
+/* CONNECTING TO DB */
 try {
-	await client.connect();
+	await connect('mongodb://localhost:27017');
 	console.log('OK connecting to db');
 } catch (err) {
 	console.error('ERR connectint to db:', err);
 	Deno.exit(1);
 }
 
+// clear blacklists
+try {
+	await clearBlacklist();
+} catch (err) {
+	console.error('ERR clearing blacklist:', err);
+}
+
 /* EXPRESS APP */
 const app = express();
-// Add logging
-app.use(morgan('dev'));
-
-/* JWT REQUESTS - MIDDLEWARE */
-app.post('/login', login);
-app.use((req, res, next) => { next(); });
-app.post('/logout', logout);
 const oapi = openapi(apiDoc);
+
+// Middleware
+app.use(morgan('dev'));
 
 app.use(oapi);
 app.use('/docs', oapi.swaggerui());
-
 app.use('/api', api(oapi));
+
+app.use('/', login(oapi));
 
 app.get(
 	'/',
