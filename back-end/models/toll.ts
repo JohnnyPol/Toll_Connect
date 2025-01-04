@@ -12,10 +12,16 @@ const tollSchema = new Schema({
 		...require(Number), validate: range('Longitude', -180, 180)
 	},
 	locality: trim(require(String)),
-	price1: { ...require(Number), validate: [ range('Price 1', 0), precision('Price 1', 2) ] },
-	price2: { ...require(Number), validate: [ range('Price 2', 0), precision('Price 2', 2) ] },
-	price3: { ...require(Number), validate: [ range('Price 3', 0), precision('Price 3', 2) ] },
-	price4: { ...require(Number), validate: [ range('Price 4', 0), precision('Price 4', 2) ] },
+	price: {
+		type: [{
+			...require(Number),
+			validate: [ range('Price', 0), precision('Price', 2) ],
+		}],
+		validate: {
+			validator: (arr: number[]) => arr.length === 4,
+			message: 'there must be exactly 4 prices',
+		},
+	},
 	PM: {
 		...require(String), enum: ['ΠΛ', 'ΜΤ'],
 	},
