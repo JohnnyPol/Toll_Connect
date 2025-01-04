@@ -5,20 +5,19 @@ type validator<T> = { validator: (val: T) => boolean; message: string };
 
 /** Makes field required.
  *
- * @param {T} type - field's type
- * @param {string} [ref] - Only if type is ObjectId: referenced collection
- * @returns object { type, ref, required: true }
+ * @param {T} type
+ * @param {string} [ref=''] - Referencing collection
+ * @returns object { type, required: true }
  */
 function require<T>(
-	type: T, ref?: string
+	type: T,
+	ref: string = ''
 ): { type: T; ref?: string; required: boolean } {
-	assert(typeof ref !== 'undefined' &&
-	       type instanceof Schema.Types.ObjectId);
-
-	if (typeof ref !== 'undefined')
-		return { type, ref, required: true };
-	else
+	assert (ref === '' || type instanceof Schema.Types.ObjectId);
+	if (ref === '')
 		return { type, required: true };
+	else
+		return { type, ref, required: true };
 }
 
 /**
@@ -27,9 +26,7 @@ function require<T>(
  * @param {{ type: T,... }} obj - object to be added
  * @returns extended object {type: T, trimmed: true, ...}
  */
-function trim<T> (
-	obj: { readonly type: T; readonly [key: string]: unknown}
-): (typeof obj) & { trimmed: boolean } {
+function trim<T> (obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
 	return { ...obj, trimmed: true };
 }
 
@@ -39,9 +36,7 @@ function trim<T> (
  * @param {{ type: T,... }} obj - object to be added
  * @returns extended object {type: T, unique: true, ...}
  */
-function unique<T> (
-	obj: { readonly type: T; readonly [key: string]: unknown}
-): (typeof obj) & { unique: boolean } {
+function unique<T> (obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
 	return { ...obj, unique: true };
 }
 
