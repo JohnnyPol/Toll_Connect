@@ -1,4 +1,10 @@
-import { Schema, SchemaType, SchemaTypeOptions, Model, Document } from 'npm:mongoose';
+import {
+	Document,
+	Model,
+	Schema,
+	SchemaType,
+	SchemaTypeOptions,
+} from 'npm:mongoose';
 import { assert } from '@std/assert';
 
 type validator<T> = { validator: (val: T) => boolean; message: string };
@@ -11,13 +17,14 @@ type validator<T> = { validator: (val: T) => boolean; message: string };
  */
 function require<T>(
 	type: T,
-	ref: string = ''
+	ref: string = '',
 ): { type: T; ref?: string; required: boolean } {
-	assert (ref === '' || type instanceof Schema.Types.ObjectId);
-	if (ref === '')
+	assert(ref === '' || type instanceof Schema.Types.ObjectId);
+	if (ref === '') {
 		return { type, required: true };
-	else
+	} else {
 		return { type, ref, required: true };
+	}
 }
 
 /**
@@ -26,7 +33,7 @@ function require<T>(
  * @param {{ type: T,... }} obj - object to be added
  * @returns extended object {type: T, trimmed: true, ...}
  */
-function trim<T> (obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
+function trim<T>(obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
 	return { ...obj, trimmed: true };
 }
 
@@ -36,10 +43,9 @@ function trim<T> (obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
  * @param {{ type: T,... }} obj - object to be added
  * @returns extended object {type: T, unique: true, ...}
  */
-function unique<T> (obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
+function unique<T>(obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
 	return { ...obj, unique: true };
 }
-
 
 /**
  * Adds validator to check if Number field is within allowed range
@@ -64,18 +70,18 @@ function range(
 		assert(typeof maxVal !== 'undefined');
 		return {
 			validator: (val) => val <= maxVal,
-			message: `${name} must be less than ${maxVal}`
+			message: `${name} must be less than ${maxVal}`,
 		};
 	} else if (typeof maxVal === 'undefined') {
 		assert(typeof minVal !== 'undefined');
 		return {
 			validator: (val) => val >= minVal,
-			message: `${name} must be greater than ${minVal}`
+			message: `${name} must be greater than ${minVal}`,
 		};
 	} else {
 		return {
 			validator: (val) => val >= minVal && val <= maxVal,
-			message: `${name} must be between ${minVal} and ${maxVal}`
+			message: `${name} must be between ${minVal} and ${maxVal}`,
 		};
 	}
 }
@@ -95,28 +101,31 @@ function range(
  */
 function precision(
 	name: string,
-	decimals: number = 0
+	decimals: number = 0,
 ): validator<number> {
-	if (decimals === 0) return {
-		validator: (val: number) => !val.toString().includes('.'),
-		message: `${name} must be integer`
-	};
-	else return {
-		validator: (val: number) => {
-			const str = val.toString();
-			return (!str.includes('.')) ||
-			       (str.split('.')[1].length <= decimals);
-		},
-		message: `${name} cannot have more than ${decimals} decimals`
+	if (decimals === 0) {
+		return {
+			validator: (val: number) =>
+				!val.toString().includes('.'),
+			message: `${name} must be integer`,
+		};
+	} else {return {
+			validator: (val: number) => {
+				const str = val.toString();
+				return (!str.includes('.')) ||
+					(str.split('.')[1].length <= decimals);
+			},
+			message: `${name} cannot have more than ${decimals} decimals`,
+		};}
+}
+
+function idtype<T>(model: Model<T>): typeof SchemaType {
+	const obj = model.schema.paths['_id'];
+	if (obj instanceof Schema.Types.String) {
+		return Schema.Types.String;
+	} else {
+		return Schema.Types.ObjectId;
 	}
 }
 
-function idtype<T> (model: Model<T>) : typeof SchemaType {
-	const obj = model.schema.paths['_id'];
-	if (obj instanceof Schema.Types.String)
-		return Schema.Types.String;
-	else
-		return Schema.Types.ObjectId;
-}
-
-export { require, range, trim, unique, precision, idtype };
+export { idtype, precision, range, require, trim, unique };

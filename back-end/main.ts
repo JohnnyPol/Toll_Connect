@@ -28,23 +28,27 @@ app.use('/docs', oapi.swaggerui());
 
 app.use('/api', api(oapi));
 
-app.get('/', oapi.path({
-	responses: {
-		200: {
-			description: 'successful response',
-			content: {
-				schema: {
-					type: 'array',
-					items:  {
-						$ref: '#/definitions/TollOperator'
-					}
-				}
-			}
-		}
-	}
-}), (_req, res) => {
-	res.json({ id: '0', name: 'John Doe', address: 'Morge'});
-});
+app.get(
+	'/',
+	oapi.path({
+		responses: {
+			200: {
+				description: 'successful response',
+				content: {
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/TollOperator',
+						},
+					},
+				},
+			},
+		},
+	}),
+	(_req, res) => {
+		res.json({ id: '0', name: 'John Doe', address: 'Morge' });
+	},
+);
 
 if (import.meta.main) {
 	app.listen(9115);
