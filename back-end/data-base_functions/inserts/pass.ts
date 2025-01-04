@@ -134,6 +134,7 @@ async function insert_pass({
       } else {
         console.error('Unknown error occurred during database operation.');
       }
+      throw (dbError);
     }
   }
 
