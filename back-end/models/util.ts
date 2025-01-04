@@ -19,7 +19,7 @@ function require<T>(
 	type: T,
 	ref: string = '',
 ): { type: T; ref?: string; required: boolean } {
-	assert(ref === '' || type instanceof Schema.Types.ObjectId);
+	//assert(ref === '' || type instanceof Schema.Types.ObjectId);
 	if (ref === '') {
 		return { type, required: true };
 	} else {

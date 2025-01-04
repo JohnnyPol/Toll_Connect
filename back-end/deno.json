@@ -4,7 +4,10 @@
 		"dev": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file --watch main.ts",
 		"db-create": "docker pull mongodb/mongodb-community-server:latest && docker run --name softeng-mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest",
 		"db": "docker start softeng-mongodb",
-		"db-stop": "docker stop softeng-mongodb"
+		"db-stop": "docker stop softeng-mongodb",
+		"db-operators": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/inserts/initialize_operators.ts",
+		"db-tolls": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/inserts/toll_insert.ts ./data-base_functions/inserts/tollstations2024.csv",
+		"db-delete-all": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/deletes/delete_all.ts"
 	},
 	"imports": {
 		"@std/assert": "jsr:@std/assert@1",
