@@ -1,5 +1,5 @@
-import * as React from "react";
-import { AppSidebar } from "@/components/app-sidebar.tsx";
+import * as React from 'react';
+import { AppSidebar } from '@/components/app-sidebar.tsx';
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -7,21 +7,21 @@ import {
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb.tsx";
-import { Separator } from "@/components/ui/separator.tsx";
+} from '@/components/ui/breadcrumb.tsx';
+import { Separator } from '@/components/ui/separator.tsx';
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
-} from "@/components/ui/sidebar.tsx";
-import { Button } from "@/components/ui/button.tsx";
+} from '@/components/ui/sidebar.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 
 const Breadcrumbs = () => {
 	const { pathname } = useLocation();
-	const paths = pathname.split("/").filter(Boolean);
+	const paths = pathname.split('/').filter(Boolean);
 	const breadcrumbs = paths.map((part) =>
 		part.charAt(0).toUpperCase() + part.slice(1)
 	);
@@ -29,16 +29,23 @@ const Breadcrumbs = () => {
 	return (
 		<Breadcrumb>
 			<BreadcrumbList>
-				<BreadcrumbItem className="hidden md:block">
-					<BreadcrumbLink to={`/${paths[0]}/${paths[1]}`}>
+				<BreadcrumbItem className='hidden md:block'>
+					<BreadcrumbLink
+						to={`/${paths[0]}/${paths[1]}`}
+					>
 						{breadcrumbs[1]}
 					</BreadcrumbLink>
 				</BreadcrumbItem>
-				{breadcrumbs.slice(2).map((breadcrumb, index) => (
+				{breadcrumbs.slice(2).map((
+					breadcrumb,
+					index,
+				) => (
 					<React.Fragment key={index}>
-						<BreadcrumbSeparator className="hidden md:block" />
+						<BreadcrumbSeparator className='hidden md:block' />
 						<BreadcrumbItem>
-							<BreadcrumbPage>{breadcrumb}</BreadcrumbPage>
+							<BreadcrumbPage>
+								{breadcrumb}
+							</BreadcrumbPage>
 						</BreadcrumbItem>
 					</React.Fragment>
 				))}
@@ -51,28 +58,31 @@ export default function AdminLayout() {
 	const navigate = useNavigate();
 
 	const signOut = () => {
-		navigate("/login");
+		navigate('/login');
 	};
 
 	return (
 		<SidebarProvider>
 			<AppSidebar />
 			<SidebarInset>
-				<header className="flex h-16 shrink-0 items-center gap-2 border-b">
-					<div className="flex items-center gap-2 px-3">
+				<header className='flex h-16 shrink-0 items-center gap-2 border-b'>
+					<div className='flex items-center gap-2 px-3'>
 						<SidebarTrigger />
-						<Separator orientation="vertical" className="mr-2 h-4" />
+						<Separator
+							orientation='vertical'
+							className='mr-2 h-4'
+						/>
 						<Breadcrumbs />
 					</div>
-					<div className="ml-auto px-3">
+					<div className='ml-auto px-3'>
 						<Button
-							variant="ghost"
+							variant='ghost'
 							onClick={() => {
 								signOut();
 							}}
 						>
 							Logout
-							<LogOut className="size-4" />
+							<LogOut className='size-4' />
 						</Button>
 					</div>
 				</header>
