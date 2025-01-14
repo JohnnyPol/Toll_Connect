@@ -31,27 +31,19 @@ function App() {
 					>
 						<Route
 							index
-							element={
-								<CompanyDashboard />
-							}
+							element={<CompanyDashboard />}
 						/>
 						<Route
 							path='map'
-							element={
-								<CompanyMapPage />
-							}
+							element={<CompanyMapPage />}
 						/>
 						<Route
 							path='statistics'
-							element={
-								<CompanyStatisticsPage />
-							}
+							element={<CompanyStatisticsPage />}
 						/>
 						<Route
 							path='payments'
-							element={
-								<CompanyPaymentsPage />
-							}
+							element={<CompanyPaymentsPage />}
 						/>
 					</Route>
 				</Route>

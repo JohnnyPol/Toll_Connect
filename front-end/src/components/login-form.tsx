@@ -21,8 +21,7 @@ export function LoginForm({
 					Login to your account
 				</h1>
 				<p className='text-balance text-sm text-muted-foreground'>
-					Enter your company credentials below to
-					login to your account
+					Enter your company credentials below to login to your account
 				</p>
 			</div>
 			<div className='grid gap-6'>
@@ -56,8 +55,7 @@ export function LoginForm({
 				<Button
 					type='submit'
 					className='w-full'
-					onClick={() =>
-						navigate('/company/dashboard')}
+					onClick={() => navigate('/company/dashboard')}
 				>
 					Login
 				</Button>

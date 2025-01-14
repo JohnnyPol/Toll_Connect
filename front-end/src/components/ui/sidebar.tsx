@@ -76,9 +76,7 @@ const SidebarProvider = React.forwardRef<
 		const open = openProp ?? _open;
 		const setOpen = React.useCallback(
 			(value: boolean | ((value: boolean) => boolean)) => {
-				const openState = typeof value === 'function'
-					? value(open)
-					: value;
+				const openState = typeof value === 'function' ? value(open) : value;
 				if (setOpenProp) {
 					setOpenProp(openState);
 				} else {
@@ -150,10 +148,8 @@ const SidebarProvider = React.forwardRef<
 				<TooltipProvider delayDuration={0}>
 					<div
 						style={{
-							'--sidebar-width':
-								SIDEBAR_WIDTH,
-							'--sidebar-width-icon':
-								SIDEBAR_WIDTH_ICON,
+							'--sidebar-width': SIDEBAR_WIDTH,
+							'--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
 							...style,
 						} as React.CSSProperties}
 						className={cn(
@@ -191,8 +187,7 @@ const Sidebar = React.forwardRef<
 		},
 		ref,
 	) => {
-		const { isMobile, state, openMobile, setOpenMobile } =
-			useSidebar();
+		const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
 		if (collapsible === 'none') {
 			return (
@@ -221,8 +216,7 @@ const Sidebar = React.forwardRef<
 						data-mobile='true'
 						className='w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden'
 						style={{
-							'--sidebar-width':
-								SIDEBAR_WIDTH_MOBILE,
+							'--sidebar-width': SIDEBAR_WIDTH_MOBILE,
 						} as React.CSSProperties}
 						side={side}
 					>
@@ -239,9 +233,7 @@ const Sidebar = React.forwardRef<
 				ref={ref}
 				className='group peer hidden md:block text-sidebar-foreground'
 				data-state={state}
-				data-collapsible={state === 'collapsed'
-					? collapsible
-					: ''}
+				data-collapsible={state === 'collapsed' ? collapsible : ''}
 				data-variant={variant}
 				data-side={side}
 			>
@@ -549,7 +541,8 @@ const sidebarMenuButtonVariants = cva(
 		variants: {
 			variant: {
 				default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-				outline: 'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+				outline:
+					'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
 			},
 			size: {
 				default: 'h-8 text-sm',

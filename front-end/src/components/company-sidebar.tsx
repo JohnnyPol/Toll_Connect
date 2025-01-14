@@ -86,8 +86,7 @@ export function CompanySidebar(
 								</div>
 								<div className='flex flex-col gap-0.5 leading-none'>
 									<span className='font-semibold'>
-										Toll
-										Connect
+										Toll Connect
 									</span>
 									<span className=''>
 										v420.69
@@ -115,8 +114,7 @@ export function CompanySidebar(
 										className='font-medium'
 										onClick={() => {
 											resetActive();
-											item.isActive =
-												true;
+											item.isActive = true;
 										}}
 									>
 										{item.title}
@@ -144,8 +142,7 @@ export function CompanySidebar(
 																	to={item.url}
 																	onClick={() => {
 																		resetActive();
-																		item.isActive =
-																			true;
+																		item.isActive = true;
 																	}}
 																>
 																	{item.title}
