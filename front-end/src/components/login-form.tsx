@@ -5,6 +5,19 @@ import { Label } from '@/components/ui/label.tsx';
 import incognitoLogo from '@/assets/incognito.svg';
 import jwtDecode from 'https://esm.sh/jwt-decode@3.1.2';
 import { useNavigate } from 'react-router-dom';
+
+export enum UserLevel {
+	Anonymous,
+	Operator,
+	Admin,
+}
+
+export type Token = {
+	level: UserLevel;
+	name: string;
+	exp: number;
+};
+
 export function LoginForm({
 	className,
 	...props
