@@ -101,6 +101,17 @@ const list_of_operators =[
         addressArea: 'Central Area',
         addressZip: 12345  
     },
+    {
+        _id: 'dummy@mail' , // testing the login page 
+        name: 'admin',
+        passwordHash: 123456789,
+        email: 'operator@example.com',
+        VAT : 'VAT12345',
+        addressStreet: 'Main Street',
+        addressNumber: 123,
+        addressArea: 'Central Area',
+        addressZip: 12345  
+    },
 ];
 
 async function insertTollOperators() {
