@@ -1,3 +1,3 @@
 export default function AdminStatisticsPage() {
-	return <div>Statistics</div>;
+	return <div>Map</div>;
 }

@@ -40,13 +40,14 @@ export function LoginForm({
 			// Make a POST request to the /login API
 			const response = await fetch('http://localhost:9115/login', {
 				method: 'POST',
+				mode: 'no-cors',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 					'X-OBSERVATORY-AUTH': 'true',
 				},
 				body: JSON.stringify({
 					username: email,
-					password: PasswordHash.toString(),
+					password: PasswordHash,
 				}),
 			});
 
@@ -113,7 +114,13 @@ export function LoginForm({
 					</Label>
 					<Input id='password' type='password' required />
 				</div>
-				<Button type='submit' className='w-full'>
+				<Button
+					type='submit'
+					className='w-full'
+					onClick={() => {
+						navigate('/company/dashboard');
+					}}
+				>
 					Login
 				</Button>
 				<div className='relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border'>
