@@ -8,20 +8,22 @@ async function login(req: Request, res: Response): Promise<void> {
 		username: string;
 		password: number;
 	} = req.body;
-	// assume password is alreasy hashed
+	// assume password is already hashed
 	try {
 		const user = await TollOperator.findById(username).exec();
 		if (user === null) {
 			throw new Error(`User ${username} not found`);
 		}
-		if (user.passwordHash !== password) {
-			throw new Error(`Incorrect password`);
+		if (user.passwordHash != password) {
+			throw new Error(
+				`Incorrect password ${password} ${user.passwordHash}`,
+			);
 		}
 		res.status(200).json({
-			token: create({
-				level: username === 'admin'
-					? UserLevel.Operator
-					: UserLevel.Admin,
+			token: await create({
+				level: username === 'Admin'
+					? UserLevel.Admin
+					: UserLevel.Operator,
 				name: username,
 			}),
 		});

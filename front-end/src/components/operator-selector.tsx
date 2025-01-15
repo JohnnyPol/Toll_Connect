@@ -1,54 +1,45 @@
-import React from 'react';
+import { useState } from 'react';
+import { useOperators } from '@/hooks/use-operators.ts';
 import { Check, Search } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 import { Input } from '@/components/ui/input.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
+import { Alert } from '@/components/ui/alert.tsx';
+import { Operator } from '@/types/operators.ts';
 
-interface Item {
-	id: string;
-	name: string;
-}
-
-interface ItemSelectorProps {
-	items: Item[];
-	category: string;
-	selectedItems: string[];
+interface OperatorSelectorProps {
+	selected: string[];
 	onSelectionChange: (selectedIds: string[]) => void;
-	allowMultiple?: boolean;
-	searchPlaceholder?: string;
 }
 
-const ItemSelector: React.FC<ItemSelectorProps> = ({
-	items,
-	category = 'item',
-	selectedItems,
+export const OperatorList: React.FC<OperatorSelectorProps> = ({
+	selected,
 	onSelectionChange,
-	allowMultiple = true,
-	searchPlaceholder = 'Search...',
 }) => {
-	const [searchQuery, setSearchQuery] = React.useState('');
+	const { operators, loading, error } = useOperators();
 
-	const filteredItems = items.filter((item) =>
-		item.name.toLowerCase().includes(searchQuery.toLowerCase())
+	const [searchQuery, setSearchQuery] = useState('');
+
+	const filteredOperators = operators.filter((operator: Operator) =>
+		operator.name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
-	const handleItemClick = (itemId: string) => {
-		if (allowMultiple) {
-			const newSelection = selectedItems.includes(itemId)
-				? selectedItems.filter((id) => id !== itemId)
-				: [...selectedItems, itemId];
-			onSelectionChange(newSelection);
-		} else {
-			onSelectionChange([itemId]);
-		}
+	const handleOperatorClick = (operatorId: string) => {
+		const newSelection = selected.includes(operatorId)
+			? selected.filter((id) => id !== operatorId)
+			: [...selected, operatorId];
+		onSelectionChange(newSelection);
 	};
+
+	if (loading) return <div>Loading...</div>;
+	if (error) return <Alert variant='error'>{error.message}</Alert>;
 
 	return (
 		<div className='w-full space-y-2'>
 			<div className='relative'>
 				<Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
 				<Input
-					placeholder={searchPlaceholder}
+					placeholder='Search...'
 					value={searchQuery}
 					onChange={(e) => setSearchQuery(e.target.value)}
 					className='pl-8'
@@ -63,50 +54,48 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
 				)}
 			>
 				<div className='space-y-1'>
-					{filteredItems.map((item) => (
+					{filteredOperators.map((operator) => (
 						<div
-							key={item.id}
-							onClick={() => handleItemClick(item.id)}
+							key={operator.id}
+							onClick={() => handleOperatorClick(operator.id)}
 							className={cn(
 								'flex items-center space-x-2 p-2 rounded-md cursor-pointer transition-colors',
 								'hover:bg-accent hover:text-accent-foreground',
-								selectedItems.includes(item.id) &&
+								selected.includes(operator.id) &&
 									'bg-accent text-accent-foreground',
 							)}
 						>
 							<div
 								className={cn(
 									'w-4 h-4 border rounded-sm flex items-center justify-center',
-									selectedItems.includes(item.id) &&
+									selected.includes(operator.id) &&
 										'bg-primary border-primary',
 								)}
 							>
-								{selectedItems.includes(item.id) && (
+								{selected.includes(operator.id) && (
 									<Check className='h-3 w-3 text-primary-foreground' />
 								)}
 							</div>
 							<div className='flex-1'>
-								<div className='text-sm font-medium'>{item.name}</div>
+								<div className='text-sm font-medium'>{operator.name}</div>
 							</div>
 						</div>
 					))}
 
-					{filteredItems.length === 0 && (
+					{filteredOperators.length === 0 && (
 						<div className='p-2 text-sm text-muted-foreground text-center'>
-							No {category}s found
+							No operators found
 						</div>
 					)}
 				</div>
 			</ScrollArea>
 
-			{selectedItems.length > 0 && (
+			{selected.length > 0 && (
 				<div className='text-sm text-muted-foreground'>
-					{selectedItems.length} {category}
-					{selectedItems.length !== 1 ? 's' : ''} selected
+					{selected.length} operator
+					{selected.length !== 1 ? 's' : ''} selected
 				</div>
 			)}
 		</div>
 	);
 };
-
-export default ItemSelector;

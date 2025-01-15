@@ -3,11 +3,13 @@ import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { isBefore } from 'date-fns/isBefore';
 import DateInput from '@/components/date-input.tsx';
-import ItemSelector from '@/components/item-selector.tsx';
+import { OperatorList } from '@/components/operator-selector.tsx';
+import { Operator } from '@/types/operators.ts';
 
 export interface DateRangeFormData {
 	startDate: Date | undefined;
 	endDate: Date | undefined;
+	selectedOperatorIds: Operator['id'][];
 }
 
 interface DateRangeFormProps {
@@ -23,33 +25,16 @@ const DateRangeForm: React.FC<DateRangeFormProps> = ({
 }) => {
 	const [error, setError] = useState<string>('');
 
-	const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-	const items = [
-		{ id: '1', label: 'Item 1', description: 'Description for item 1' },
-		{ id: '2', label: 'Item 2', description: 'Description for item 2' },
-		{ id: '3', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '4', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '5', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '6', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '7', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '8', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '9', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '10', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '11', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '12', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '13', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '14', label: 'Item 3', description: 'Description for item 3' },
-		{ id: '15', label: 'Item 3', description: 'Description for item 3' },
-		// ... more items
-	];
-
 	const handleStartDateChange = (date: Date | undefined) => {
 		onFormDataChange({ ...formData, startDate: date });
 	};
 
 	const handleEndDateChange = (date: Date | undefined) => {
 		onFormDataChange({ ...formData, endDate: date });
+	};
+
+	const handleOperatorSelectionChange = (selected: string[]) => {
+		onFormDataChange({ ...formData, selectedOperatorIds: selected });
 	};
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -90,14 +75,9 @@ const DateRangeForm: React.FC<DateRangeFormProps> = ({
 
 				<div className='space-y-2'>
 					<Label>Select Operators</Label>
-					<ItemSelector
-						items={items}
-						category='operator'
-						selectedItems={selectedIds}
-						onSelectionChange={setSelectedIds}
-						allowMultiple={true}
-						searchPlaceholder='Search...'
-						maxHeight='10'
+					<OperatorList
+						selected={formData.selectedOperatorIds}
+						onSelectionChange={handleOperatorSelectionChange}
 					/>
 				</div>
 

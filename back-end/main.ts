@@ -1,7 +1,7 @@
 // @ts-types='npm:@types/express'
 import express from 'npm:express';
 import morgan from 'npm:morgan';
-// import cors from 'npm:cors';
+import cors from 'npm:cors';
 import openapi from 'npm:@wesleytodd/openapi';
 // SEE: https://docs.deno.com/examples/express_tutorial/
 import { connect } from 'npm:mongoose';
@@ -33,6 +33,7 @@ const app = express();
 const oapi = openapi(apiDoc);
 
 // Middleware
+app.use(cors());
 app.use(morgan('dev'));
 
 app.use(oapi);
