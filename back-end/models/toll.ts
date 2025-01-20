@@ -3,6 +3,7 @@ import { idtype, precision, range, require, trim, unique } from './util.ts';
 
 import TollOperator from './toll_operator.ts';
 import Road from './road.ts';
+import Pass from './pass.ts';
 
 const tollSchema = new Schema({
 	_id: trim(unique(require(String))),

@@ -32,7 +32,7 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 	};
 
 	if (loading) return <div>Loading...</div>;
-	if (error) return <Alert variant='error'>{error.message}</Alert>;
+	if (error) return <Alert variant='error'>{error}</Alert>;
 
 	return (
 		<div className='w-full space-y-2'>
@@ -56,23 +56,23 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 				<div className='space-y-1'>
 					{filteredOperators.map((operator) => (
 						<div
-							key={operator.id}
-							onClick={() => handleOperatorClick(operator.id)}
+							key={operator._id}
+							onClick={() => handleOperatorClick(operator._id)}
 							className={cn(
 								'flex items-center space-x-2 p-2 rounded-md cursor-pointer transition-colors',
 								'hover:bg-accent hover:text-accent-foreground',
-								selected.includes(operator.id) &&
+								selected.includes(operator._id) &&
 									'bg-accent text-accent-foreground',
 							)}
 						>
 							<div
 								className={cn(
 									'w-4 h-4 border rounded-sm flex items-center justify-center',
-									selected.includes(operator.id) &&
+									selected.includes(operator._id) &&
 										'bg-primary border-primary',
 								)}
 							>
-								{selected.includes(operator.id) && (
+								{selected.includes(operator._id) && (
 									<Check className='h-3 w-3 text-primary-foreground' />
 								)}
 							</div>

@@ -65,5 +65,5 @@ app.get(
 );
 
 if (import.meta.main) {
-	app.listen(9115);
+	app.listen(9115, '0.0.0.0');
 }

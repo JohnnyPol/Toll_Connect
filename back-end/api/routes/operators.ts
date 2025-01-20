@@ -29,14 +29,14 @@ export default function (oapi: Middleware): Router {
 		}),
 		(_req: Request, res: Response) => {
 			res.status(200).json([
-				{ 'id': 'AM', 'name': 'aegeanmotorway' },
-				{ 'id': 'EG', 'name': 'egnatia' },
-				{ 'id': 'GE', 'name': 'gefyra' },
-				{ 'id': 'KO', 'name': 'kentrikiodos' },
-				{ 'id': 'MO', 'name': 'moreas' },
-				{ 'id': 'NAO', 'name': 'naodos' },
-				{ 'id': 'NO', 'name': 'neaodos' },
-				{ 'id': 'OO', 'name': 'olympiaodos' },
+				{ '_id': 'AM', 'name': 'aegeanmotorway' },
+				{ '_id': 'EG', 'name': 'egnatia' },
+				{ '_id': 'GE', 'name': 'gefyra' },
+				{ '_id': 'KO', 'name': 'kentrikiodos' },
+				{ '_id': 'MO', 'name': 'moreas' },
+				{ '_id': 'NAO', 'name': 'naodos' },
+				{ '_id': 'NO', 'name': 'neaodos' },
+				{ '_id': 'OO', 'name': 'olympiaodos' },
 			]);
 		},
 	);

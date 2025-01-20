@@ -14,4 +14,9 @@ const passSchema = new Schema({
 	},
 });
 
+passSchema.statics.getAveragePasses = async function (tollId: string) {
+	const passes = await this.find({ toll: tollId });
+	return passes.length;
+};
+
 export default model('Pass', passSchema, 'pass');

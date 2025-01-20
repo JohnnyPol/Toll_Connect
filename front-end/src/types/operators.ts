@@ -1,4 +1,4 @@
 export interface Operator {
-	id: string;
+	_id: string;
 	name: string;
 }

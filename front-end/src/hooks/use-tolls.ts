@@ -1,21 +1,27 @@
 import { useState } from 'react';
 import { tollService } from '@/api/services/tolls.ts';
 import { Operator } from '@/types/operators.ts';
-import { Toll } from '@/types/tolls.ts';
+import { TollMap } from '@/types/tolls.ts';
 import { AxiosError } from 'axios';
 
 interface TollState {
 	[operatorId: string]: {
-		data: Toll[];
+		data: TollMap[];
 		loading: boolean;
 		error: string | null;
 	};
 }
 
-export const useTolls = () => {
+interface UseTollsReturn {
+	tollState: TollState;
+	fetchTollsForOperator: (operatorId: Operator['_id']) => Promise<void>;
+	fetchTollsForAllOperators: (operators: Operator['_id'][]) => Promise<void>;
+}
+
+export const useTolls = (): UseTollsReturn => {
 	const [tollState, setTollState] = useState<TollState>({});
 
-	const fetchTollsForOperator = async (operatorId: Operator['id']) => {
+	const fetchTollsForOperator = async (operatorId: Operator['_id']): Promise<void> => {
 		// Initialize state for this operator if it doesn't exist
 		setTollState((prev) => ({
 			...prev,
@@ -52,7 +58,7 @@ export const useTolls = () => {
 		}
 	};
 
-	const fetchTollsForAllOperators = async (operators: Operator['id'][]) => {
+	const fetchTollsForAllOperators = async (operators: Operator['_id'][]): Promise<void> => {
 		await Promise.all(operators.map(fetchTollsForOperator));
 	};
 

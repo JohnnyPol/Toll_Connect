@@ -9,7 +9,7 @@ import { Operator } from '@/types/operators.ts';
 export interface DateRangeFormData {
 	startDate: Date | undefined;
 	endDate: Date | undefined;
-	selectedOperatorIds: Operator['id'][];
+	selectedOperatorIds: Operator['_id'][];
 }
 
 interface DateRangeFormProps {
