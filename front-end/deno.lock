@@ -9,6 +9,7 @@
     "npm:@radix-ui/react-select@^2.1.4": "2.1.4_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@radix-ui/react-separator@^1.1.1": "1.1.1_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@radix-ui/react-slot@^1.1.1": "1.1.1_@types+react@18.3.18_react@18.3.1",
+    "npm:@radix-ui/react-switch@^1.1.2": "1.1.2_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@radix-ui/react-tooltip@^1.1.6": "1.1.6_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@types/node@^22.10.2": "22.10.6",
     "npm:@types/react-dom@^18.3.1": "18.3.5_@types+react@18.3.18",
@@ -16,6 +17,7 @@
     "npm:@vis.gl/react-google-maps@^1.4.2": "1.5.0_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@vitejs/plugin-react@^4.3.4": "4.3.4_vite@6.0.7__@types+node@22.10.6_@babel+core@7.26.0_@types+node@22.10.6",
     "npm:autoprefixer@^10.4.20": "10.4.20_postcss@8.5.0",
+    "npm:axios-cache-interceptor@^1.6.2": "1.6.2_axios@1.7.9",
     "npm:axios@^1.7.9": "1.7.9",
     "npm:class-variance-authority@~0.7.1": "0.7.1",
     "npm:clsx@^2.1.1": "2.1.1",
@@ -655,6 +657,22 @@
         "react"
       ]
     },
+    "@radix-ui/react-switch@1.1.2_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1": {
+      "integrity": "sha512-zGukiWHjEdBCRyXvKR6iXAQG6qXm2esuAD6kDOi9Cn+1X6ev3ASo4+CsYaD6Fov9r/AQFekqnD/7+V0Cs6/98g==",
+      "dependencies": [
+        "@radix-ui/primitive",
+        "@radix-ui/react-compose-refs",
+        "@radix-ui/react-context",
+        "@radix-ui/react-primitive",
+        "@radix-ui/react-use-controllable-state",
+        "@radix-ui/react-use-previous",
+        "@radix-ui/react-use-size",
+        "@types/react",
+        "@types/react-dom",
+        "react",
+        "react-dom"
+      ]
+    },
     "@radix-ui/react-tooltip@1.1.6_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1": {
       "integrity": "sha512-TLB5D8QLExS1uDn7+wH/bjEmRurNMTzNrtq7IjaS4kjion9NtzsTGkvR5+i7yc9q01Pi2KMM2cN3f8UG4IvvXA==",
       "dependencies": [
@@ -993,6 +1011,15 @@
     "aws4@1.13.2": {
       "integrity": "sha512-lHe62zvbTB5eEABUVi/AwVh0ZKY9rMMDhmm+eeyuuUQbQ3+J+fONVQOZyj+DdrvD4BY33uYniyRJ4UJIaSKAfw=="
     },
+    "axios-cache-interceptor@1.6.2_axios@1.7.9": {
+      "integrity": "sha512-YLbAODIHZZIcD4b3WYFVQOa5W2TY/WnJ6sBHqAg6Z+hx+RVj8/OcjQyRopO6awn7/kOkGL5X9TP16AucnlJ/lw==",
+      "dependencies": [
+        "axios",
+        "cache-parser",
+        "fast-defer",
+        "object-code"
+      ]
+    },
     "axios@1.7.9": {
       "integrity": "sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==",
       "dependencies": [
@@ -1046,6 +1073,9 @@
         "bytewise-core",
         "typewise"
       ]
+    },
+    "cache-parser@1.2.5": {
+      "integrity": "sha512-Md/4VhAHByQ9frQ15WD6LrMNiVw9AEl/J7vWIXw+sxT6fSOpbtt6LHTp76vy8+bOESPBO94117Hm2bIjlI7XjA=="
     },
     "camelcase-css@2.0.1": {
       "integrity": "sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA=="
@@ -1228,6 +1258,9 @@
     },
     "fast-deep-equal@3.1.3": {
       "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="
+    },
+    "fast-defer@1.1.8": {
+      "integrity": "sha512-lEJeOH5VL5R09j6AA0D4Uvq7AgsHw0dAImQQ+F3iSyHZuAxyQfWobsagGpTcOPvJr3urmKRHrs+Gs9hV+/Qm/Q=="
     },
     "fast-glob@3.3.3": {
       "integrity": "sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==",
@@ -1618,6 +1651,9 @@
     },
     "object-assign@4.1.1": {
       "integrity": "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg=="
+    },
+    "object-code@1.3.3": {
+      "integrity": "sha512-/Ds4Xd5xzrtUOJ+xJQ57iAy0BZsZltOHssnDgcZ8DOhgh41q1YJCnTPnWdWSLkNGNnxYzhYChjc5dgC9mEERCA=="
     },
     "object-hash@3.0.0": {
       "integrity": "sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw=="
@@ -2253,6 +2289,7 @@
       "npm:@radix-ui/react-select@^2.1.4",
       "npm:@radix-ui/react-separator@^1.1.1",
       "npm:@radix-ui/react-slot@^1.1.1",
+      "npm:@radix-ui/react-switch@^1.1.2",
       "npm:@radix-ui/react-tooltip@^1.1.6",
       "npm:@types/node@^22.10.2",
       "npm:@types/react-dom@^18.3.1",
@@ -2260,6 +2297,7 @@
       "npm:@vis.gl/react-google-maps@^1.4.2",
       "npm:@vitejs/plugin-react@^4.3.4",
       "npm:autoprefixer@^10.4.20",
+      "npm:axios-cache-interceptor@^1.6.2",
       "npm:axios@^1.7.9",
       "npm:class-variance-authority@~0.7.1",
       "npm:clsx@^2.1.1",

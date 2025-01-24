@@ -28,16 +28,18 @@ export default function (oapi: Middleware): Router {
 			},
 		}),
 		(_req: Request, res: Response) => {
-			res.status(200).json([
-				{ '_id': 'AM', 'name': 'aegeanmotorway' },
-				{ '_id': 'EG', 'name': 'egnatia' },
-				{ '_id': 'GE', 'name': 'gefyra' },
-				{ '_id': 'KO', 'name': 'kentrikiodos' },
-				{ '_id': 'MO', 'name': 'moreas' },
-				{ '_id': 'NAO', 'name': 'naodos' },
-				{ '_id': 'NO', 'name': 'neaodos' },
-				{ '_id': 'OO', 'name': 'olympiaodos' },
-			]);
+			setTimeout(() => {
+				res.status(200).json([
+					{ '_id': 'AM', 'name': 'aegeanmotorway' },
+					{ '_id': 'EG', 'name': 'egnatia' },
+					{ '_id': 'GE', 'name': 'gefyra' },
+					{ '_id': 'KO', 'name': 'kentrikiodos' },
+					{ '_id': 'MO', 'name': 'moreas' },
+					{ '_id': 'NAO', 'name': 'naodos' },
+					{ '_id': 'NO', 'name': 'neaodos' },
+					{ '_id': 'OO', 'name': 'olympiaodos' },
+				]);
+			}, 1000); // 1000ms = 1 second
 		},
 	);
 

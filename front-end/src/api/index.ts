@@ -1,8 +1,9 @@
-import axios, { AxiosError } from 'axios';
+import Axios, { AxiosError } from 'axios';
+import { setupCache } from 'axios-cache-interceptor';
 
 const baseURL = 'http://localhost:9115/api';
 
-export const apiClient = axios.create({
+const instance = Axios.create({
 	baseURL,
 	headers: {
 		'Content-Type': 'application/json',
@@ -10,7 +11,7 @@ export const apiClient = axios.create({
 });
 
 // Optional: Add request/response interceptors
-apiClient.interceptors.response.use(
+instance.interceptors.response.use(
 	(response) => response,
 	(error: AxiosError) => {
 		// Handle errors globally
@@ -18,3 +19,5 @@ apiClient.interceptors.response.use(
 		return Promise.reject(error);
 	},
 );
+
+export const axios = setupCache(instance);

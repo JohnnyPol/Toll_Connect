@@ -7,7 +7,6 @@ interface UseOperatorsReturn {
 	operators: Operator[];
 	loading: boolean;
 	error: string | null;
-	refetch: () => Promise<void>;
 }
 
 export const useOperators = (): UseOperatorsReturn => {
@@ -39,6 +38,5 @@ export const useOperators = (): UseOperatorsReturn => {
 		operators,
 		loading,
 		error,
-		refetch: fetchOperators,
 	};
 };

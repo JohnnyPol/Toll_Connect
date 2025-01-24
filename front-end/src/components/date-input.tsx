@@ -31,7 +31,7 @@ const DateInput: React.FC<DateInputProps> = ({
 		selectedDate ? format(selectedDate, 'MM/dd/yyyy') : '',
 	);
 
-	const handleDayPickerSelect = (date: Date | undefined) => {
+	const handleCalendarSelect = (date: Date | undefined) => {
 		if (!date) {
 			setInputValue('');
 			onDateChange(undefined);
@@ -77,7 +77,7 @@ const DateInput: React.FC<DateInputProps> = ({
 						onMonthChange={setMonth}
 						mode='single'
 						selected={selectedDate}
-						onSelect={handleDayPickerSelect}
+						onSelect={handleCalendarSelect}
 					/>
 					<Input
 						id={inputId}

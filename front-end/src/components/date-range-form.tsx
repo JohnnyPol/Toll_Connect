@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { isBefore } from 'date-fns/isBefore';
 import DateInput from '@/components/date-input.tsx';
-import { OperatorList } from '@/components/operator-selector.tsx';
+import { OperatorList } from '@/components/operator-list.tsx';
 import { Operator } from '@/types/operators.ts';
 
 export interface DateRangeFormData {
