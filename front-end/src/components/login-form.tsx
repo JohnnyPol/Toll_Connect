@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label.tsx';
 import incognitoLogo from '@/assets/incognito.svg';
 import jwtDecode from 'https://esm.sh/jwt-decode@3.1.2';
 import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 
 export enum UserLevel {
 	Anonymous,
@@ -23,24 +24,30 @@ export function LoginForm({
 	...props
 }: React.ComponentPropsWithoutRef<'form'>) {
 	const navigate = useNavigate();
+	const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error messages
 
 	// Function to handle form submission
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const form = event.target as HTMLFormElement;
 		const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+		console.log(email);
+		// deno-lint-ignore no-unused-vars
 		const password = (form.elements.namedItem('password') as HTMLInputElement)
 			.value;
 
 		try {
+			// Clear previous error messages
+			setErrorMessage(null);
+
 			// Hash the password with SHA-512
-			const passwordHash = await hashPassword(password);
-			console.log(passwordHash);
-			const PasswordHash = 123456789;
+			//const passwordHash = await hashPassword(password);
+			// console.log("Password Hash: ", passwordHash);
+			const PasswordHash = '123456789';
+
 			// Make a POST request to the /login API
 			const response = await fetch('http://localhost:9115/login', {
 				method: 'POST',
-				mode: 'no-cors',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 					'X-OBSERVATORY-AUTH': 'true',
@@ -52,15 +59,14 @@ export function LoginForm({
 			});
 
 			if (!response.ok) {
-				throw new Error(
-					'Authentication failed. Please check your credentials.',
-				);
+				// Handle server errors
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Authentication failed.');
 			}
 
 			// Parse the response and decode the token
 			const { token }: { token: string } = await response.json();
 			const decodedToken: Token = jwtDecode(token);
-			console.log(token);
 
 			// Store the token locally
 			localStorage.setItem('authToken', token);
@@ -74,12 +80,14 @@ export function LoginForm({
 				throw new Error('Unknown user level.');
 			}
 		} catch (error) {
-			console.error('Login error:', error);
-			alert('Login failed. Please try again.');
+			setErrorMessage(
+				error instanceof Error ? error.message : 'An error occurred.',
+			);
 		}
 	};
 
 	// Function to hash the password with SHA-512
+	// deno-lint-ignore no-unused-vars
 	const hashPassword = async (password: string): Promise<string> => {
 		const encoder = new TextEncoder();
 		const data = encoder.encode(password);
@@ -101,6 +109,12 @@ export function LoginForm({
 					Enter your company credentials below to login to your account
 				</p>
 			</div>
+			{/* Error message */}
+			{errorMessage && (
+				<div className='text-red-500 text-sm mt-2 text-center'>
+					{errorMessage}
+				</div>
+			)}
 			<div className='grid gap-6'>
 				<div className='grid gap-2'>
 					<Label htmlFor='email' className='text-left'>
@@ -114,13 +128,7 @@ export function LoginForm({
 					</Label>
 					<Input id='password' type='password' required />
 				</div>
-				<Button
-					type='submit'
-					className='w-full'
-					onClick={() => {
-						navigate('/company/dashboard');
-					}}
-				>
+				<Button type='submit' className='w-full'>
 					Login
 				</Button>
 				<div className='relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border'>

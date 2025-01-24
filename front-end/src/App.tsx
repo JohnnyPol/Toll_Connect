@@ -24,25 +24,23 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
 
-        <Route path="company">
-          <Route path="dashboard" element={<CompanyLayout />}>
-            <Route index element={<CompanyDashboard />} />
-            <Route path="map" element={<CompanyMapPage />} />
-            <Route path="statistics" element={<CompanyStatisticsPage />} />
-            <Route path="payments" element={<CompanyPaymentsPage />} />
+        {/* Protected Routes for Company Users*/}
+        <Route element={<ProtectedRoute requiredLevel={UserLevel.Operator} />}>
+          <Route path="company">
+            <Route path="dashboard" element={<CompanyLayout />}>
+              <Route index element={<CompanyDashboard />} />
+              <Route path="map" element={<CompanyMapPage />} />
+              <Route path="statistics" element={<CompanyStatisticsPage />} />
+              <Route path="payments" element={<CompanyPaymentsPage />} />
+            </Route>
           </Route>
         </Route>
-        {/* Protected Routes for Company Users 
-        <Route element={<ProtectedRoute requiredLevel={UserLevel.Operator} />}>
-        ...
-        </Route>
-        */}
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="map" element={<AdminMapPage />} />
-            <Route path="statistics" element={<AdminStatisticsPage />} />
-            <Route path="payments" element={<AdminPaymentsPage />} />
+          <Route path="map" element={<AdminMapPage />} />
+          <Route path="statistics" element={<AdminStatisticsPage />} />
+          <Route path="payments" element={<AdminPaymentsPage />} />
         </Route>
 
         {/* Protected Routes for Admin Users 

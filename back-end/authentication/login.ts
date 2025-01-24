@@ -6,7 +6,7 @@ import { create, UserLevel, verify } from './jwt.ts';
 async function login(req: Request, res: Response): Promise<void> {
 	const { username, password }: {
 		username: string;
-		password: number;
+		password: string;
 	} = req.body;
 	// assume password is alreasy hashed
 	try {
@@ -18,10 +18,10 @@ async function login(req: Request, res: Response): Promise<void> {
 			throw new Error(`Incorrect password`);
 		}
 		res.status(200).json({
-			token: create({
+			token: await create({
 				level: username === 'admin'
-					? UserLevel.Operator
-					: UserLevel.Admin,
+					? UserLevel.Admin
+					: UserLevel.Operator,
 				name: username,
 			}),
 		});

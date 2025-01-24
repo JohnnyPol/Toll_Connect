@@ -1,116 +1,116 @@
 import { insert_toll_operator } from './tollOperator.ts';
-import {connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect } from 'npm:mongoose';
 
-const list_of_operators =[
+const list_of_operators = [
     {
-        _id: 'AM' ,
+        _id: 'AM',
         name: 'aegeanmotorway',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
-    }, 
+        addressZip: 12345
+    },
     {
-        _id: 'EG' ,
+        _id: 'EG',
         name: 'egnatia',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'GE' ,
+        _id: 'GE',
         name: 'gefyra',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'KO' ,
+        _id: 'KO',
         name: 'kentrikiodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'MO' ,
+        _id: 'MO',
         name: 'moreas',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'NAO' ,
+        _id: 'NAO',
         name: 'naodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'NO' ,
+        _id: 'NO',
         name: 'neaodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'OO' ,
+        _id: 'OO',
         name: 'olympiaodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'Admin' ,
+        _id: 'Admin',
         name: 'admin',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
     {
-        _id: 'dummy@mail' , // testing the login page 
+        _id: 'dummy@mail', // testing the login page 
         name: 'admin',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
 ];
 
@@ -119,12 +119,12 @@ async function insertTollOperators() {
         await connect('mongodb://localhost:27017');
         console.log('OK connecting to db');
     } catch (err) {
-        console.error('ERR connectint to db:', err);
+        console.error('ERR connecting to db:', err);
         Deno.exit(1);
     }
 
     for (const TollOperator of list_of_operators) {
-        try {      
+        try {
             await insert_toll_operator(TollOperator);
 
             console.log(`Successfully inserted toll operator: ${TollOperator}`);
@@ -140,9 +140,9 @@ async function insertTollOperators() {
         console.log('Disconnected from MongoDB');
     } catch (disconnectError: unknown) {
         if (disconnectError instanceof Error) {
-        console.error('Error disconnecting from MongoDB:', disconnectError.message);
+            console.error('Error disconnecting from MongoDB:', disconnectError.message);
         } else {
-        console.error('Unknown error occurred during disconnection.');
+            console.error('Unknown error occurred during disconnection.');
         }
     }
 }

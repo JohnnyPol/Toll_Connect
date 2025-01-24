@@ -8,6 +8,7 @@
     "npm:@types/node@*": "22.5.4",
     "npm:@wesleytodd/openapi@*": "1.1.0_ajv@8.17.1",
     "npm:@wesleytodd/openapi@^1.1.0": "1.1.0_ajv@8.17.1",
+    "npm:cors@*": "2.8.5",
     "npm:express@*": "4.21.2",
     "npm:express@^4.21.2": "4.21.2",
     "npm:moment@*": "2.30.1",
@@ -1182,6 +1183,7 @@
       "jsr:@std/assert@1",
       "jsr:@std/path@^1.0.8",
       "npm:@wesleytodd/openapi@^1.1.0",
+      "npm:cors@*",
       "npm:express@^4.21.2",
       "npm:mongodb@^6.12.0",
       "npm:mongoose@^8.9.1"
