@@ -31,7 +31,6 @@ export function LoginForm({
 		event.preventDefault();
 		const form = event.target as HTMLFormElement;
 		const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-		console.log(email);
 		// deno-lint-ignore no-unused-vars
 		const password = (form.elements.namedItem('password') as HTMLInputElement)
 			.value;
@@ -52,10 +51,10 @@ export function LoginForm({
 					'Content-Type': 'application/x-www-form-urlencoded',
 					'X-OBSERVATORY-AUTH': 'true',
 				},
-				body: JSON.stringify({
+				body: new URLSearchParams({
 					username: email,
 					password: PasswordHash,
-				}),
+				}).toString(),
 			});
 
 			if (!response.ok) {

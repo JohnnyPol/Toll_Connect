@@ -44,7 +44,7 @@ app.use('/api', api(oapi));
 
 app.use(
 	cors({
-		origin: "http://localhost:5173", // Allow only frontend origin
+		origin: "http://localhost:5173",
 		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization", "X-OBSERVATORY-AUTH"],
 		credentials: true,
