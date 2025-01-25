@@ -15,14 +15,12 @@ import { Label } from '@/components/ui/label.tsx';
 interface DateInputProps {
 	selectedDate: Date | undefined;
 	onDateChange: (date: Date | undefined) => void;
-	label: string;
 	placeholder?: string;
 }
 
 const DateInput: React.FC<DateInputProps> = ({
 	selectedDate,
 	onDateChange,
-	label,
 	placeholder = 'Pick a date',
 }) => {
 	const inputId = useId();
@@ -54,42 +52,39 @@ const DateInput: React.FC<DateInputProps> = ({
 	};
 
 	return (
-		<div className='space-y-2'>
-			<Label htmlFor={inputId}>{label}</Label>
-			<Popover>
-				<PopoverTrigger asChild>
-					<Button
-						variant='outline'
-						className={cn(
-							'w-full justify-start text-left font-normal',
-							!selectedDate && 'text-muted-foreground',
-						)}
-					>
-						<CalendarIcon className='mr-2 h-4 w-4' />
-						{selectedDate
-							? format(selectedDate, 'PPP')
-							: <span>{placeholder}</span>}
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className='w-auto p-0' align='start'>
-					<Calendar
-						month={month}
-						onMonthChange={setMonth}
-						mode='single'
-						selected={selectedDate}
-						onSelect={handleCalendarSelect}
-					/>
-					<Input
-						id={inputId}
-						type='text'
-						value={inputValue}
-						placeholder='MM/dd/yyyy'
-						onChange={handleInputChange}
-						className='text-center font-normal'
-					/>
-				</PopoverContent>
-			</Popover>
-		</div>
+		<Popover>
+			<PopoverTrigger asChild>
+				<Button
+					variant='outline'
+					className={cn(
+						'w-full justify-start text-left font-normal',
+						!selectedDate && 'text-muted-foreground',
+					)}
+				>
+					<CalendarIcon className='mr-2 h-4 w-4' />
+					{selectedDate
+						? format(selectedDate, 'PPP')
+						: <span>{placeholder}</span>}
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className='w-auto p-0' align='start'>
+				<Calendar
+					month={month}
+					onMonthChange={setMonth}
+					mode='single'
+					selected={selectedDate}
+					onSelect={handleCalendarSelect}
+				/>
+				<Input
+					id={inputId}
+					type='text'
+					value={inputValue}
+					placeholder='MM/dd/yyyy'
+					onChange={handleInputChange}
+					className='text-center font-normal'
+				/>
+			</PopoverContent>
+		</Popover>
 	);
 };
 

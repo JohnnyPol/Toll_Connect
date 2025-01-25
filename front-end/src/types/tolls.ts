@@ -1,4 +1,4 @@
-export interface TollMap {
+export interface TollMarkerData {
 	_id: string;
 	name: string;
 	latitude: number;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	APIProvider,
 	ControlPosition,
@@ -33,26 +33,37 @@ import {
 } from '@/components/ui/dialog.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import { useTolls } from '@/hooks/use-tolls.ts';
+import { Toast, Toaster } from '@/components/ui/toast.tsx';
+import { useTollMarkers } from '../../hooks/use-toll-markers.ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
-import { TollMap, Toll } from '@/types/tolls.ts';
+import { Toll, TollMarkerData } from '@/types/tolls.ts';
 
 import { tollService } from '@/api/services/tolls.ts';
+import {
+	MapFilterForm,
+	MapFilterFormValues,
+} from '@/components/map-filter-form.tsx';
+import { useOperators } from '@/hooks/use-operators.ts';
+import { Operator } from '@/types/operators.ts';
+import { toast } from 'sonner';
+import { subDays } from 'date-fns/subDays';
+import { MapFilterSheet } from '@/components/map-filter-sheet.tsx';
 
 export default function AnonymousMapPage() {
-	const [formData, setFormData] = useState<DateRangeFormData>({
-		startDate: new Date().setDate(new Date().getDate() - 30),
+	const { tollMarkerState, fetchTollMarkersForAllOperators } = useTollMarkers();
+	const filterFormValues = useRef<MapFilterFormValues>({
+		startDate: subDays(new Date(), 30),
 		endDate: new Date(),
-		selectedOperatorIds: [],
+		operatorIds: [],
 	});
 
-	const { tollState, fetchTollsForAllOperators } = useTolls();
+	const [selectedToll, setSelectedToll] = useState<
+		TollMarkerData['_id'] | null
+	>(null);
 
-	const [selectedToll, setSelectedToll] = useState<TollMap['_id'] | null>(null);
-	
 	const [tollData, setTollData] = useState<Toll>([]);
 
-	const fetchToll = async (id: TollMap['_id']): Promise<void> => {
+	const fetchToll = async (id: TollMarkerData['_id']): Promise<void> => {
 		const data = await tollService.getById(id);
 		setTollData(data);
 	};
@@ -61,13 +72,15 @@ export default function AnonymousMapPage() {
 		fetchToll(selectedToll);
 	}, [selectedToll]);
 
-	const handleFormSubmit = (data: DateRangeFormData) => {
-		console.log('Form submitted:', data);
-		fetchTollsForAllOperators(formData.selectedOperatorIds);
+	const handleSubmit = (values: MapFilterFormValues) => {
+		console.log(values);
+		filterFormValues.current = values;
+		fetchTollMarkersForAllOperators(values.operatorIds);
 	};
 
 	return (
 		<>
+			<Toaster />
 			<APIProvider
 				apiKey={'AIzaSyDAMNPvIOhRWOsnVi-xRUMTHW3RD8uFJcw'}
 				onLoad={() => console.log('Maps API has loaded.')}
@@ -87,8 +100,8 @@ export default function AnonymousMapPage() {
 					disableDefaultUI
 					reuseMaps={true}
 				>
-					{formData.selectedOperatorIds.map((id) => {
-						const operatorTollState = tollState[id] || {
+					{filterFormValues.current.operatorIds.map((id: Operator['_id']) => {
+						const operatorTollState = tollMarkerState[id] || {
 							data: [],
 							loading: false,
 							error: null,
@@ -107,16 +120,10 @@ export default function AnonymousMapPage() {
 									</Alert>
 								)}
 
-								{operatorTollState.error && (
-									<Alert>
-										<AlertTitle>Oops!</AlertTitle>
-										<AlertDescription>
-											<div className='text-red-500'>
-												Error loading tolls: {operatorTollState.error}
-											</div>
-										</AlertDescription>
-									</Alert>
-								)}
+								{operatorTollState.error &&
+									toast.error(operatorTollState.error, {
+										position: 'bottom-center',
+									})}
 
 								<Dialog>
 									<>
@@ -155,9 +162,18 @@ export default function AnonymousMapPage() {
 											<Label htmlFor='road'>Road</Label>
 											<Input id='road' value={tollData.road} disabled />
 											<Label htmlFor='operator'>Operator</Label>
-											<Input id='operator' value={tollData.operator_name} disabled />
+											<Input
+												id='operator'
+												value={tollData.operator_name}
+												disabled
+											/>
 											<Label htmlFor='avg-passes'>Average Passes</Label>
-											<Input id='avg-passes' value={tollData.avg_passes} disabled />
+											<Input
+												id='avg-passes'
+												use-tolls
+												value={tollData.avg_passes}
+												disabled
+											/>
 										</div>
 									</DialogContent>
 								</Dialog>
@@ -169,34 +185,10 @@ export default function AnonymousMapPage() {
 						position={ControlPosition
 							.TOP_CENTER}
 					>
-						<Sheet>
-							<SheetTrigger asChild>
-								<div className='pt-3'>
-									<Button variant='outline'>
-										<FilterIcon className='mr-2 h-4 w-4' />
-										Filters
-									</Button>
-								</div>
-							</SheetTrigger>
-							<SheetContent>
-								<SheetHeader>
-									<SheetTitle>
-										Filter Options
-									</SheetTitle>
-									<SheetDescription>
-										Set your preferences for the statistics date range and the
-										desired operators.
-									</SheetDescription>
-								</SheetHeader>
-								<ScrollArea className='w-full h-[calc(100%-4rem)] p-4'>
-									<DateRangeForm
-										formData={formData}
-										onFormDataChange={setFormData}
-										onSubmit={handleFormSubmit}
-									/>
-								</ScrollArea>
-							</SheetContent>
-						</Sheet>
+						<MapFilterSheet
+							defaultValues={filterFormValues.current}
+							onSubmit={handleSubmit}
+						/>
 					</MapControl>
 				</Map>
 			</APIProvider>

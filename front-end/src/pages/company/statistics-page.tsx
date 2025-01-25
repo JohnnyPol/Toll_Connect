@@ -1,3 +1,7 @@
 export default function StatisticsPage() {
-	return <div>Statistics</div>;
+	return (
+		<div>
+			Statistics
+		</div>
+	);
 }

@@ -1,10 +1,10 @@
 import { axios } from '@/api/index.ts';
 import { Operator } from '@/types/operators.ts';
-import { TollMap, Toll } from '@/types/tolls.ts';
+import { TollMarkerData, Toll } from '@/types/tolls.ts';
 
 export const tollService = {
 	getByOperator: async (operatorId: Operator['_id']) => {
-		const response = await axios.get<TollMap[]>(
+		const response = await axios.get<TollMarkerData[]>(
 			`/operators/${operatorId}/tolls`,
 		);
 		return response.data;

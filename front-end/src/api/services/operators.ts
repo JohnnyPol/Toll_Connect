@@ -1,6 +1,5 @@
 import { axios } from '@/api/index.ts';
 import { Operator } from '@/types/operators.ts';
-import { TollMap } from '@/types/tolls.ts';
 
 export const operatorService = {
 	getAll: async () => {
