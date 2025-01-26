@@ -104,7 +104,7 @@ const list_of_operators = [
     {
         _id: 'dummy@mail', // testing the login page 
         name: 'admin',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',

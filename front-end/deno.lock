@@ -10,6 +10,7 @@
     "npm:@radix-ui/react-separator@^1.1.1": "1.1.1_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@radix-ui/react-slot@^1.1.1": "1.1.1_@types+react@18.3.18_react@18.3.1",
     "npm:@radix-ui/react-tooltip@^1.1.6": "1.1.6_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
+    "npm:@types/node@*": "22.5.4",
     "npm:@types/node@^22.10.2": "22.10.6",
     "npm:@types/react-dom@^18.3.1": "18.3.5_@types+react@18.3.18",
     "npm:@types/react@^18.3.12": "18.3.18",
@@ -865,7 +866,13 @@
     "@types/node@22.10.6": {
       "integrity": "sha512-qNiuwC4ZDAUNcY47xgaSuS92cjf8JbSUoaKS77bmLG1rU7MlATVSiw/IlrjtIyyskXBZ8KkNfjK/P5na7rgXbQ==",
       "dependencies": [
-        "undici-types"
+        "undici-types@6.20.0"
+      ]
+    },
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+      "dependencies": [
+        "undici-types@6.19.8"
       ]
     },
     "@types/pbf@3.0.5": {
@@ -2107,6 +2114,9 @@
         "typewise-core"
       ]
     },
+    "undici-types@6.19.8": {
+      "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
+    },
     "undici-types@6.20.0": {
       "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
     },
@@ -2167,7 +2177,7 @@
     "vite@6.0.7_@types+node@22.10.6": {
       "integrity": "sha512-RDt8r/7qx9940f8FcOIAH9PTViRrghKaK2K1jY3RaAURrEUbm9Du1mJ72G+jlhtG3WwodnfzY8ORQZbBavZEAQ==",
       "dependencies": [
-        "@types/node",
+        "@types/node@22.10.6",
         "esbuild",
         "fsevents",
         "postcss",

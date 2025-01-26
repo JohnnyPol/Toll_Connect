@@ -1,9 +1,46 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import jwtDecode from 'https://esm.sh/jwt-decode@3.1.2';
 import { GalleryVerticalEnd } from 'lucide-react';
 
 import { LoginForm } from '@/components/login-form.tsx';
 import tollImage from '@/assets/tolls.jpeg';
+import { Token, UserLevel } from '@/components/login-form.tsx';
 
 export default function LoginPage() {
+	// Redirection of login if valid token
+	const navigate = useNavigate();
+	useEffect(() => {
+		// Check for token in localStorage
+		const token = localStorage.getItem('authToken');
+
+		if (token) {
+			try {
+				// Decode the token
+				console.log('Locally stored token', token);
+				const decodedToken: Token = jwtDecode(token);
+				{
+					// Check if the token is expired
+					const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+					if (decodedToken.exp < currentTime) {
+						// Token is expired, remove it
+						localStorage.removeItem('authToken');
+					} else {
+						// Redirect based on user level
+						if (decodedToken.level === UserLevel.Operator) {
+							navigate('/company/dashboard');
+						} else if (decodedToken.level === UserLevel.Admin) {
+							navigate('/admin/dashboard');
+						}
+					}
+				}
+			} catch (error) {
+				console.error('Invalid token:', error);
+				// Remove the invalid token
+				localStorage.removeItem('authToken');
+			}
+		}
+	}, [navigate]);
 	return (
 		<div className='grid min-h-svh lg:grid-cols-2'>
 			<div className='flex flex-col gap-4 p-6 md:p-10'>

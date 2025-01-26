@@ -58,6 +58,10 @@ export default function CompanyLayout() {
 	const navigate = useNavigate();
 
 	const signOut = () => {
+		// Remove the token from localStorage
+		localStorage.removeItem('authToken');
+		// TODO: Should there be a signout api call?
+		// Redirect to the login page
 		navigate('/login');
 	};
 
