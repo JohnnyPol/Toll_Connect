@@ -5,8 +5,8 @@ const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const tollOperatorSchema = new Schema({
 	_id: unique(trim(require(String))),
-	name: unique(trim(require(String))),
-	passwordHash: require(Number),
+	name: trim(require(String)), // TODO: Why unique?
+	passwordHash: require(String),
 	email: {
 		...trim(require(String)),
 		validate: {

@@ -5,7 +5,7 @@ import { connect, disconnect } from 'npm:mongoose';
  * Inserts a new toll operator into the database - connects and disconnects to db.
  * @param {string} _id - Toll Operator ID that will be referenced by it
  * @param {string} name - The name of the toll operator.
- * @param {number} passwordHash - The hashed password for the toll operator.
+ * @param {string} passwordHash - The hashed password for the toll operator.
  * @param {string} email - The email address of the toll operator.
  * @param {string} VAT - The VAT number of the toll operator.
  * @param {string} addressStreet - The street address of the toll operator.
@@ -26,7 +26,7 @@ async function insert_toll_operator_connect({
 }: {
     _id: string;
     name: string;
-    passwordHash: number;
+    passwordHash: string;
     email: string;
     VAT: string;
     addressStreet: string;
@@ -87,7 +87,7 @@ async function insert_toll_operator_connect({
  * Inserts a new toll operator into the database.
  * @param {string} _id - Toll Operator ID that will be referenced by it
  * @param {string} name - The name of the toll operator.
- * @param {number} passwordHash - The hashed password for the toll operator.
+ * @param {string} passwordHash - The hashed password for the toll operator.
  * @param {string} email - The email address of the toll operator.
  * @param {string} VAT - The VAT number of the toll operator.
  * @param {string} addressStreet - The street address of the toll operator.
@@ -109,7 +109,7 @@ async function insert_toll_operator({
 }: {
   _id: string;
   name: string;
-  passwordHash: number;
+  passwordHash: string;
   email: string;
   VAT: string;
   addressStreet: string;

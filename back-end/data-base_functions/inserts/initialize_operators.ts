@@ -1,13 +1,13 @@
 import { insert_toll_operator } from './tollOperator.ts';
-import {connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect } from 'npm:mongoose';
 
-const list_of_operators =[
+const list_of_operators = [
     {
-        _id: 'AM' ,
+        _id: 'AM',
         name: 'aegeanmotorway',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -15,11 +15,11 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/blu-circle.png'  
     }, 
     {
-        _id: 'EG' ,
+        _id: 'EG',
         name: 'egnatia',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -27,11 +27,11 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/grn-circle.png'  
     },
     {
-        _id: 'GE' ,
+        _id: 'GE',
         name: 'gefyra',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -39,11 +39,11 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/ltblu-circle.png'  
     },
     {
-        _id: 'KO' ,
+        _id: 'KO',
         name: 'kentrikiodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -51,11 +51,11 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/pink-circle.png'  
     },
     {
-        _id: 'MO' ,
+        _id: 'MO',
         name: 'moreas',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -63,11 +63,11 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/purple-circle.png'  
     },
     {
-        _id: 'NAO' ,
+        _id: 'NAO',
         name: 'naodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -75,11 +75,11 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/red-circle.png'  
     },
     {
-        _id: 'NO' ,
+        _id: 'NO',
         name: 'neaodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -87,11 +87,22 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png'  
     },
     {
-        _id: 'OO' ,
+        _id: 'OO',
         name: 'olympiaodos',
-        passwordHash: 123456789,
+        passwordHash: "123456789",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
+        addressStreet: 'Main Street',
+        addressNumber: 123,
+        addressArea: 'Central Area',
+        addressZip: 12345
+    },
+    {
+        _id: 'Admin',
+        name: 'admin',
+        passwordHash: "123456789",
+        email: 'operator@example.com',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
@@ -99,15 +110,15 @@ const list_of_operators =[
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/orange-circle.png'  
     },
     {
-        _id: 'Admin' ,
+        _id: 'dummy@mail', // testing the login page 
         name: 'admin',
-        passwordHash: 123456789,
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         email: 'operator@example.com',
-        VAT : 'VAT12345',
+        VAT: 'VAT12345',
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345
     },
 ];
 
@@ -116,12 +127,12 @@ async function insertTollOperators() {
         await connect('mongodb://localhost:27017');
         console.log('OK connecting to db');
     } catch (err) {
-        console.error('ERR connectint to db:', err);
+        console.error('ERR connecting to db:', err);
         Deno.exit(1);
     }
 
     for (const TollOperator of list_of_operators) {
-        try {      
+        try {
             await insert_toll_operator(TollOperator);
 
             console.log(`Successfully inserted toll operator: ${TollOperator}`);
@@ -137,9 +148,9 @@ async function insertTollOperators() {
         console.log('Disconnected from MongoDB');
     } catch (disconnectError: unknown) {
         if (disconnectError instanceof Error) {
-        console.error('Error disconnecting from MongoDB:', disconnectError.message);
+            console.error('Error disconnecting from MongoDB:', disconnectError.message);
         } else {
-        console.error('Unknown error occurred during disconnection.');
+            console.error('Unknown error occurred during disconnection.');
         }
     }
 }

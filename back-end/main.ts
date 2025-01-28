@@ -11,6 +11,7 @@ import login from './authentication/login.ts';
 import { clearBlacklist } from './authentication/jwt.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
+import cors from "npm:cors";
 
 /* CONNECTING TO DB */
 try {
@@ -39,6 +40,17 @@ app.use(morgan('dev'));
 app.use(oapi);
 app.use('/docs', oapi.swaggerui());
 app.use('/api', api(oapi));
+
+// Enable CORS for all routes
+
+app.use(
+	cors({
+		origin: "http://localhost:5173",
+		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization", "X-OBSERVATORY-AUTH"],
+		credentials: true,
+	})
+);
 
 app.use('/', login(oapi));
 

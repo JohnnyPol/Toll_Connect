@@ -6,7 +6,7 @@ import { create, UserLevel, verify } from './jwt.ts';
 async function login(req: Request, res: Response): Promise<void> {
 	const { username, password }: {
 		username: string;
-		password: number;
+		password: string;
 	} = req.body;
 	// assume password is already hashed
 	try {
@@ -21,7 +21,8 @@ async function login(req: Request, res: Response): Promise<void> {
 		}
 		res.status(200).json({
 			token: await create({
-				level: username === 'Admin'
+				// Test just so that dummy@mail user can pass this conditional
+				level: username === 'dummy@mail' // TODO: Maybe a change in the schema is needed
 					? UserLevel.Admin
 					: UserLevel.Operator,
 				name: username,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppSidebar } from '@/components/app-sidebar.tsx';
+import { AppSidebar } from '../../components/admin-sidebar.tsx';
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -58,6 +58,10 @@ export default function AdminLayout() {
 	const navigate = useNavigate();
 
 	const signOut = () => {
+		// Remove the token from localStorage
+		localStorage.removeItem('authToken');
+
+		// Redirect to the login page
 		navigate('/login');
 	};
 
