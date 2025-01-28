@@ -1,53 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import {
 	APIProvider,
 	ControlPosition,
 	Map,
-	MapCameraChangedEvent,
 	MapControl,
-	Marker,
 } from '@vis.gl/react-google-maps';
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from '@/components/ui/sheet.tsx';
-import * as SheetPrimitive from '@radix-ui/react-dialog';
-import { Button } from '@/components/ui/button.tsx';
-import { FilterIcon, Terminal, X } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import DateRangeForm, {
-	DateRangeFormData,
-} from '@/components/date-range-form.tsx';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Label } from '@/components/ui/label.tsx';
-import { Toast, Toaster } from '@/components/ui/toast.tsx';
-import { useTollMarkers } from '../../hooks/use-toll-markers.ts';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
-import { Toll, TollMarkerData } from '@/types/tolls.ts';
+import { Toaster } from '@/components/ui/toast.tsx';
+import { useTollMarkers } from '@/hooks/use-toll-markers.ts';
 
-import { tollService } from '@/api/services/tolls.ts';
-import {
-	MapFilterForm,
-	MapFilterFormValues,
-} from '@/components/map-filter-form.tsx';
-import { useOperators } from '@/hooks/use-operators.ts';
+import { MapFilterFormValues } from '@/components/map-filter-form.tsx';
 import { Operator } from '@/types/operators.ts';
 import { toast } from 'sonner';
 import { subDays } from 'date-fns/subDays';
 import { MapFilterSheet } from '@/components/map-filter-sheet.tsx';
+import { MapTollMarker } from '@/components/map-toll-marker.tsx';
+import Heatmap from '@/components/heatmap.tsx';
+import { MapAnonymousTollPopup } from '../../components/map-anonymous-toll-popup.tsx';
 
 export default function AnonymousMapPage() {
 	const { tollMarkerState, fetchTollMarkersForAllOperators } = useTollMarkers();
@@ -57,21 +25,6 @@ export default function AnonymousMapPage() {
 		operatorIds: [],
 	});
 
-	const [selectedToll, setSelectedToll] = useState<
-		TollMarkerData['_id'] | null
-	>(null);
-
-	const [tollData, setTollData] = useState<Toll>([]);
-
-	const fetchToll = async (id: TollMarkerData['_id']): Promise<void> => {
-		const data = await tollService.getById(id);
-		setTollData(data);
-	};
-
-	useEffect(() => {
-		fetchToll(selectedToll);
-	}, [selectedToll]);
-
 	const handleSubmit = (values: MapFilterFormValues) => {
 		console.log(values);
 		filterFormValues.current = values;
@@ -80,10 +33,12 @@ export default function AnonymousMapPage() {
 
 	return (
 		<>
-			<Toaster />
+			<Toaster position='bottom-center' richColors closeButton />
 			<APIProvider
 				apiKey={'AIzaSyDAMNPvIOhRWOsnVi-xRUMTHW3RD8uFJcw'}
-				onLoad={() => console.log('Maps API has loaded.')}
+				onLoad={() => {
+					console.log('Maps API has loaded.');
+				}}
 			>
 				<Map
 					defaultZoom={7}
@@ -94,7 +49,7 @@ export default function AnonymousMapPage() {
 					options={{
 						styles: [{
 							featureType: 'poi',
-							stylers: [{ visibility: 'off' }], // Disable places of interest (POI)
+							stylers: [{ visibility: 'off' }],
 						}],
 					}}
 					disableDefaultUI
@@ -107,77 +62,40 @@ export default function AnonymousMapPage() {
 							error: null,
 						};
 
+						if (operatorTollState.loading) {
+							toast.loading('Loading toll markers...', {
+								id: `loading-${id}`,
+							});
+						} else {
+							setTimeout(() => {
+								toast.dismiss(`loading-${id}`);
+							}, 10);
+						}
+
+						if (operatorTollState.error) {
+							toast.error(operatorTollState.error, {
+								id: `error-${id}`,
+							});
+						}
+
 						return (
-							<>
-								{operatorTollState.loading && (
-									<Alert>
-										<Terminal className='h-4 w-4' />
-										<AlertTitle>Heads up!</AlertTitle>
-										<AlertDescription>
-											You can add components and dependencies to your app using
-											the cli.
-										</AlertDescription>
-									</Alert>
-								)}
-
-								{operatorTollState.error &&
-									toast.error(operatorTollState.error, {
-										position: 'bottom-center',
-									})}
-
-								<Dialog>
+							<div key={id}>
+								{!operatorTollState.loading && !operatorTollState.error && (
 									<>
-										{!operatorTollState.loading && !operatorTollState.error && (
-											<>
-												{operatorTollState.data.map((toll) => (
-													<DialogTrigger asChild>
-														<Marker
-															position={{
-																lat: toll.latitude,
-																lng: toll.longitude,
-															}}
-															title={toll.name}
-															optimized
-															onClick={() => {
-																setSelectedToll(toll._id);
-															}}
-														/>
-													</DialogTrigger>
-												))}
-											</>
-										)}
+										{operatorTollState.data.map((toll) => (
+											<MapTollMarker
+												key={toll._id}
+												tollMarkerData={toll}
+												markerIcon={operatorTollState.markerIcon}
+											>
+												<MapAnonymousTollPopup
+													tollId={toll._id}
+												/>
+											</MapTollMarker>
+										))}
 									</>
-									<DialogContent className='w-full'>
-										<DialogHeader>
-											<DialogTitle>Toll Information</DialogTitle>
-											<DialogDescription>
-												Here you can see information about the selected toll.
-											</DialogDescription>
-										</DialogHeader>
-										<div className='grid gap-4 py-4'>
-											<Label htmlFor='name'>Name</Label>
-											<Input id='name' value={tollData.name} disabled />
-											<Label htmlFor='price'>Price</Label>
-											<Input id='price' value={tollData.price} disabled />
-											<Label htmlFor='road'>Road</Label>
-											<Input id='road' value={tollData.road} disabled />
-											<Label htmlFor='operator'>Operator</Label>
-											<Input
-												id='operator'
-												value={tollData.operator_name}
-												disabled
-											/>
-											<Label htmlFor='avg-passes'>Average Passes</Label>
-											<Input
-												id='avg-passes'
-												use-tolls
-												value={tollData.avg_passes}
-												disabled
-											/>
-										</div>
-									</DialogContent>
-								</Dialog>
-							</>
+								)}
+							</div>
 						);
 					})}
 

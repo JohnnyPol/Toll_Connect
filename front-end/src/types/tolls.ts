@@ -3,6 +3,7 @@ export interface TollMarkerData {
 	name: string;
 	latitude: number;
 	longitude: number;
+	icon?: string;
 }
 
 export interface Toll {

@@ -11,7 +11,7 @@ import {
 	SheetTrigger,
 } from '@/components/ui/sheet.tsx';
 
-interface MapFilterSheetProps{
+interface MapFilterSheetProps {
 	defaultValues: MapFilterFormValues;
 	onSubmit: (values: MapFilterFormValues) => void;
 }

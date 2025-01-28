@@ -1,7 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { subDays } from 'date-fns/subDays';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { isAfter } from 'date-fns/isAfter';
 import {
 	Form,
 	FormControl,
@@ -13,17 +13,6 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import DateInput from '@/components/date-input.tsx';
 import { OperatorList } from '@/components/operator-list.tsx';
-import { isAfter } from 'date-fns/isAfter';
-import { FilterIcon } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from '@/components/ui/sheet.tsx';
 
 const formSchema = z.object({
 	startDate: z.date(),
@@ -82,7 +71,7 @@ export const MapFilterForm: React.FC<MapFilterFormProps> = ({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+			<form onSubmit={form.handleSubmit(onSubmit)} className='w-full pr-4 space-y-6'>
 				<FormField
 					control={form.control}
 					name='startDate'

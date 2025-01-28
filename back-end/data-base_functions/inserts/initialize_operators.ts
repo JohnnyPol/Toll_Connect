@@ -11,7 +11,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/blu-circle.png'  
     }, 
     {
         _id: 'EG' ,
@@ -22,7 +23,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/grn-circle.png'  
     },
     {
         _id: 'GE' ,
@@ -33,7 +35,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/ltblu-circle.png'  
     },
     {
         _id: 'KO' ,
@@ -44,7 +47,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/pink-circle.png'  
     },
     {
         _id: 'MO' ,
@@ -55,7 +59,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/purple-circle.png'  
     },
     {
         _id: 'NAO' ,
@@ -66,7 +71,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/red-circle.png'  
     },
     {
         _id: 'NO' ,
@@ -77,7 +83,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png'  
     },
     {
         _id: 'OO' ,
@@ -88,7 +95,8 @@ const list_of_operators =[
         addressStreet: 'Main Street',
         addressNumber: 123,
         addressArea: 'Central Area',
-        addressZip: 12345  
+        addressZip: 12345,
+        markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/orange-circle.png'  
     },
     {
         _id: 'Admin' ,

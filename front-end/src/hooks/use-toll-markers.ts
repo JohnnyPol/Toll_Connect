@@ -4,18 +4,21 @@ import { Operator } from '@/types/operators.ts';
 import { TollMarkerData } from '@/types/tolls.ts';
 import { AxiosError } from 'axios';
 
-interface TollMarkerState{
+interface TollMarkerState {
 	[operatorId: Operator['_id']]: {
 		data: TollMarkerData[];
 		loading: boolean;
 		error: string | null;
+		markerIcon: string;
 	};
 }
 
 interface UseTollMarkersReturn {
 	tollMarkerState: TollMarkerState;
 	fetchTollMarkersForOperator: (operatorId: Operator['_id']) => Promise<void>;
-	fetchTollMarkersForAllOperators: (operators: Operator['_id'][]) => Promise<void>;
+	fetchTollMarkersForAllOperators: (
+		operators: Operator['_id'][],
+	) => Promise<void>;
 }
 
 export const useTollMarkers = (): UseTollMarkersReturn => {
@@ -25,13 +28,23 @@ export const useTollMarkers = (): UseTollMarkersReturn => {
 		operatorId: Operator['_id'],
 	): Promise<void> => {
 		try {
-			const data = await tollService.getByOperator(operatorId);
+			setTollMarkerState((prev: TollMarkerState) => ({
+				...prev,
+				[operatorId]: {
+					data: [],
+					loading: true,
+					error: null,
+					markerIcon: '',
+				},
+			}));
+			const { data, markerIcon } = await tollService.getByOperator(operatorId);
 			setTollMarkerState((prev: TollMarkerState) => ({
 				...prev,
 				[operatorId]: {
 					data,
 					loading: false,
 					error: null,
+					markerIcon,
 				},
 			}));
 		} catch (err) {
@@ -45,6 +58,7 @@ export const useTollMarkers = (): UseTollMarkersReturn => {
 					data: [],
 					loading: false,
 					error: errorMessage,
+					markerIcon: '',
 				},
 			}));
 		}

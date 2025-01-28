@@ -104,7 +104,8 @@ async function insert_toll_operator({
   addressStreet,
   addressNumber,
   addressArea,
-  addressZip
+  addressZip,
+  markerIcon,
 }: {
   _id: string;
   name: string;
@@ -115,6 +116,7 @@ async function insert_toll_operator({
   addressNumber: number;
   addressArea: string;
   addressZip: number;
+  markerIcon?: string
 }) {
     try {  
       // Prepare the toll operator data
@@ -127,7 +129,8 @@ async function insert_toll_operator({
         addressStreet,
         addressNumber,
         addressArea,
-        addressZip
+        addressZip,
+        markerIcon
       };
   
       // Insert the toll operator into the database

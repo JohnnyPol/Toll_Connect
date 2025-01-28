@@ -31,6 +31,7 @@ const tollOperatorSchema = new Schema({
 			precision('Address ZIP', 0),
 		],
 	},
+	markerIcon: String,
 });
 
 tollOperatorSchema.virtual('address').get(function (): string {
