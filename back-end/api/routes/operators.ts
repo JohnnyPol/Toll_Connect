@@ -128,15 +128,16 @@ export default function (oapi: Middleware): Router {
 				// });
 				const randomDelay = Math.floor(Math.random() * 2000) + 500; // Random delay between 500ms and 2500ms
 				setTimeout(() => {
-					if (Math.random() < 0.2) { // 20% chance to throw an error
-						return res.status(400).json({
-							error: 'Random error occurred',
-						});
-					}
-					res.status(200).json({
-						data: info,
-						markerIcon: operator.markerIcon, // Include markerIcon in the response
-					});
+					// if (Math.random() < 0.2) { // 20% chance to throw an error
+					// 	return res.status(400).json({
+					// 		error: 'Random error occurred',
+					// 	});
+					// }
+					// res.status(200).json({
+					// 	data: info,
+					// 	markerIcon: operator.markerIcon, // Include markerIcon in the response
+					// });
+					res.status(200).json(info);
 				}, randomDelay);
 			} catch (error) {
 				console.error(error);

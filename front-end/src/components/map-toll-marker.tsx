@@ -12,7 +12,7 @@ import { MapAnonymousTollPopup } from './map-anonymous-toll-popup.tsx';
 
 interface MapTollMarkerProps {
 	tollMarkerData: TollMarkerData;
-	markerIcon: string;
+	markerIcon?: string;
 	children?: React.ReactNode;
 }
 

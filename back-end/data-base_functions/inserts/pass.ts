@@ -127,7 +127,7 @@ async function insert_pass({
         // Insert pass into the database
         const pass= new Pass(passData);
         const newPass = await pass.save();
-        console.log('Inserted Pass:', newPass);
+        // console.log('Inserted Pass:', newPass);
     } catch (dbError: unknown) {
       if (dbError instanceof Error) {
             console.error('Failed to insert Pass:', dbError.message);

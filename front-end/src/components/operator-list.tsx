@@ -56,7 +56,7 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 			<div className='flex h-8 items-center justify-between'>
 				<Label
 					className={cn(
-						'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-8 w-half text-center',
+						'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-8 w-24 text-center',
 						!selectAll && 'text-primary font-bold',
 					)}
 				>
@@ -76,7 +76,7 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 				/>
 				<Label
 					className={cn(
-						'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mr-8 w-half text-center',
+						'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mr-8 w-24 text-center',
 						selectAll && 'text-primary font-bold',
 					)}
 				>

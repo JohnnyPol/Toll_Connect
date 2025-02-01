@@ -14,4 +14,3 @@ export interface Toll {
 	operator_name: string;
 	avg_passes: number;
 }
-

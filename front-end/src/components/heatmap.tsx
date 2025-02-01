@@ -30,7 +30,9 @@ const Heatmap: React.FC<HeatmapProps> = ({ radius, opacity }) => {
 			id: 'heatmap-loading',
 		});
 	} else {
-		toast.dismiss('heatmap-loading');
+		setTimeout(() => {
+			toast.dismiss('heatmap-loading');
+		}, 10);
 	}
 
 	if (error) {

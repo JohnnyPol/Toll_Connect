@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator.tsx';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 
-interface MapCompanyTollPopupProps {
+interface MapTollPopupProps {
 	tollId: Toll['_id'];
 }
 
@@ -34,7 +34,7 @@ export const data = {
   ],
 };
 
-export const MapCompanyTollPopup: React.FC<MapCompanyTollPopupProps> = ({
+export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 	tollId,
 }) => {
 	const { toll, loading, error } = useToll(tollId);

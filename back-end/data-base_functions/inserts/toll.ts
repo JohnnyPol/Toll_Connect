@@ -170,7 +170,7 @@ roadName: string;
     // Insert the toll into the database
     const toll = new Toll(tollData);
     const newToll = await toll.save();
-    console.log('Inserted Toll:', newToll);
+    // console.log('Inserted Toll:', newToll);
   } catch (dbError: unknown) {
     if (dbError instanceof Error) {
       console.error('Failed to insert Toll:', dbError.message);

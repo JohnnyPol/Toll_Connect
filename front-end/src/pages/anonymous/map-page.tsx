@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 import {
 	APIProvider,
 	ControlPosition,
@@ -6,33 +6,26 @@ import {
 	MapControl,
 } from '@vis.gl/react-google-maps';
 import { Toaster } from '@/components/ui/toast.tsx';
-import { useTollMarkers } from '@/hooks/use-toll-markers.ts';
 
 import { MapFilterFormValues } from '@/components/map-filter-form.tsx';
 import { Operator } from '@/types/operators.ts';
-import { toast } from 'sonner';
 import { subDays } from 'date-fns/subDays';
 import { MapFilterSheet } from '@/components/map-filter-sheet.tsx';
-import { MapTollMarker } from '@/components/map-toll-marker.tsx';
-import Heatmap from '@/components/heatmap.tsx';
-import { MapAnonymousTollPopup } from '../../components/map-anonymous-toll-popup.tsx';
+import { OperatorProvider } from '@/context/operator-context.tsx';
+import { MapOperatorMarkers } from '@/components/map-operator-markers.tsx';
+import { MapOperatorLegend } from '@/components/map-operator-legend.tsx';
 
 export default function AnonymousMapPage() {
-	const { tollMarkerState, fetchTollMarkersForAllOperators } = useTollMarkers();
-	const filterFormValues = useRef<MapFilterFormValues>({
-		startDate: subDays(new Date(), 30),
-		endDate: new Date(),
-		operatorIds: [],
-	});
-
-	const handleSubmit = (values: MapFilterFormValues) => {
-		console.log(values);
-		filterFormValues.current = values;
-		fetchTollMarkersForAllOperators(values.operatorIds);
-	};
+	const [filterFormValues, setFilterFormValues] = useState<MapFilterFormValues>(
+		{
+			startDate: subDays(new Date(), 30),
+			endDate: new Date(),
+			operatorIds: [],
+		},
+	);
 
 	return (
-		<>
+		<OperatorProvider>
 			<Toaster position='bottom-center' richColors closeButton />
 			<APIProvider
 				apiKey={'AIzaSyDAMNPvIOhRWOsnVi-xRUMTHW3RD8uFJcw'}
@@ -55,61 +48,29 @@ export default function AnonymousMapPage() {
 					disableDefaultUI
 					reuseMaps={true}
 				>
-					{filterFormValues.current.operatorIds.map((id: Operator['_id']) => {
-						const operatorTollState = tollMarkerState[id] || {
-							data: [],
-							loading: false,
-							error: null,
-						};
 
-						if (operatorTollState.loading) {
-							toast.loading('Loading toll markers...', {
-								id: `loading-${id}`,
-							});
-						} else {
-							setTimeout(() => {
-								toast.dismiss(`loading-${id}`);
-							}, 10);
-						}
-
-						if (operatorTollState.error) {
-							toast.error(operatorTollState.error, {
-								id: `error-${id}`,
-							});
-						}
-
-						return (
-							<div key={id}>
-								{!operatorTollState.loading && !operatorTollState.error && (
-									<>
-										{operatorTollState.data.map((toll) => (
-											<MapTollMarker
-												key={toll._id}
-												tollMarkerData={toll}
-												markerIcon={operatorTollState.markerIcon}
-											>
-												<MapAnonymousTollPopup
-													tollId={toll._id}
-												/>
-											</MapTollMarker>
-										))}
-									</>
-								)}
-							</div>
-						);
-					})}
+					{filterFormValues.operatorIds.map((id: Operator['_id']) => (
+						<MapOperatorMarkers
+							key={id}
+							id={id}
+						/>
+					))}
 
 					<MapControl
 						position={ControlPosition
 							.TOP_CENTER}
 					>
 						<MapFilterSheet
-							defaultValues={filterFormValues.current}
-							onSubmit={handleSubmit}
+							defaultValues={filterFormValues}
+							onSubmit={setFilterFormValues}
 						/>
 					</MapControl>
+
+					{filterFormValues.operatorIds.length !== 0 && (
+						<MapOperatorLegend operatorIds={filterFormValues.operatorIds} />
+					)}
 				</Map>
 			</APIProvider>
-		</>
+		</OperatorProvider>
 	);
 }
