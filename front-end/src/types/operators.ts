@@ -2,6 +2,7 @@ export interface Operator {
 	_id: string;
 	name: string;
 	markerIcon?: string;
+	chartColor?: string;
 }
 
 export interface HeatmapData {

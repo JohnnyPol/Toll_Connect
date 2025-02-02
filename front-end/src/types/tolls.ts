@@ -13,4 +13,9 @@ export interface Toll {
 	road: string;
 	operator_name: string;
 	avg_passes: number;
+	my_passes?: number;
+	other_passes?: {
+		operatorId: string;
+		passes: number;
+	}[];
 }

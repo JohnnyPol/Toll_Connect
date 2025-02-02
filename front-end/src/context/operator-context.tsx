@@ -26,6 +26,17 @@ const AVAILABLE_MARKERS = [
 	'http://maps.google.com/mapfiles/kml/paddle/orange-circle.png',
 ];
 
+const AVAILABLE_COLORS = [
+	'#3b82f6',
+	'#22c55e',
+	'#0ea5e9',
+	'#ec4899',
+	'#a855f7',
+	'#ef4444',
+	'#eab308',
+	'#f97316',
+];
+
 // Create the provider component
 export const OperatorProvider: React.FC<{ children: React.ReactNode }> = (
 	{ children },
@@ -42,6 +53,8 @@ export const OperatorProvider: React.FC<{ children: React.ReactNode }> = (
 				data.forEach((operator, index) => {
 					operator.markerIcon =
 						AVAILABLE_MARKERS[index % AVAILABLE_MARKERS.length];
+					operator.chartColor =
+						AVAILABLE_COLORS[index % AVAILABLE_COLORS.length];
 				});
 				setOperators(data);
 				setError(null);

@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import DateInput from '@/components/date-input.tsx';
 import { OperatorList } from '@/components/operator-list.tsx';
+import { subDays } from 'date-fns';
 
 const formSchema = z.object({
 	startDate: z.date(),
@@ -52,9 +53,15 @@ export const MapFilterForm: React.FC<MapFilterFormProps> = ({
 	defaultValues,
 	onSubmit,
 }) => {
+	const resetValues = {
+		startDate: subDays(new Date(), 30),
+		endDate: new Date(),
+		operatorIds: [],
+	};
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
-		defaultValues,
+		defaultValues
 	});
 
 	const handleDateChange = (
@@ -71,7 +78,10 @@ export const MapFilterForm: React.FC<MapFilterFormProps> = ({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className='w-full pr-4 space-y-6'>
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className='w-full pr-4 space-y-6'
+			>
 				<FormField
 					control={form.control}
 					name='startDate'
@@ -130,7 +140,7 @@ export const MapFilterForm: React.FC<MapFilterFormProps> = ({
 					<Button
 						type='button'
 						variant='outline'
-						onClick={() => form.reset()}
+						onClick={() => form.reset(resetValues)}
 						className='flex-1'
 					>
 						Reset

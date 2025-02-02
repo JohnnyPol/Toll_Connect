@@ -8,7 +8,7 @@ export const tollService = {
 		return response.data;
 	},
 	getById: async (tollId: Toll['_id']) => {
-		const response = await axios.get<Toll>(`/tolls/${tollId}`);
+		const response = await axios.get<Toll>(`/tolls/${tollId}/detailed`);
 		return response.data;
 	},
 };
