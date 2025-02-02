@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { Operator } from '@/types/operators.ts';
 import { operatorService } from '@/api/services/operators.ts';
 import { AxiosError } from 'axios';

@@ -1,5 +1,4 @@
 import { useContext} from 'react';
-import type { Operator } from '@/types/operators.ts';
 import { OperatorContext, OperatorContextType } from '@/context/operator-context.tsx';
 
 export const useOperators = (): OperatorContextType => {

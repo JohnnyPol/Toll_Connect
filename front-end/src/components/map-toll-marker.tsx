@@ -1,4 +1,4 @@
-import { AdvancedMarker, Marker, Pin } from '@vis.gl/react-google-maps';
+import { Marker } from '@vis.gl/react-google-maps';
 import {
 	Dialog,
 	DialogContent,
@@ -8,7 +8,6 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog.tsx';
 import { TollMarkerData } from '@/types/tolls.ts';
-import { MapAnonymousTollPopup } from './map-anonymous-toll-popup.tsx';
 
 interface MapTollMarkerProps {
 	tollMarkerData: TollMarkerData;

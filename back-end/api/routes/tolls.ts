@@ -133,6 +133,11 @@ export default function (oapi: Middleware): Router {
 					operatorId: operator._id,
 					passes: Math.floor(Math.random() * 100) + 1,
 				}));
+				// Shuffle to check consistency in the front-end
+				for (let i = otherPasses.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[otherPasses[i], otherPasses[j]] = [otherPasses[j], otherPasses[i]];
+				}
 				tollResponse.other_passes = otherPasses;
 			}
 

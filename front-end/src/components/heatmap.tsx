@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react';
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { HeatmapData } from '@/types/operators.ts';
 import { useHeatmapData } from '@/hooks/use-heatmap-data.ts';
 import { toast } from 'sonner';
 

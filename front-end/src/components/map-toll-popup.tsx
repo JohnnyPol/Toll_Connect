@@ -2,16 +2,15 @@ import { useEffect } from 'react';
 import { Toll } from '@/types/tolls.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { useToll } from '../hooks/use-toll.ts';
+import { useToll } from "@/hooks/use-toll.ts";
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator.tsx';
 
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
 import { useOperators } from '@/hooks/use-operators.ts';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+import * as Highcharts from 'highcharts';
+import { HighchartsReact } from 'highcharts-react-official';
 
 enum PopupType {
 	BASIC,
@@ -114,20 +113,35 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 				?.passes || 0
 		);
 
-		const data = {
-			labels: operatorNames,
-			datasets: [
+		const data = operatorNames.map((name, index) => ({
+			name: name.toUpperCase(),
+			y: operatorPasses[index],
+		}));
+
+		const options: Highcharts.Options = {
+			chart: {
+				type: 'pie',
+			},
+			title: {
+				text: 'Operator Distribution',
+			},
+			tooltip: {
+				pointFormat: '<b>{point.y}</b> passes ({point.percentage:.1f}%)',
+			},
+			plotOptions: {
+				series: {
+					allowPointSelect: true,
+					cursor: 'pointer',
+				},
+			},
+			colors: operatorColors,
+			series: [
 				{
-					label: '# of passes',
-					data: operatorPasses,
-					backgroundColor: operatorColors,
+					type: 'pie',
+					name: 'Passes',
+					data: data,
 				},
 			],
-		};
-
-		const options = {
-			responsive: true,
-			maintainAspectRatio: false,
 		};
 
 		return (
@@ -137,11 +151,11 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 					orientation='vertical'
 					className='flex-none h-full md:block'
 				/>
-				<div className='flex-1 flex flex-col justify-center items-center'>
-					<h2 className='text-lg font-semibold mb-2 text-center'>Operator Distribution</h2>
-					<div className="w-3/4">
-						<Pie data={data} options={options} />
-					</div>
+				<div className='flex-1'>
+					<HighchartsReact
+						highcharts={Highcharts}
+						options={options}
+					/>
 				</div>
 			</div>
 		);

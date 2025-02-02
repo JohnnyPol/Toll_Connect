@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button.tsx';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 import { Input } from '@/components/ui/input.tsx';
-import { Label } from '@/components/ui/label.tsx';
 
 interface DateInputProps {
 	selectedDate: Date | undefined;

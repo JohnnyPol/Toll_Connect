@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useOperators } from '@/hooks/use-operators.ts';
 import { cn } from '@/lib/utils.ts';

@@ -2,7 +2,7 @@ import { useOperatorTolls } from '@/hooks/use-operator-tolls.ts';
 import { Operator } from '@/types/operators.ts';
 import { toast } from 'sonner';
 import { MapTollMarker } from '@/components/map-toll-marker.tsx';
-import { MapTollPopup } from './map-toll-popup.tsx';
+import { MapTollPopup } from "@/components/map-toll-popup.tsx";
 import { useOperators } from '@/hooks/use-operators.ts';
 
 interface MapOperatorMarkersProps {
