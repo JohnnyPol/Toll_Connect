@@ -11,21 +11,16 @@ import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { useOperators } from '@/hooks/use-operators.ts';
 
-interface MapTollPopupProps {
-	tollId: Toll['_id'];
-}
-
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-const pieOptions = {
-	responsive: true,
-	maintainAspectRatio: true,
-};
 
 enum PopupType {
 	BASIC,
 	OPERATOR_MINE,
 	OPERATOR_OTHER, // = ADMIN
+}
+
+interface MapTollPopupProps {
+	tollId: Toll['_id'];
 }
 
 export const MapTollPopup: React.FC<MapTollPopupProps> = ({
@@ -130,6 +125,11 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 			],
 		};
 
+		const options = {
+			responsive: true,
+			maintainAspectRatio: false,
+		};
+
 		return (
 			<div className='flex space-x-4 items-center'>
 				{basicComponent}
@@ -138,9 +138,9 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 					className='flex-none h-full md:block'
 				/>
 				<div className='flex-1 flex flex-col justify-center items-center'>
-					<h2 className='text-lg font-semibold mb-2'>Operator Distribution</h2>
-					<div className='w-3/4'>
-						<Pie data={data} options={pieOptions} />
+					<h2 className='text-lg font-semibold mb-2 text-center'>Operator Distribution</h2>
+					<div className="w-3/4">
+						<Pie data={data} options={options} />
 					</div>
 				</div>
 			</div>
