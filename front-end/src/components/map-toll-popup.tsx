@@ -2,15 +2,13 @@ import { useEffect } from 'react';
 import { Toll } from '@/types/tolls.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { useToll } from "@/hooks/use-toll.ts";
+import { useToll } from '@/hooks/use-toll.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator.tsx';
 
 import { useOperators } from '@/hooks/use-operators.ts';
-
-import * as Highcharts from 'highcharts';
-import { HighchartsReact } from 'highcharts-react-official';
+import { PieChart } from '@/components/pie-chart.tsx';
 
 enum PopupType {
 	BASIC,
@@ -113,37 +111,6 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 				?.passes || 0
 		);
 
-		const data = operatorNames.map((name, index) => ({
-			name: name.toUpperCase(),
-			y: operatorPasses[index],
-		}));
-
-		const options: Highcharts.Options = {
-			chart: {
-				type: 'pie',
-			},
-			title: {
-				text: 'Operator Distribution',
-			},
-			tooltip: {
-				pointFormat: '<b>{point.y}</b> passes ({point.percentage:.1f}%)',
-			},
-			plotOptions: {
-				series: {
-					allowPointSelect: true,
-					cursor: 'pointer',
-				},
-			},
-			colors: operatorColors,
-			series: [
-				{
-					type: 'pie',
-					name: 'Passes',
-					data: data,
-				},
-			],
-		};
-
 		return (
 			<div className='flex space-x-4 items-center'>
 				{basicComponent}
@@ -152,9 +119,12 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 					className='flex-none h-full md:block'
 				/>
 				<div className='flex-1'>
-					<HighchartsReact
-						highcharts={Highcharts}
-						options={options}
+					<PieChart
+						title='Operator Distribution'
+						names={operatorNames}
+						values={operatorPasses}
+						colors={operatorColors}
+						tooltipFormat='<b>{point.y}</b> passes ({point.percentage:.1f}%)'
 					/>
 				</div>
 			</div>

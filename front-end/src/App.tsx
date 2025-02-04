@@ -25,7 +25,7 @@ function App() {
 				<Route path='/login' element={<LoginPage />} />
 
 				{/* Protected Routes for Company Users*/}
-				<Route element={<ProtectedRoute requiredLevel={UserLevel.Operator} />}>
+				{/* <Route element={<ProtectedRoute requiredLevel={UserLevel.Operator} />}> */}
 					<Route path='company'>
 						<Route path='dashboard' element={<CompanyLayout />}>
 							<Route index element={<CompanyDashboard />} />
@@ -34,7 +34,7 @@ function App() {
 							<Route path='payments' element={<CompanyPaymentsPage />} />
 						</Route>
 					</Route>
-				</Route>
+				{/* </Route> */}
 
 				{/* Protected Routes for Admin Users */}
 				<Route element={<ProtectedRoute requiredLevel={UserLevel.Admin} />}>
