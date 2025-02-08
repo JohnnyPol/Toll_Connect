@@ -1,76 +1,69 @@
 import { useEffect, useState } from 'react';
-import DateInput from '@/components/date-input.tsx';
 
-import { useSearchParams } from 'react-router-dom';
 import { PaymentColumn } from '@/components/payment-column.tsx';
 import { PaymentColorsProvider } from '@/context/payment-colors-context.tsx';
+import {
+	PaymentFilterForm,
+	PaymentFilterFormValues,
+} from '@/components/payment-filter-form.tsx';
+import { OperatorProvider } from '@/context/operator-context.tsx';
+import { Toaster } from '@/components/ui/toast.tsx';
 
 export default function CompanyPaymentsPage() {
-	const [searchParams, setSearchParams] = useSearchParams();
-
-	const [endDate, setEndDate] = useState<Date | null>(() => {
-		const endDateParam = searchParams.get('endDate');
-		return endDateParam ? new Date(endDateParam) : null;
-	});
+	const [filterFormValues, setFilterFormValues] = useState<
+		PaymentFilterFormValues
+	>(
+		{
+			endDate: new Date(),
+			targets: 'all',
+		},
+	);
 
 	useEffect(() => {
-		if (endDate) {
-			setSearchParams((prev) => {
-				prev.set('endDate', endDate.toISOString());
-				return prev;
-			});
-		} else {
-			searchParams.delete('endDate');
-			setSearchParams(searchParams);
-		}
-	}, [endDate, setSearchParams]);
+		console.log(filterFormValues);
+	}, [filterFormValues]);
 
 	return (
-		<>
-			<div className='flex gap-4 p-4'>
-				<DateInput
-					selectedDate={endDate}
-					onDateChange={setEndDate}
-					placeholder='Select end date'
+		<OperatorProvider>
+			<Toaster position='bottom-center' richColors closeButton />
+			<div>
+				<PaymentFilterForm
+					defaultValues={filterFormValues}
+					onSubmit={setFilterFormValues}
 				/>
 			</div>
 			<div className='grid grid-cols-5 gap-4 h-full p-4 pt-0'>
 				<PaymentColorsProvider color='orange'>
 					<PaymentColumn
-						endDate={endDate}
+						paymentFilterFormValues={filterFormValues}
 						title='Owed to Company'
-						urlParam='payPage'
 					/>
 				</PaymentColorsProvider>
 				<PaymentColorsProvider color='red'>
 					<PaymentColumn
-						endDate={endDate}
+						paymentFilterFormValues={filterFormValues}
 						title='Owed to Others'
-						urlParam='payOthersPage'
 					/>
 				</PaymentColorsProvider>
 				<PaymentColorsProvider color='blue'>
 					<PaymentColumn
-						endDate={endDate}
+						paymentFilterFormValues={filterFormValues}
 						title='To Validate'
-						urlParam='validatePage'
 					/>
 				</PaymentColorsProvider>
 				<PaymentColorsProvider color='purple'>
 					<PaymentColumn
-						endDate={endDate}
-						title="To Be Validated"
-						urlParam='othersValidationPage'
+						paymentFilterFormValues={filterFormValues}
+						title='To Be Validated'
 					/>
 				</PaymentColorsProvider>
 				<PaymentColorsProvider color='green'>
 					<PaymentColumn
-						endDate={endDate}
+						paymentFilterFormValues={filterFormValues}
 						title='Completed'
-						urlParam='completedPage'
 					/>
 				</PaymentColorsProvider>
 			</div>
-		</>
+		</OperatorProvider>
 	);
 }

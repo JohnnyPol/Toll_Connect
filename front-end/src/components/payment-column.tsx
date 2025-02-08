@@ -14,54 +14,43 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import { useSearchParams } from 'react-router-dom';
 import { paymentService } from '@/api/services/payments.ts';
 import { usePaymentColors } from '@/hooks/use-payment-color.ts';
 import { cn } from '@/lib/utils.ts';
+import { PaymentFilterFormValues } from '@/components/payment-filter-form.tsx';
 
 interface PaymentColumnProps {
-	endDate: Date | null;
+	paymentFilterFormValues: PaymentFilterFormValues;
 	title: string;
-	urlParam: string;
 }
 
 export const PaymentColumn: React.FC<PaymentColumnProps> = ({
-	endDate,
+	paymentFilterFormValues,
 	title,
-	urlParam,
 }) => {
 	const { colorScheme } = usePaymentColors();
-
-	// const [searchParams, setSearchParams] = useSearchParams();
-
-	// const currentPage = Number(searchParams.get(urlParam)) || 1;
 
 	const [currentPage, setPage] = useState(1);
 
 	const [payments, setPayments] = useState<Payment[]>([]);
 	const [totalPages, setTotalPages] = useState(1);
 
-	const handlePageChange = (pageNumber: number) => {
-		// setSearchParams(`${urlParam}=${pageNumber}`);
-		setPage(pageNumber);
-	};
-
 	useEffect(() => {
-		if (endDate) {
+		if (paymentFilterFormValues.endDate) {
 			paymentService.getPayments(
-				new Date('2000-01-01'),
-				endDate,
+				paymentFilterFormValues.startDate || new Date('2000-01-01'),
+				paymentFilterFormValues.endDate,
 				'to be paid',
 				currentPage,
 			).then((data) => {
 				setTotalPages(data.pagination.totalPages);
 				if (currentPage > data.pagination.totalPages) {
-					handlePageChange(1);
+					setPage(1);
 				}
 				setPayments(data.data);
 			});
 		}
-	}, [currentPage, endDate]);
+	}, [currentPage, paymentFilterFormValues]);
 
 	return (
 		<div
@@ -190,13 +179,11 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 						))}
 				</div>
 			</ScrollArea>
-			{totalPages > 1 && (
-				<Pagination
-					currentPage={currentPage}
-					totalPages={totalPages}
-					onPageChange={handlePageChange}
-				/>
-			)}
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={setPage}
+			/>
 		</div>
 	);
 };
