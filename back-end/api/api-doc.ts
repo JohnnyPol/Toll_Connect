@@ -36,7 +36,7 @@ const apiDoc = {
 			type: 'object',
             properties: {
                 error: { type: 'string' },
-            }
+            },
 			additionalProperties: true,
 		},
 		HealthcheckResponse: {

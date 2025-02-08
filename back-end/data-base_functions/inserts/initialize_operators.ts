@@ -147,6 +147,8 @@ async function insertTollOperators() {
     }
 }
 
-// Execute the insertion
-console.log('Starting toll stations import...');
-await insertTollOperators();
+// // Execute the insertion
+// console.log('Starting toll stations import...');
+// await insertTollOperators();
+
+export { insertTollOperators };

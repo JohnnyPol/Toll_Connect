@@ -69,13 +69,15 @@ async function insertPassesFromCSV(path: string) {
     }
 }
 
-// Execute the insertion
-console.log('Starting path import...');
-let path: string;
-const args = Deno.args;
-if (args.length > 0) {
-    path = args[0];  // Get the first argument
-} else {
-    path = './passes-sample.csv'
-}
-await insertPassesFromCSV(path);
+// // Execute the insertion
+// console.log('Starting path import...');
+// let path: string;
+// const args = Deno.args;
+// if (args.length > 0) {
+//     path = args[0];  // Get the first argument
+// } else {
+//     path = './passes-sample.csv'
+// }
+// await insertPassesFromCSV(path);
+
+export { insertPassesFromCSV };

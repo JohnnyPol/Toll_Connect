@@ -3,6 +3,8 @@ import { die, ErrorType, get_date, set_date } from '../util.ts';
 
 import TollOperator from '../../models/toll_operator.ts';
 import Pass from '../../models/pass.ts';
+import Toll from '../../models/toll.ts';
+import Tag from '../../models/tag.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
@@ -10,39 +12,99 @@ export default function (oapi: Middleware): Router {
 	router.get(
 		'/:operator_id/:date_from/:date_to',
 		async (req: Request, res: Response) => {
-			const tollOpID  : string = req.params.operator_id;
-			const date_from : Date   = get_date(req.params.date_from);
-			const date_to   : Date   = get_date(req.params.date_to);
+			const tollOpID: string = req.params.operator_id;
+			const date_from: Date = get_date(req.params.date_from);
+			const date_to: Date = get_date(req.params.date_to);
 
 			try {
-				const operator = await TollOperator.findById(tollOpID);
-				if (!operator)
-					return die(res, ErrorType.BadRequest, 'Operator not found');
+				const operator = await TollOperator.findById(
+					tollOpID,
+				);
+				if (!operator) {
+					return die(
+						res,
+						ErrorType.BadRequest,
+						'Operator not found',
+					);
+				}
+
+				const tollIds = await Toll.find({
+					tollOperator: tollOpID,
+				}, '_id');
+
+				const tagIds = await Tag.find({
+					tollOperator: tollOpID,
+				}, '_id');
 
 				const passes = await Pass.find({
-					'toll.tollOperator': tollOpID,
-					'tag.tollOperator': { $ne: tollOpID },
-					time: { $gte: date_from, $lte: date_to }
-				}).populate(['tag', 'toll']).sort('tag.tollOperator');
+					$and: [
+						{ toll: { $in: tollIds } },
+						{ tag: { $nin: tagIds } },
+					],
+					time: {
+						$gte: date_from,
+						$lte: date_to,
+					},
+				}).sort('time');
 
-				const processed: {
-					visitingOpID: string;
-					nPasses: number;
-					passesCost: number;
-				}[] = [];
-				passes.forEach(pass => {
-					if (processed.length === 0 ||
-						processed[processed.length - 1].visitingOpID !== pass.tag.tollOperator) {
-						processed.push({
-							visitingOpID: pass.tag.tollOperator,
-							nPasses: 1,
-							passesCost: pass.tag.charge,
-						});
-					} else {
-						processed[processed.length - 1].nPasses++;
-						processed[processed.length - 1].passesCost += pass.tag.charge;
+				// console.log(passes);
+
+				// Group passes by visiting operators (tag.tollOperator)
+				const operatorCharges = new Map<
+					string,
+					{ nPasses: number; passesCost: number }
+				>();
+
+				for (const pass of passes) {
+					const tag = await Tag.findById(
+						pass.tag,
+					);
+					if (!tag) {
+						console.warn(
+							`Tag not found for pass ${pass._id}`,
+						);
+						continue;
 					}
-				});
+					const visitingOpID = tag.tollOperator;
+					const passCharge = pass.charge;
+
+					if (
+						!operatorCharges.has(
+							visitingOpID,
+						)
+					) {
+						operatorCharges.set(
+							visitingOpID,
+							{
+								nPasses: 0,
+								passesCost: 0,
+							},
+						);
+					}
+
+					const data = operatorCharges.get(
+						visitingOpID,
+					)!;
+					data.nPasses += 1;
+					data.passesCost += passCharge;
+				}
+
+				// Convert map to list format
+				const processed = Array.from(
+					operatorCharges.entries(),
+				).map((
+					[visitingOpID, { nPasses, passesCost }],
+				) => ({
+					visitingOpID,
+					nPasses,
+					passesCost: Number(
+						passesCost.toFixed(2),
+					),
+				})).sort((a, b) =>
+					a.visitingOpID.localeCompare(
+						b.visitingOpID,
+					)
+				);
 
 				res.status(200).json({
 					tollOpID,
@@ -52,12 +114,18 @@ export default function (oapi: Middleware): Router {
 					vOpList: processed,
 				});
 			} catch (err) {
-				console.error('Error fetching passes cost:', err);
-				die(res, ErrorType.Internal, 'Error fetching passes cost');
+				console.error(
+					'Error fetching passes cost:',
+					err,
+				);
+				die(
+					res,
+					ErrorType.Internal,
+					'Error fetching passes cost',
+				);
 			}
 		},
 	);
-
 
 	return router;
 }

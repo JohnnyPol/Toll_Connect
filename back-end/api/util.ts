@@ -4,11 +4,16 @@ import { Response } from 'npm:express';
 /**                         DATE CONVERSIONS                                  */
 
 function set_date (date: Date) : string {
-	return format(date, 'yyyy-MM-DD HH:mm');
+	return format(date, 'yyyy-MM-dd HH:mm');
 }
 
 function get_date (date: string) : Date {
-	return parse(date, 'yyyyMMDD');
+	try {
+		return parse(date, 'yyyyMMdd');
+	} catch (error) {
+		console.error("Error parsing date:", error);
+		return new Date('Invalid Date');
+	}
 }
 
 enum ErrorType {

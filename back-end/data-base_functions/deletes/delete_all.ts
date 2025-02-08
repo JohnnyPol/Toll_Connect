@@ -1,3 +1,4 @@
+import e from 'npm:@types/express';
 import mongoose from 'npm:mongoose';
 
 async function deleteAllDocuments() {
@@ -35,5 +36,7 @@ async function deleteAllDocuments() {
 }
 
 // Run the function
-deleteAllDocuments();
+// deleteAllDocuments();
+
+export { deleteAllDocuments };
 
