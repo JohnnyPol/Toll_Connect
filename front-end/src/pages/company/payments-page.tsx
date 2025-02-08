@@ -59,7 +59,7 @@ export default function CompanyPaymentsPage() {
 				<PaymentColorsProvider color='purple'>
 					<PaymentColumn
 						endDate={endDate}
-						title="Pending Others' Validation"
+						title="To Be Validated"
 						urlParam='othersValidationPage'
 					/>
 				</PaymentColorsProvider>
