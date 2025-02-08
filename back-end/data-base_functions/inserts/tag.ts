@@ -1,4 +1,4 @@
-import { connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect, ClientSession } from 'npm:mongoose';
 import Tag from '../../models/tag.ts';
 
 /**
@@ -59,7 +59,7 @@ async function insert_tag({
 }: {
     _id: string;
     tollOperator: string;
-}) {
+}, session:ClientSession) {
     try {
         const tagData = { _id, tollOperator };
         const tag = new Tag(tagData);

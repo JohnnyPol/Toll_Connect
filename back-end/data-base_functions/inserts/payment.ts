@@ -1,5 +1,6 @@
-import { connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect} from 'npm:mongoose';
 import Payment from '../../models/payment.ts';
+import { ClientSession } from 'mongodb';
 
 /**
  * Inserts a new payment into the database - connects and disconnects to db.
@@ -98,7 +99,7 @@ async function insert_payment({
     amount: number;
     dateofPayment?: Date; // Optional
     dateofValidation?: Date; // Optional
-}) {
+}, session:ClientSession) {
     try {
         // Prepare and insert payment data
         const paymentData: { 
@@ -119,6 +120,8 @@ async function insert_payment({
         const payment = new Payment(paymentData);
         const newPayment = await payment.save();
         console.log('Inserted Payment:', newPayment);
+
+        return newPayment._id;
     } catch (dbError: unknown) {
         if (dbError instanceof Error) {
             console.error('Failed to insert Payment:', dbError.message);

@@ -1,7 +1,7 @@
 import Pass from '../../models/pass.ts';
 import Tag from '../../models/tag.ts';
 import {insert_tag} from './tag.ts'
-import { connect, disconnect} from 'npm:mongoose';
+import { connect, disconnect, ClientSession} from 'npm:mongoose';
 import {MongoError} from 'npm:mongodb'
 
 /**
@@ -24,7 +24,7 @@ async function insert_pass_connect({
     time: Date;
     charge: number;
     tagOperator?: string;
-}) {
+}, session:ClientSession) {
   try {
     // Connect to the database
     await connect('mongodb://localhost:27017');
@@ -36,7 +36,7 @@ async function insert_pass_connect({
           const test_tag = await Tag.findById(tag);  
           if (!test_tag) {
             console.log('Tag not found, inserting new Tag...');
-            await insert_tag({_id: tag, tollOperator: tagOperator,});  // Insert the tag if not found
+            await insert_tag({_id: tag, tollOperator: tagOperator,}, session);  // Insert the tag if not found
           }
         } catch (error) {
           console.error('Error checking for Tag:', error);
@@ -114,15 +114,15 @@ async function insert_pass({
     time: Date;
     charge: number;
     tagOperator?: string;
-}) {
+}, session:ClientSession) {
     try {  
         if (tagOperator) {
             try {
               // Find the Tag by its custom string ID (tagId)
-              const test_tag = await Tag.findById(tag); 
+              const test_tag = await Tag.findById(tag).session(session); 
               if (!test_tag) {
                 console.log('Tag not found, inserting new Tag...');
-                await insert_tag({_id: tag, tollOperator: tagOperator,});  // Insert the tag if not found
+                await insert_tag({_id: tag, tollOperator: tagOperator,}, session);  // Insert the tag if not found
               }
             } catch (error) {
                 console.error('Error checking for Tag:', error);
@@ -140,7 +140,7 @@ async function insert_pass({
         // Insert pass into the database
         const pass= new Pass(passData);
         try{
-          const newPass = await pass.save();
+          const newPass = await pass.save({session});
           console.log('Inserted Pass:', newPass);
         } catch (error) {
           if (error instanceof MongoError && error.code === 11000) {

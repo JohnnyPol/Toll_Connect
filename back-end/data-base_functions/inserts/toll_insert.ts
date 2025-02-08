@@ -1,8 +1,8 @@
-import { connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect} from 'npm:mongoose';
 import { insert_toll } from './toll.ts';
 import Papa from 'npm:papaparse';
 
-async function insertTollsFromCSV(path: string) {
+async function insertTollsFromCSV(path: string,) {
     try {
         console.log('Reading toll stations data...');
         const tollStationsText = await Deno.readTextFile(path);
@@ -43,7 +43,7 @@ async function insertTollsFromCSV(path: string) {
                     PM: station.PM,  // Use PM value directly from CSV
                     tollOperator: station.OpID,
                     roadName: station.Road
-                });
+                },);
 
                 console.log(`Successfully inserted toll station: ${station.Name}`);
             } catch (error) {
