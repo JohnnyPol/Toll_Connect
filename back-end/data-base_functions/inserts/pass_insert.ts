@@ -50,10 +50,10 @@ async function insertPassesFromCSV(path: string) {
             }
         }
 
-        console.log('Completed toll stations insertion');
+        console.log('Completed passes insertion');
 
     } catch (error) {
-        console.error('Error during pass stations import:', error);
+        console.error('Error during passes import:', error);
         console.trace('Pass operator trace:');  
     } finally {
         // Disconnect from the database

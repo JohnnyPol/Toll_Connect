@@ -1,7 +1,8 @@
 import Pass from '../../models/pass.ts';
 import Tag from '../../models/tag.ts';
 import {insert_tag} from './tag.ts'
-import { connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect} from 'npm:mongoose';
+import {MongoError} from 'npm:mongodb'
 
 /**
  * Inserts a new toll operator into the database - connects and disconnects to db.
@@ -52,8 +53,20 @@ async function insert_pass_connect({
 
     // Insert pass into the database
     const pass= new Pass(passData);
-    const newPass = await pass.save();
-    console.log('Inserted Pass:', newPass);
+    try{
+      const newPass = await pass.save();
+      console.log('Inserted Pass:', newPass);
+    } catch (error) {
+      if (error instanceof MongoError && error.code === 11000) {
+        // This means the unique index violation occurred
+        console.log('Error: Duplicate pass entry detected');
+        // Handle the error as needed, e.g., sending a specific message to the user
+      } else {
+        // Other errors
+        console.error('Error while inserting', error);
+      }
+      throw(new Error('Duplicate pass'));
+    }
   } catch (dbError: unknown) {
     if (dbError instanceof Error) {
       // Type narrowing to handle 'unknown' error type
@@ -112,7 +125,7 @@ async function insert_pass({
                 await insert_tag({_id: tag, tollOperator: tagOperator,});  // Insert the tag if not found
               }
             } catch (error) {
-              console.error('Error checking for Tag:', error);
+                console.error('Error checking for Tag:', error);
             }
           }
     
@@ -126,8 +139,20 @@ async function insert_pass({
     
         // Insert pass into the database
         const pass= new Pass(passData);
-        const newPass = await pass.save();
-        console.log('Inserted Pass:', newPass);
+        try{
+          const newPass = await pass.save();
+          console.log('Inserted Pass:', newPass);
+        } catch (error) {
+          if (error instanceof MongoError && error.code === 11000) {
+            // This means the unique index violation occurred
+            console.log('Error: Duplicate pass entry detected');
+            // Handle the error as needed, e.g., sending a specific message to the user
+          } else {
+            // Other errors
+            console.error('Error while inserting', error);
+          }
+          throw(new Error('Duplicate pass'));
+        }
     } catch (dbError: unknown) {
       if (dbError instanceof Error) {
             console.error('Failed to insert Pass:', dbError.message);
