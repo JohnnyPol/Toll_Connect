@@ -7,7 +7,6 @@ import openapi from 'npm:@wesleytodd/openapi';
 import { connect } from 'npm:mongoose';
 // SEE: https://docs.deno.com/examples/mongo/
 
-import login from './authentication/login.ts';
 import { clearBlacklist } from './authentication/jwt.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
@@ -50,8 +49,6 @@ app.use(
 		credentials: true,
 	})
 );
-
-app.use('/', login(oapi));
 
 app.get(
 	'/',
