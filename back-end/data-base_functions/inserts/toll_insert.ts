@@ -71,14 +71,16 @@ async function insertTollsFromCSV(path: string) {
 }
 
 // Execute the insertion
-console.log('Starting toll stations import...');
-let path: string;
-const args = Deno.args;
-if (args.length > 0) {
-    path = args[0];  // Get the first argument
-} else {
-    path = './tollstations.csv'
+if(import.meta.main){
+    console.log('Starting toll stations import...');
+    let path: string;
+    const args = Deno.args;
+    if (args.length > 0) {
+        path = args[0];  // Get the first argument
+    } else {
+        path = './tollstations.csv'
+    }
+    await insertTollsFromCSV(path);
 }
-await insertTollsFromCSV(path);
 
 export {insertTollsFromCSV};

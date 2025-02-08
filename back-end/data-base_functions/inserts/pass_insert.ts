@@ -53,7 +53,8 @@ async function insertPassesFromCSV(path: string) {
         console.log('Completed toll stations insertion');
 
     } catch (error) {
-        console.error('Error during toll stations import:', error);
+        console.error('Error during pass stations import:', error);
+        console.trace('Pass operator trace:');  
     } finally {
         // Disconnect from the database
         try {
@@ -70,14 +71,16 @@ async function insertPassesFromCSV(path: string) {
 }
 
 // Execute the insertion
-console.log('Starting path import...');
-let path: string;
-const args = Deno.args;
-if (args.length > 0) {
-    path = args[0];  // Get the first argument
-} else {
-    path = './passes-sample.csv'
+if(import.meta.main){
+    console.log('Starting path import...');
+    let path: string;
+    const args = Deno.args;
+    if (args.length > 0) {
+        path = args[0];  // Get the first argument
+    } else {
+        path = './passes-sample.csv'
+    }
+    await insertPassesFromCSV(path);
 }
-await insertPassesFromCSV(path);
 
 export {insertPassesFromCSV};
