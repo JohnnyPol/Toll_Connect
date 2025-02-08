@@ -34,6 +34,8 @@ async function deleteAllDocuments() {
   }
 }
 
+export {deleteAllDocuments};
+
 // Run the function
 deleteAllDocuments();
 

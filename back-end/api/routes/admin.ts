@@ -160,7 +160,6 @@ export default function(oapi: Middleware): Router {
             });
         } finally {
             // Cleanup: remove uploaded file
-            import fs from 'fs/promises';
 
             if (req.file?.path) {
             try {
@@ -168,8 +167,10 @@ export default function(oapi: Middleware): Router {
                 console.log('Temporary file deleted');
             } catch (error) {
                 console.error('Error removing temp file:', error);
-    }
-};
+                }
+            }
+        }
+});
 
 
 

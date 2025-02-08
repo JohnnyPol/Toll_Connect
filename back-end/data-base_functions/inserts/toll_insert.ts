@@ -80,3 +80,5 @@ if (args.length > 0) {
     path = './tollstations.csv'
 }
 await insertTollsFromCSV(path);
+
+export {insertTollsFromCSV};

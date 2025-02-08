@@ -79,3 +79,5 @@ if (args.length > 0) {
     path = './passes-sample.csv'
 }
 await insertPassesFromCSV(path);
+
+export {insertPassesFromCSV};
