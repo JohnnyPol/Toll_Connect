@@ -1,4 +1,4 @@
-import { model, Schema } from 'npm:mongoose';
+import { model, Schema, InferSchemaType } from 'npm:mongoose';
 import { idtype, precision, range, require } from './util.ts';
 
 import Tag from './tag.ts';
@@ -13,5 +13,7 @@ const passSchema = new Schema({
 		validate: [range('Charge', 0), precision('Charge', 2)],
 	},
 });
+
+export type passType = InferSchemaType<typeof passSchema>;
 
 export default model('Pass', passSchema, 'pass');
