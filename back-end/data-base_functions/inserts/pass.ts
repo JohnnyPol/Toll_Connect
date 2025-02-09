@@ -1,5 +1,6 @@
 import Pass from '../../models/pass.ts';
 import Tag from '../../models/tag.ts';
+import Toll from '../../models/toll.ts';
 import { insert_tag } from './tag.ts';
 import { connect, disconnect } from 'npm:mongoose';
 
@@ -118,7 +119,7 @@ async function insert_pass({
 	toll: string;
 	time: Date;
 	charge: number;
-	tagOperator?: string;
+	tagOperator: string;
 }) {
 	try {
 		if (tagOperator) {
@@ -136,15 +137,32 @@ async function insert_pass({
 				}
 			} catch (error) {
 				console.error('Error checking for Tag:', error);
+				throw error;
 			}
+		}
+
+		let tollOperator;
+
+		try {
+			const test_toll = await Toll.findById(toll);
+
+			if (!test_toll) {
+				console.log('Toll not found');
+				throw (new Error('Toll not found'));
+			}
+
+			tollOperator = test_toll._id;
+		} catch (error) {
+			console.error('Error checking for Toll:', error);
+			throw error;
 		}
 
 		// Prepare pass data
 		const passData = {
-			tag,
-			toll,
-			time,
-			charge,
+			tag: { _id: tag, tollOperator: tagOperator },
+			toll: { _id: toll, tollOperator: tollOperator },
+			time: time,
+			charge: charge,
 		};
 
 		// Insert pass into the database

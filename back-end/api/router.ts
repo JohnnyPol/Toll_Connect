@@ -24,7 +24,7 @@ export default function (oapi: Middleware): Router {
 	// Public Routes (Login does not require authentication)
 	router.use("/", login(oapi));
 
-	router.use(authenticateUser);
+	// router.use(authenticateUser);
 	// Protected Routes (Require authentication)
 	router.use("/admin", admin(oapi));
 	router.use("/chargesBy", charges_by(oapi));
