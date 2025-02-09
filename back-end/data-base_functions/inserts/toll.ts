@@ -3,7 +3,6 @@ import Toll from '../../models/toll.ts';
 import { findRoadIdByName } from '../find/road.ts';
 import { insert_road } from './road.ts';
 
-
 /**
  * Inserts a new toll station into the database - connects and disconnects to db.
  * @param {string} _id - The id used to reference the toll station.
@@ -17,89 +16,98 @@ import { insert_road } from './road.ts';
  * @param {string} roadName - The Name of the associated road.
  */
 async function insert_toll_connect({
-  _id,
-  name,
-  latitude,
-  longitude,
-  locality,
-  price1,
-  price2,
-  price3,
-  price4,
-  PM,
-  tollOperator,
-  roadName,
+	_id,
+	name,
+	latitude,
+	longitude,
+	locality,
+	price1,
+	price2,
+	price3,
+	price4,
+	PM,
+	tollOperator,
+	roadName,
 }: {
-  _id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  locality: string;
-  price1: number;
-  price2: number;
-  price3: number;
-  price4: number;
-  PM: string;
-  tollOperator: string;
-  roadName: string;
+	_id: string;
+	name: string;
+	latitude: number;
+	longitude: number;
+	locality: string;
+	price1: number;
+	price2: number;
+	price3: number;
+	price4: number;
+	PM: string;
+	tollOperator: string;
+	roadName: string;
 }) {
-  try {
-    // Connect to DB
-    await connect('mongodb://localhost:27017');
-    console.log('Connected to MongoDB');
+	try {
+		// Connect to DB
+		await connect('mongodb://localhost:27017');
+		console.log('Connected to MongoDB');
 
-    // If road does not exist insert it
-    const roadId = await findRoadIdByName(roadName);
-    let road_for_use : string = 'Invalid';
-    
-    if (!roadId) {
-      console.log('Road not found, inserting new Road...');
-      await insert_road({name: roadName});
-      const temp = await findRoadIdByName(roadName);
-      if(temp) road_for_use = temp;
-    } else {
-      road_for_use = roadId;
-    }
+		// If road does not exist insert it
+		const roadId = await findRoadIdByName(roadName);
+		let road_for_use: string = 'Invalid';
 
-    // Get toll Date
-    const tollData = {
-      _id,
-      name,
-      latitude,
-      longitude,
-      locality,
-      price: [price1, price2, price3, price4],
-      PM,
-      tollOperator,  
-      road: new Types.ObjectId(road_for_use),
-      };
+		if (!roadId) {
+			console.log('Road not found, inserting new Road...');
+			await insert_road({ name: roadName });
+			const temp = await findRoadIdByName(roadName);
+			if (temp) road_for_use = temp;
+		} else {
+			road_for_use = roadId;
+		}
 
-    // Insert the toll into the database
-    const toll = new Toll(tollData);
-    const newToll = await toll.save();
-    console.log('Inserted Toll:', newToll);
-  } catch (dbError: unknown) {
-    if (dbError instanceof Error) {
-      console.error('Failed to insert Toll:', dbError.message);
-    } else {
-      console.error('Unknown error occurred during database operation.');
-    }
-    throw(dbError);
-  } finally {
-    // Disconnect from the database
-    try {
-      await disconnect();
-      console.log('Disconnected from MongoDB');
-    } catch (disconnectError: unknown) {
-      if (disconnectError instanceof Error) {
-        console.error('Error disconnecting from MongoDB:', disconnectError.message);
-      } else {
-        console.error('Unknown error occurred during disconnection.');
-      }
-    }
-  }
+		// Get toll Date
+		const tollData = {
+			_id,
+			name,
+			latitude,
+			longitude,
+			locality,
+			price: [price1, price2, price3, price4],
+			PM,
+			tollOperator,
+			road: new Types.ObjectId(road_for_use),
+		};
+
+		// Insert the toll into the database
+		const toll = new Toll(tollData);
+		const newToll = await toll.save();
+		console.log('Inserted Toll:', newToll);
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			console.error(
+				'Failed to insert Toll:',
+				dbError.message,
+			);
+		} else {
+			console.error(
+				'Unknown error occurred during database operation.',
+			);
+		}
+		throw dbError;
+	} finally {
+		// Disconnect from the database
+		try {
+			await disconnect();
+			console.log('Disconnected from MongoDB');
+		} catch (disconnectError: unknown) {
+			if (disconnectError instanceof Error) {
+				console.error(
+					'Error disconnecting from MongoDB:',
+					disconnectError.message,
+				);
+			} else {
+				console.error(
+					'Unknown error occurred during disconnection.',
+				);
+			}
+		}
+	}
 }
-
 
 /**
  * Inserts a new toll station into the database - connects and disconnects to db.
@@ -114,71 +122,76 @@ async function insert_toll_connect({
  * @param {string} roadName - The Name of the associated road.
  */
 async function insert_toll({
-_id,
-name,
-latitude,
-longitude,
-locality,
-price1,
-price2,
-price3,
-price4,
-PM,
-tollOperator,
-roadName,
+	_id,
+	name,
+	latitude,
+	longitude,
+	locality,
+	price1,
+	price2,
+	price3,
+	price4,
+	PM,
+	tollOperator,
+	roadName,
 }: {
-_id: string;
-name: string;
-latitude: number;
-longitude: number;
-locality: string;
-price1: number;
-price2: number;
-price3: number;
-price4: number;
-PM: string;
-tollOperator: string;
-roadName: string;
+	_id: string;
+	name: string;
+	latitude: number;
+	longitude: number;
+	locality: string;
+	price1: number;
+	price2: number;
+	price3: number;
+	price4: number;
+	PM: string;
+	tollOperator: string;
+	roadName: string;
 }) {
-  try {
-    // If road does not exist insert it
-    const roadId = await findRoadIdByName(roadName);
-    let road_for_use : string = 'Invalid';
-    
-    if (!roadId) {
-      console.log('Road not found, inserting new Road...');
-      await insert_road({name: roadName});
-      const temp = await findRoadIdByName(roadName);
-      if(temp) road_for_use = temp;
-    } else {
-      road_for_use = roadId;
-    }
+	try {
+		// If road does not exist insert it
+		const roadId = await findRoadIdByName(roadName);
+		let road_for_use: string = 'Invalid';
 
-    // Get toll data
-    const tollData = {
-      _id,
-      name,
-      latitude,
-      longitude,
-      locality,
-      price: [price1, price2, price3, price4],
-      PM,
-      tollOperator, 
-      road: new Types.ObjectId(road_for_use), 
-      };
-  
-    // Insert the toll into the database
-    const toll = new Toll(tollData);
-    const newToll = await toll.save();
-    console.log('Inserted Toll:', newToll);
-  } catch (dbError: unknown) {
-    if (dbError instanceof Error) {
-      console.error('Failed to insert Toll:', dbError.message);
-    } else {
-      console.error('Unknown error occurred during database operation.');
-    } 
-    throw(dbError);
-  } 
+		if (!roadId) {
+			console.log('Road not found, inserting new Road...');
+			await insert_road({ name: roadName });
+			const temp = await findRoadIdByName(roadName);
+			if (temp) road_for_use = temp;
+		} else {
+			road_for_use = roadId;
+		}
+
+		// Get toll data
+		const tollData = {
+			_id,
+			name,
+			latitude,
+			longitude,
+			locality,
+			price: [price1, price2, price3, price4],
+			PM,
+			tollOperator,
+			road: new Types.ObjectId(road_for_use),
+		};
+
+		// Insert the toll into the database
+		const toll = new Toll(tollData);
+		const newToll = await toll.save();
+		console.log('Inserted Toll:', newToll);
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			console.error(
+				'Failed to insert Toll:',
+				dbError.message,
+			);
+		} else {
+			console.error(
+				'Unknown error occurred during database operation.',
+			);
+		}
+		throw dbError;
+	}
 }
 
 export { insert_toll, insert_toll_connect };
