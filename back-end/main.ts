@@ -10,7 +10,7 @@ import { connect } from 'npm:mongoose';
 import { clearBlacklist } from './authentication/jwt.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
-import cors from "npm:cors";
+import cors from "cors";
 
 /* CONNECTING TO DB */
 try {
@@ -32,6 +32,9 @@ try {
 const app = express();
 const oapi = openapi(apiDoc);
 
+// Enable CORS for all routes
+app.use(cors());
+
 // Middleware
 app.use(morgan('dev'));
 
@@ -39,16 +42,6 @@ app.use(oapi);
 app.use('/docs', oapi.swaggerui());
 app.use('/api', api(oapi));
 
-// Enable CORS for all routes
-
-app.use(
-	cors({
-		origin: "http://localhost:5173",
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-		allowedHeaders: ["Content-Type", "Authorization", "X-OBSERVATORY-AUTH"],
-		credentials: true,
-	})
-);
 
 app.get(
 	'/',

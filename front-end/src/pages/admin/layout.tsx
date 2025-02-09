@@ -64,7 +64,7 @@ export default function AdminLayout() {
 		localStorage.removeItem('authToken');
 
 		// Make a POST request to the /login API
-		const response = await fetch('http://localhost:9115/logout', {
+		const response = await fetch('http://localhost:9115/api/logout', {
 			method: 'POST',
 			headers: {
 				'X-OBSERVATORY-AUTH': token,
