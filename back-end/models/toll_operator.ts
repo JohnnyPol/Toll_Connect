@@ -1,14 +1,22 @@
 import { model, Schema } from 'npm:mongoose';
 import { precision, range, require, trim, unique } from './util.ts';
-import { UserLevel } from '../authentication/jwt.ts';
 
 const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+export enum UserLevel {
+	Anonymous = 0,
+	Operator = 1,
+	Admin = 2,
+}
 
 const tollOperatorSchema = new Schema({
 	_id: unique(trim(require(String))), // username
 	name: trim(require(String)),
 	passwordHash: require(String),
-	userLevel: require(String),
+	userLevel: {
+		type: Number,
+		enum: UserLevel
+	}, 
 	email: {
 		...trim(require(String)),
 		validate: {

@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
 export enum UserLevel {
-	Anonymous,
-	Operator,
-	Admin,
+	Anonymous = 0,
+	Operator = 1,
+	Admin = 2,
 }
 
 export type Token = {

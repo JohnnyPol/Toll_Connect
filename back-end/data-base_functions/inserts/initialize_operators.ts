@@ -1,4 +1,4 @@
-import { UserLevel } from '../../authentication/jwt.ts';
+import { UserLevel } from '../../models/toll_operator.ts';
 import { insert_toll_operator } from './tollOperator.ts';
 import { connect, disconnect } from 'npm:mongoose';
 
