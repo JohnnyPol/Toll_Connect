@@ -1,6 +1,7 @@
 import { Middleware, Request, Response, Router } from 'npm:express';
 import { die, ErrorType } from '../../util.ts';
 import TollOperator from '../../../models/toll_operator.ts';
+import { UserLevel } from '../../../authentication/jwt.ts';
 
 export default function (oapi: Middleware): Router {
     const router = new Router();
@@ -11,7 +12,7 @@ export default function (oapi: Middleware): Router {
      */
     router.get('/', async (req: Request, res: Response) => {
         try {
-            const tollOperators = await TollOperator.find().lean(); 
+            const tollOperators = await TollOperator.find({userLevel:UserLevel.Operator}).lean(); 
             res.status(200).json(tollOperators);
         } catch (error) {
             console.error('Error fetching toll operators:', error);
