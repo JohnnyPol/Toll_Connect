@@ -86,13 +86,39 @@ async function validateCSVFile(filePath: string): Promise<boolean> {
 
 
 
-//const client = new MongoClient('mongodb://localhost:27017/');
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
     // Healthcheck endpoint
-    router.get('/healthcheck', async (_req: Request, res: Response) => {
+    router.get('/healthcheck',
+        oapi.path({
+            tags: ['Admin'],
+            summary: 'Check system health',
+            operationId: 'getHealthcheck',
+            responses: {200: {
+                description: 'System healthy',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/HealthcheckResponse'
+                        }
+                    }
+                }
+            },
+            401: {
+                description: 'System unhealthy',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminErrorResponse'
+                        }
+                    }
+                }
+            }
+        }
+    }),
+         async (_req: Request, res: Response) => {
         try {
             if (mongoose.connection.readyState !== 1)
                 throw(new Error("no connected to db"));
@@ -121,9 +147,38 @@ export default function (oapi: Middleware): Router {
         }
     });
 
- // Reset stations endpoint
+
   // Reset stations endpoint
-  router.post('/resetstations', async (_req: Request, res: Response) => {
+  router.post('/resetstations',
+   
+    oapi.path({
+        tags: ['Admin'],
+        summary: 'Reset stations data',
+        operationId: 'resetStations',
+        responses: {
+            200: {
+                description: 'Reset successful',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminResponse'
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Reset failed',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminErrorResponse'
+                        }
+                    }
+                }
+            }
+        }
+    }),
+    async (_req: Request, res: Response) => {
     try {
         // Step 1: Delete all existing documents
         await deleteCollection("payment");
@@ -155,7 +210,36 @@ export default function (oapi: Middleware): Router {
 		}
 	});
 
-router.post('/resetpasses', async (_req: Request, res: Response) => {
+router.post('/resetpasses', 
+    
+    oapi.path({
+        tags: ['Admin'],
+        summary: 'Reset passes data',
+        operationId: 'resetPasses',
+        responses: {
+            200: {
+                description: 'Reset successful',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminResponse'
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Reset failed',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminErrorResponse'
+                        }
+                    }
+                }
+            }
+        }
+    }),
+    async (_req: Request, res: Response) => {
     try {
         // Get database connection
         //const db = client.db();
@@ -190,6 +274,42 @@ router.post('/resetpasses', async (_req: Request, res: Response) => {
 
 	router.post(
 		'/addpasses',
+        oapi.path({
+            tags: ['Admin'],
+            summary: 'Add passes from CSV',
+            operationId: 'addPasses',
+            parameters: [
+                {
+                    in: 'formData',
+                    name: 'file',
+                    required: true,
+                    type: 'file',
+                    description: 'CSV file with passes data'
+                }
+            ],
+            responses: {
+                200: {
+                    description: 'Passes added successfully',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/definitions/AdminResponse'
+                            }
+                        }
+                    }
+                },
+                500: {
+                    description: 'Operation failed',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/definitions/AdminErrorResponse'
+                            }
+                        }
+                    }
+                }
+            }
+        }),
 		upload.single('file'),
 		async (req: Request, res: Response) => {
 			try {

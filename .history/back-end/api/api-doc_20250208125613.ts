@@ -60,7 +60,7 @@ const apiDoc = {
             }
         }
     },
-    /*paths: {
+    paths: {
         '/admin/healthcheck': {
             get: {
                 tags: ['Admin'],
@@ -136,7 +136,6 @@ const apiDoc = {
             }
         }
     }
-        */
 };
 
 export default apiDoc;
