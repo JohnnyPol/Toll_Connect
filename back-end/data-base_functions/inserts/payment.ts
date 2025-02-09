@@ -99,7 +99,7 @@ async function insertPayment({
     amount: number;
     dateofPayment?: Date; // Optional
     dateofValidation?: Date; // Optional
-}, session:ClientSession) {
+}, session?:ClientSession) {
     try {
         // Prepare and insert payment data
         const paymentData: { 
@@ -118,10 +118,16 @@ async function insertPayment({
             dateofValidation
         };
         const payment = new Payment(paymentData);
-        const newPayment = await payment.save();
-        console.log('Inserted Payment:', newPayment);
-
-        return newPayment._id;
+        if(session) {
+            const newPayment = await payment.save({session});
+            console.log('Inserted Payment:', newPayment);
+            return newPayment._id;
+        } else {
+            const newPayment = await payment.save();
+            console.log('Inserted Payment:', newPayment);
+            return newPayment._id;
+        }
+        
     } catch (dbError: unknown) {
         if (dbError instanceof Error) {
             console.error('Failed to insert Payment:', dbError.message);

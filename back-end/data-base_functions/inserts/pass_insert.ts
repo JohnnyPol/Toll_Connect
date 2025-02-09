@@ -1,6 +1,7 @@
 import { connect, disconnect, startSession, Types } from 'npm:mongoose';
 import { insertPass } from './pass.ts';
 import { insertPayment } from './payment.ts';
+import mongoose from "npm:mongoose";
 import Papa from 'npm:papaparse';
 import moment from 'npm:moment';
 
@@ -28,8 +29,8 @@ async function insertPassesFromCSV(path: string) {
 		console.log(`Found ${passes.length} passes to insert`);
 
 
-		const session = await startSession();
-		//session.startTransaction();
+		const session = await mongoose.connection.startSession();
+		session.startTransaction();
 
 		try {
 			for (const pass of passes) {
@@ -293,7 +294,7 @@ async function insertPassesFromCSV(path: string) {
 
 async function insertPassesFromCSVConnection(path: string) {
 	try {
-		await connect('mongodb://localhost:27017');
+		await mongoose.connect('mongodb://localhost:27017/?replicaSet=rs0');
 		console.log('OK connecting to db');
 	} catch (err) {
 		console.error('ERR connecting to db:', err);

@@ -10,6 +10,7 @@
 		"db-passes": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/inserts/pass_insert.ts ./data-base_functions/inserts/passes-sample.csv",
 		"db-delete-all": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/deletes/delete_all.ts"
 	},
+
 	"imports": {
 		"@std/assert": "jsr:@std/assert@1",
 		"@std/path": "jsr:@std/path@^1.0.8",

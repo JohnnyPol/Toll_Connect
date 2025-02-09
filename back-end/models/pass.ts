@@ -4,10 +4,17 @@ import { idtype, precision, range, require } from './util.ts';
 import Tag from './tag.ts';
 import Toll from './toll.ts';
 import Payment from './payment.ts'
+import TollOperator from './toll_operator.ts';
 
 const passSchema = new Schema({
-	tag: require(idtype(Tag), 'Tag'),
-	toll: require(idtype(Toll), 'Toll'),
+	tag: {
+		_id: require(idtype(Tag), 'Tag'),
+		tollOperator: require(idtype(TollOperator), 'Toll Operator'),
+	},
+	toll: {
+		_id: require(idtype(Toll), 'Toll'),
+		tollOperator: require(idtype(TollOperator), 'Toll Operator'),
+	},
 	time: require(Date),
 	charge: {
 		...require(Number),

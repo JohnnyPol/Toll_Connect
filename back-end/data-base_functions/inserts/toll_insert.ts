@@ -62,16 +62,18 @@ async function insertTollsFromCSVConnect(path: string,) {
         Deno.exit(1);
     }
 
-    await insertTollsFromCSV(path);
- 
     try {
-        await disconnect();
-        console.log('Disconnected from MongoDB');
-    } catch (disconnectError: unknown) {
-        if (disconnectError instanceof Error) {
-            console.error('Error disconnecting from MongoDB:', disconnectError.message);
-        } else {
-            console.error('Unknown error occurred during disconnection.');
+        await insertTollsFromCSV(path);
+    } finally {
+        try {
+            await disconnect();
+            console.log('Disconnected from MongoDB');
+        } catch (disconnectError: unknown) {
+            if (disconnectError instanceof Error) {
+                console.error('Error disconnecting from MongoDB:', disconnectError.message);
+            } else {
+                console.error('Unknown error occurred during disconnection.');
+            }
         }
     }
     
