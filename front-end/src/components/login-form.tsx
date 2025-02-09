@@ -47,7 +47,7 @@ export function LoginForm({
 			const passwordHash = await hashPassword(password);
 
 			// Make a POST request to the /login API
-			const response = await fetch('http://localhost:9115/login', {
+			const response = await fetch('http://localhost:9115/api/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',

@@ -26,8 +26,8 @@ export default function LoginPage() {
 						// Token is expired, remove it
 						localStorage.removeItem('authToken');
 					} else {
-						// verify token
-						// if response 200 then go to the relative route /company and /admin correspondingly
+						// TODO: 1. verify token
+						// if response 200 then go to the relative route /company and /admin dashboard correspondingly
 					}
 				}
 			} catch (error) {
