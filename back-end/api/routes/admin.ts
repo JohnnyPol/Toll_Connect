@@ -1,7 +1,7 @@
 // api/routes/admin.ts
 import { Middleware, Request, Response, Router } from 'npm:express';
 import { MongoClient } from 'npm:mongodb';
-import * as path from "npm:path";
+import * as path from 'npm:path';
 import { insertTollsFromCSV } from '../../data-base_functions/inserts/toll_insert.ts';
 import { fromFileUrl, dirname, join } from "https://deno.land/std/path/mod.ts";
 import { insertPassesFromCSV } from '../../data-base_functions/inserts/pass_insert.ts';
@@ -43,9 +43,12 @@ const upload = multer({
 import { parse } from 'npm:csv-parse/sync';
 
 async function validateCSVFile(filePath: string): Promise<boolean> {
-    try {
-        const csvContent = await fs.readFile(filePath, 'utf-8');
-        const records = parse(csvContent, { columns: true, skip_empty_lines: true });
+	try {
+		const csvContent = await fs.readFile(filePath, 'utf-8');
+		const records = parse(csvContent, {
+			columns: true,
+			skip_empty_lines: true,
+		});
 
          // Check if the file is empty or the header row is missing
     if (records.length === 0) {
@@ -85,8 +88,8 @@ async function validateCSVFile(filePath: string): Promise<boolean> {
 
 //const client = new MongoClient('mongodb://localhost:27017/');
 
-export default function(oapi: Middleware): Router {
-    const router = new Router();
+export default function (oapi: Middleware): Router {
+	const router = new Router();
 
     // Healthcheck endpoint
     router.get('/healthcheck', async (_req: Request, res: Response) => {
@@ -127,23 +130,30 @@ export default function(oapi: Middleware): Router {
         await deleteCollection("pass");
         await  deleteCollection("toll"); 
 
-       // Step 2: Construct the correct path to the CSV file
-       const currentFilePath = fromFileUrl(import.meta.url);
-       const currentDir = dirname(currentFilePath);
-       const projectRoot = join(currentDir, '..', '..');
-       const csvPath = join(projectRoot, 'data-base_functions', 'inserts', 'tollstations2024.csv');
-        // Step 3: Insert new stations using the existing function
-        await insertTollsFromCSV(csvPath);
+			// Step 2: Construct the correct path to the CSV file
+			const currentFilePath = fromFileUrl(import.meta.url);
+			const currentDir = dirname(currentFilePath);
+			const projectRoot = join(currentDir, '..', '..');
+			const csvPath = join(
+				projectRoot,
+				'data-base_functions',
+				'inserts',
+				'tollstations2024.csv',
+			);
+			// Step 3: Insert new stations using the existing function
+			await insertTollsFromCSV(csvPath);
 
-        res.status(200).json({ status: "OK" });
-    } catch (error) {
-        console.error('Error in resetstations:', error);
-        res.status(500).json({ 
-            status: "failed", 
-            info: error instanceof Error ? error.message : 'Unknown error occurred' 
-        });
-    }
-});
+			res.status(200).json({ status: 'OK' });
+		} catch (error) {
+			console.error('Error in resetstations:', error);
+			res.status(500).json({
+				status: 'failed',
+				info: error instanceof Error
+					? error.message
+					: 'Unknown error occurred',
+			});
+		}
+	});
 
 router.post('/resetpasses', async (_req: Request, res: Response) => {
     try {
@@ -166,55 +176,65 @@ router.post('/resetpasses', async (_req: Request, res: Response) => {
             await toll_operator.updateOne( {_id: 'admin'}, {passwordHash: newPassword});
             
 
-    
+			res.status(200).json({ status: 'OK' });
+		} catch (error) {
+			console.error('Error in resetpasses:', error);
+			res.status(500).json({
+				status: 'failed',
+				info: error instanceof Error
+					? error.message
+					: 'Unknown error occurred',
+			});
+		}
+	});
 
-        res.status(200).json({ status: 'OK' });
-    } catch (error) {
-        console.error('Error in resetpasses:', error);
-        res.status(500).json({
-            status: 'failed',
-            info: error instanceof Error
-                ? error.message
-                : 'Unknown error occurred',
-        });
-    }
-});
+	router.post(
+		'/addpasses',
+		upload.single('file'),
+		async (req: Request, res: Response) => {
+			try {
+				console.log(
+					' Received request to upload passes',
+				);
+				console.log(' req.body:', req.body);
+				console.log(' req.file:', req.file);
 
-router.post('/addpasses', upload.single('file'), async (req: Request, res: Response) => {
-    try {
-        console.log(" Received request to upload passes");
-        console.log(" req.body:", req.body);
-        console.log(" req.file:", req.file);
+				if (!req.file) {
+					console.error(' No file uploaded');
+					throw new Error('No file uploaded');
+				}
 
-        if (!req.file) {
-            console.error(" No file uploaded");
-            throw new Error("No file uploaded");
-        }
+				console.log(
+					`File received: ${req.file.originalname}`,
+				);
+				console.log(`Stored at: ${req.file.path}`);
 
-        console.log(`File received: ${req.file.originalname}`);
-        console.log(`Stored at: ${req.file.path}`);
+				// Validate and process the file
+				const filePath = req.file.path;
+				const isValid = await validateCSVFile(filePath);
+				if (!isValid) {
+					throw new Error(
+						'Invalid CSV format. Please upload a valid file.',
+					);
+				}
 
-        // Validate and process the file
-        const filePath = req.file.path;
-        const isValid = await validateCSVFile(filePath);
-        if (!isValid) {
-            throw new Error("Invalid CSV format. Please upload a valid file.");
-        }
+				await insertPassesFromCSV(filePath);
+				console.log(
+					' Successfully inserted passes from CSV.',
+				);
 
-        await insertPassesFromCSV(filePath);
-        console.log(" Successfully inserted passes from CSV.");
+				res.status(200).json({ status: 'OK' });
+			} catch (error) {
+				console.error(' Error in /addpasses:', error);
+				res.status(500).json({
+					status: 'failed',
+					info: error instanceof Error
+						? error.message
+						: 'Unknown error occurred',
+				});
+			}
+		},
+	);
 
-        res.status(200).json({ status: "OK" });
-    } catch (error) {
-        console.error(" Error in /addpasses:", error);
-        res.status(500).json({
-            status: "failed",
-            info: error instanceof Error ? error.message : "Unknown error occurred",
-        });
-    }
-});
-
-
-return router;
+	return router;
 }
-
