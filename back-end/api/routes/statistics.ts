@@ -27,7 +27,7 @@ export default function (oapi: Middleware): Router {
 				tolls.forEach(toll => {
 					const { _id, latitude, longitude } = toll;
 					let len = resp.push({ latitude, longitude, count: 0 });
-					for (;i < passes.length && passes[i].toll == _id; ++i)
+					for (;i < passes.length && passes[i].toll._id == _id; ++i)
 						resp[len - 1].count++;
 				});
 
@@ -51,7 +51,7 @@ export default function (oapi: Middleware): Router {
 
 			// Fetch passes and ensure 'tag' is fully populated
 			const passes = await Pass.find({
-				toll: tollID,
+				"toll._id": tollID,
 				time: { $gte: startDate, $lte: endDate }
 			})
 			.populate({

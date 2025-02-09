@@ -39,7 +39,7 @@ export default function (oapi: Middleware): Router {
 	router.use("/db/payment", payment(oapi));
 	router.use("/db/road", road(oapi));
 	router.use("/db/tag", tag(oapi));
-	router.use("/db/toll_operator", toll_operator(oapi));
+	router.use("/db/toll-operator", toll_operator(oapi));
 
 
 
