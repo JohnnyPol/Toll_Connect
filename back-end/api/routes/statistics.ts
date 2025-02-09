@@ -27,7 +27,7 @@ export default function (oapi: Middleware): Router {
 				tolls.forEach(toll => {
 					const { _id, latitude, longitude } = toll;
 					let len = resp.push({ latitude, longitude, count: 0 });
-					while (i < passes.length && passes[i].toll == _id)
+					for (;i < passes.length && passes[i].toll == _id; ++i)
 						resp[len - 1].count++;
 				});
 

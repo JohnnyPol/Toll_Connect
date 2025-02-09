@@ -12,7 +12,7 @@ function get_date (date: string) : Date {
 		return parse(date, 'yyyyMMdd');
 	} catch (error) {
 		console.error("Error parsing date:", error);
-		return new Date('Invalid Date');
+		return new Date(0);
 	}
 }
 
