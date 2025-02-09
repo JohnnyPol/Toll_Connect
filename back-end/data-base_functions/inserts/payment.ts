@@ -11,7 +11,7 @@ import { ClientSession } from 'mongodb';
  * @param {Date} [dateofPayment] - The date of the payment (optional)
  * @param {Date} [dateofValidation] - The date of validation (optional)
  */
-async function insert_payment_connect({
+async function insertPaymentConnect({
     payer,
     payee,
     dateofCharge,
@@ -85,7 +85,7 @@ async function insert_payment_connect({
  * @param {Date} [dateofPayment] - The date of the payment Optional
  * @param {Date} [dateofValidation] - The date of validation Optional
  */
-async function insert_payment({
+async function insertPayment({
     payer,
     payee,
     dateofCharge,
@@ -132,4 +132,4 @@ async function insert_payment({
     }
 }
 
-export { insert_payment, insert_payment_connect };
+export { insertPayment, insertPaymentConnect };

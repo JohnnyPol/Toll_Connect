@@ -13,7 +13,7 @@ import { connect, disconnect } from 'npm:mongoose';
  * @param {string} addressArea - The area of the toll operator's address.
  * @param {number} addressZip - The postal code (ZIP) of the toll operator.
  */
-async function insert_toll_operator_connect({
+async function insertTollOperatorConnect({
     _id,
     name,
     passwordHash,
@@ -95,7 +95,7 @@ async function insert_toll_operator_connect({
  * @param {string} addressArea - The area of the toll operator's address.
  * @param {number} addressZip - The postal code (ZIP) of the toll operator.
  */
-async function insert_toll_operator({
+async function insertTollOperator({
   _id,
   name,
   passwordHash,
@@ -144,4 +144,4 @@ async function insert_toll_operator({
     }
   }
 
-export{insert_toll_operator, insert_toll_operator_connect}
+export{insertTollOperator, insertTollOperatorConnect}

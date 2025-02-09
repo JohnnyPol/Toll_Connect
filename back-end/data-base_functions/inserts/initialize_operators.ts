@@ -1,4 +1,4 @@
-import { insert_toll_operator } from './tollOperator.ts';
+import { insertTollOperator } from './tollOperator.ts';
 import { connect, disconnect } from 'npm:mongoose';
 
 const list_of_operators = [
@@ -91,7 +91,7 @@ const list_of_operators = [
         addressZip: 12345
     },
     {
-        _id: 'Admin',
+        _id: 'admin',
         name: 'admin',
         passwordHash: "123456789",
         email: 'operator@example.com',
@@ -115,17 +115,9 @@ const list_of_operators = [
 ];
 
 async function insertTollOperators() {
-    try {
-        await connect('mongodb://localhost:27017');
-        console.log('OK connecting to db');
-    } catch (err) {
-        console.error('ERR connecting to db:', err);
-        Deno.exit(1);
-    }
-
     for (const TollOperator of list_of_operators) {
         try {
-            await insert_toll_operator(TollOperator);
+            await insertTollOperator(TollOperator);
 
             console.log(`Successfully inserted toll operator: ${TollOperator}`);
         } catch (error) {
@@ -134,6 +126,18 @@ async function insertTollOperators() {
     }
 
     console.log('Completed toll stations insertion');
+}
+
+async function insertTollOperatorsConnect() {
+    try {
+        await connect('mongodb://localhost:27017');
+        console.log('OK connecting to db');
+    } catch (err) {
+        console.error('ERR connecting to db:', err);
+        Deno.exit(1);
+    }
+
+    insertTollOperators();
 
     try {
         await disconnect();
@@ -147,6 +151,9 @@ async function insertTollOperators() {
     }
 }
 
+
 // Execute the insertion
-console.log('Starting toll stations import...');
-await insertTollOperators();
+if(import.meta.main) {
+    console.log('Starting toll stations import...');
+    await insertTollOperatorsConnect();
+}

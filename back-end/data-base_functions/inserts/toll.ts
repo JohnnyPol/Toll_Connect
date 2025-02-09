@@ -1,7 +1,7 @@
 import { connect, disconnect, Types } from 'npm:mongoose';
 import Toll from '../../models/toll.ts';
 import { findRoadIdByName } from '../find/road.ts';
-import { insert_road } from './road.ts';
+import { insertRoad } from './road.ts';
 
 
 /**
@@ -16,7 +16,7 @@ import { insert_road } from './road.ts';
  * @param {string} tollOperator - The ID of the associated toll operator.
  * @param {string} roadName - The Name of the associated road.
  */
-async function insert_toll_connect({
+async function insertTollConnect({
   _id,
   name,
   latitude,
@@ -54,7 +54,7 @@ async function insert_toll_connect({
     
     if (!roadId) {
       console.log('Road not found, inserting new Road...');
-      await insert_road({name: roadName});
+      await insertRoad({name: roadName});
       const temp = await findRoadIdByName(roadName);
       if(temp) road_for_use = temp;
     } else {
@@ -113,7 +113,7 @@ async function insert_toll_connect({
  * @param {string} tollOperator - The ID of the associated toll operator.
  * @param {string} roadName - The Name of the associated road.
  */
-async function insert_toll({
+async function insertToll({
 _id,
 name,
 latitude,
@@ -147,7 +147,7 @@ roadName: string;
     
     if (!roadId) {
       console.log('Road not found, inserting new Road...');
-      await insert_road({name: roadName});
+      await insertRoad({name: roadName});
       const temp = await findRoadIdByName(roadName);
       if(temp) road_for_use = temp;
     } else {
@@ -181,4 +181,4 @@ roadName: string;
   } 
 }
 
-export { insert_toll, insert_toll_connect };
+export { insertToll, insertTollConnect };

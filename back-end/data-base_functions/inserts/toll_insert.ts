@@ -1,8 +1,8 @@
 import { connect, disconnect} from 'npm:mongoose';
-import { insert_toll } from './toll.ts';
+import { insertToll } from './toll.ts';
 import Papa from 'npm:papaparse';
 
-async function insertTollsFromCSV(path: string,) {
+async function insertTollsFromCSV(path:string,) {
     try {
         console.log('Reading toll stations data...');
         const tollStationsText = await Deno.readTextFile(path);
@@ -11,17 +11,9 @@ async function insertTollsFromCSV(path: string,) {
             header: true,
             dynamicTyping: true,
             skipEmptyLines: true
-        }).data;
+        }).data; 
 
         console.log(`Found ${tollStations.length} toll stations to insert`);
-
-        try {
-            await connect('mongodb://localhost:27017');
-            console.log('OK connecting to db');
-        } catch (err) {
-            console.error('ERR connectint to db:', err);
-            Deno.exit(1);
-        }
 
         for (const station of tollStations) {
             try {
@@ -30,7 +22,7 @@ async function insertTollsFromCSV(path: string,) {
                     throw new Error(`Invalid PM value ${station.PM} for station ${station.Name}. Must be either 'ΜΤ' or 'ΠΛ'`);
                 }      
 
-                await insert_toll({
+                await insertToll({
                     _id: station.TollID,
                     name: station.Name,
                     latitude: station.Lat,
@@ -48,26 +40,41 @@ async function insertTollsFromCSV(path: string,) {
                 console.log(`Successfully inserted toll station: ${station.Name}`);
             } catch (error) {
                 console.error(`Failed to insert toll station ${station.Name}:`, error);
+                throw(error);
             }
         }
 
         console.log('Completed toll stations insertion');
-
     } catch (error) {
         console.error('Error during toll stations import:', error);
-    } finally {
-        // Step 4: Disconnect from the database
-        try {
-          await disconnect();
-          console.log('Disconnected from MongoDB');
-        } catch (disconnectError: unknown) {
-          if (disconnectError instanceof Error) {
+        throw(error);
+    }
+
+}
+
+async function insertTollsFromCSVConnect(path: string,) {
+   
+    try {
+        await connect('mongodb://localhost:27017');
+        console.log('OK connecting to db');
+    } catch (err) {
+        console.error('ERR connectint to db:', err);
+        Deno.exit(1);
+    }
+
+    insertTollsFromCSV(path);
+ 
+    try {
+        await disconnect();
+        console.log('Disconnected from MongoDB');
+    } catch (disconnectError: unknown) {
+        if (disconnectError instanceof Error) {
             console.error('Error disconnecting from MongoDB:', disconnectError.message);
-          } else {
+        } else {
             console.error('Unknown error occurred during disconnection.');
-          }
         }
     }
+    
 }
 
 // Execute the insertion
@@ -80,7 +87,7 @@ if(import.meta.main){
     } else {
         path = './tollstations.csv'
     }
-    await insertTollsFromCSV(path);
+    await insertTollsFromCSVConnect(path);
 }
 
 export {insertTollsFromCSV};

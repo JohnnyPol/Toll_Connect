@@ -6,7 +6,7 @@ import Tag from '../../models/tag.ts';
  * @param {string} _id - The ID of the tag
  * @param {string} tollOperator - The ID of the toll operator
  */
-async function insert_tag_connect({
+async function insertTagConnect({
     _id,
     tollOperator
 }: {
@@ -53,18 +53,24 @@ async function insert_tag_connect({
  * @param {string} _id - The ID of the tag
  * @param {string} tollOperator - The ID of the toll operator
  */
-async function insert_tag({
+async function insertTag({
     _id,
     tollOperator
 }: {
     _id: string;
     tollOperator: string;
-}, session:ClientSession) {
+}, session?:ClientSession) {
     try {
         const tagData = { _id, tollOperator };
         const tag = new Tag(tagData);
-        const newTag = await tag.save();
-        console.log('Inserted Tag:', newTag);
+        if(session) {
+            const newTag = await tag.save({session});
+            console.log('Inserted Tag:', newTag);
+        } else {
+            const newTag = await tag.save();
+            console.log('Inserted Tag:', newTag);
+        }        
+        
     } catch (dbError: unknown) {
         if (dbError instanceof Error) {
             console.error('Failed to insert Tag:', dbError.message);
@@ -75,4 +81,5 @@ async function insert_tag({
     }
 }
 
-export { insert_tag, insert_tag_connect };
+
+export { insertTag, insertTagConnect };

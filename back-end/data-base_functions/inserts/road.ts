@@ -6,7 +6,7 @@ import Road from '../../models/road.ts';
  * Inserts a new road into the database - connects and disconnects to db.
  * @param {string} name - The name of the road
  */
-async function insert_road_connect({
+async function insertRoadConnect({
     name
 }: {
     name: string;
@@ -50,7 +50,7 @@ async function insert_road_connect({
  * Inserts a new road into the database (without connection handling)
  * @param {string} name - The name of the road
  */
-async function insert_road({
+async function insertRoad({
     name
 }: {
     name: string;
@@ -72,4 +72,4 @@ async function insert_road({
 
 
 
-export { insert_road, insert_road_connect };
+export { insertRoad, insertRoadConnect };

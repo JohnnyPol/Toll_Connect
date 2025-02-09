@@ -1,6 +1,6 @@
 import { connect, disconnect, startSession, Types } from 'npm:mongoose';
-import { insert_pass } from './pass.ts';
-import { insert_payment } from './payment.ts';
+import { insertPass } from './pass.ts';
+import { insertPayment } from './payment.ts';
 import Papa from 'npm:papaparse';
 import moment from 'npm:moment';
 
@@ -45,7 +45,7 @@ async function insertPassesFromCSV(path: string) {
 						pass.timestamp.toString(),
 					);
 
-					await insert_pass(
+					await insertPass(
 						{
 							tag: pass.tagRef,
 							toll: pass.tollID,
@@ -181,7 +181,7 @@ async function insertPassesFromCSV(path: string) {
 				for (const chargeTuple of newChargeTuples) {
 					try {
 						const payId =
-							await insert_payment({
+							await insertPayment({
 								payer: chargeTuple
 									.tagHomeID, // Use tagHomeID as payer
 								payee: chargeTuple

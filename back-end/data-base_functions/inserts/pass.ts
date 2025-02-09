@@ -1,6 +1,6 @@
 import Pass from '../../models/pass.ts';
 import Tag from '../../models/tag.ts';
-import {insert_tag} from './tag.ts'
+import {insertTag} from './tag.ts'
 import { connect, disconnect, ClientSession} from 'npm:mongoose';
 import {MongoError} from 'npm:mongodb'
 
@@ -12,7 +12,7 @@ import {MongoError} from 'npm:mongodb'
  * @param {number} charge - The amount that was charged on the Tag
  * @param {string} tagOperator - Optional Parameter to allow adding the tag if not previously inserted  
  */
-async function insert_pass_connect({
+async function insertPassConnect({
     tag,
     toll,
     time,
@@ -24,7 +24,7 @@ async function insert_pass_connect({
     time: Date;
     charge: number;
     tagOperator?: string;
-}, session:ClientSession) {
+}) {
   try {
     // Connect to the database
     await connect('mongodb://localhost:27017');
@@ -36,7 +36,7 @@ async function insert_pass_connect({
           const test_tag = await Tag.findById(tag);  
           if (!test_tag) {
             console.log('Tag not found, inserting new Tag...');
-            await insert_tag({_id: tag, tollOperator: tagOperator,}, session);  // Insert the tag if not found
+            await insertTag({_id: tag, tollOperator: tagOperator,});  // Insert the tag if not found
           }
         } catch (error) {
           console.error('Error checking for Tag:', error);
@@ -102,7 +102,7 @@ async function insert_pass_connect({
  * @param {number} charge - The amount that was charged on the Tag
  * @param {string} tagOperator - Optional Parameter to allow adding the tag if not previously inserted  
  */
-async function insert_pass({
+async function insertPass({
     tag,
     toll,
     time,
@@ -114,20 +114,29 @@ async function insert_pass({
     time: Date;
     charge: number;
     tagOperator?: string;
-}, session:ClientSession) {
+}, session?:ClientSession) {
     try {  
         if (tagOperator) {
             try {
               // Find the Tag by its custom string ID (tagId)
-              const test_tag = await Tag.findById(tag).session(session); 
-              if (!test_tag) {
-                console.log('Tag not found, inserting new Tag...');
-                await insert_tag({_id: tag, tollOperator: tagOperator,}, session);  // Insert the tag if not found
+              if(session) {
+                const test_tag = await Tag.findById(tag).session(session); 
+                if (!test_tag) {
+                  console.log('Tag not found, inserting new Tag...');
+                  await insertTag({_id: tag, tollOperator: tagOperator,}, session);  // Insert the tag if not found
+                }
+              } else {
+                const test_tag = await Tag.findById(tag); 
+                if (!test_tag) {
+                  console.log('Tag not found, inserting new Tag...');
+                  await insertTag({_id: tag, tollOperator: tagOperator,},);  // Insert the tag if not found
+                }
               }
+              
             } catch (error) {
                 console.error('Error checking for Tag:', error);
             }
-          }
+        }
     
         // Prepare pass data
         const passData = {
@@ -140,8 +149,14 @@ async function insert_pass({
         // Insert pass into the database
         const pass= new Pass(passData);
         try{
-          const newPass = await pass.save({session});
-          console.log('Inserted Pass:', newPass);
+          if(session) {
+            const newPass = await pass.save({session});
+            console.log('Inserted Pass:', newPass);
+          } else {
+            const newPass = await pass.save();
+            console.log('Inserted Pass:', newPass);
+          }
+          
         } catch (error) {
           if (error instanceof MongoError && error.code === 11000) {
             // This means the unique index violation occurred
@@ -163,4 +178,4 @@ async function insert_pass({
     }
   }
 
-export{insert_pass, insert_pass_connect}
+export{insertPass, insertPassConnect}
