@@ -1,3 +1,4 @@
+import { UserLevel } from '../../authentication/jwt.ts';
 import TollOperator from '../../models/toll_operator.ts';
 import { connect, disconnect } from 'npm:mongoose';
 
@@ -6,6 +7,7 @@ import { connect, disconnect } from 'npm:mongoose';
  * @param {string} _id - Toll Operator ID that will be referenced by it
  * @param {string} name - The name of the toll operator.
  * @param {string} passwordHash - The hashed password for the toll operator.
+ * @param {UserLevel} userLevel - The user's access level.
  * @param {string} email - The email address of the toll operator.
  * @param {string} VAT - The VAT number of the toll operator.
  * @param {string} addressStreet - The street address of the toll operator.
@@ -17,6 +19,7 @@ async function insert_toll_operator_connect({
 	_id,
 	name,
 	passwordHash,
+	userLevel,
 	email,
 	VAT,
 	addressStreet,
@@ -27,6 +30,7 @@ async function insert_toll_operator_connect({
 	_id: string;
 	name: string;
 	passwordHash: string;
+	userLevel: UserLevel;
 	email: string;
 	VAT: string;
 	addressStreet: string;
@@ -44,6 +48,7 @@ async function insert_toll_operator_connect({
 			_id,
 			name,
 			passwordHash,
+			userLevel,
 			email,
 			VAT,
 			addressStreet,
@@ -101,6 +106,7 @@ async function insert_toll_operator_connect({
  * @param {string} _id - Toll Operator ID that will be referenced by it
  * @param {string} name - The name of the toll operator.
  * @param {string} passwordHash - The hashed password for the toll operator.
+ * @param {UserLevel} userLevel - The user's access level.
  * @param {string} email - The email address of the toll operator.
  * @param {string} VAT - The VAT number of the toll operator.
  * @param {string} addressStreet - The street address of the toll operator.
@@ -112,6 +118,7 @@ async function insert_toll_operator({
 	_id,
 	name,
 	passwordHash,
+	userLevel,
 	email,
 	VAT,
 	addressStreet,
@@ -122,6 +129,7 @@ async function insert_toll_operator({
 	_id: string;
 	name: string;
 	passwordHash: string;
+	userLevel: UserLevel;
 	email: string;
 	VAT: string;
 	addressStreet: string;
@@ -135,6 +143,7 @@ async function insert_toll_operator({
 			_id,
 			name,
 			passwordHash,
+			userLevel,
 			email,
 			VAT,
 			addressStreet,
