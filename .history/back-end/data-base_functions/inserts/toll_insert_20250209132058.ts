@@ -62,7 +62,7 @@ async function insertTollsFromCSVConnect(path: string,) {
         Deno.exit(1);
     }
 
-    await insertTollsFromCSV(path);
+    insertTollsFromCSV(path);
  
     try {
         await disconnect();

@@ -121,7 +121,7 @@ async function insertTollOperators() {
 
             console.log(`Successfully inserted toll operator: ${TollOperator}`);
         } catch (error) {
-            console.error(`Failed to insert toll operator ${TollOperator}:`, error);
+            console.error(`Failed to insert toll station ${TollOperator}:`, error);
         }
     }
 
@@ -137,7 +137,7 @@ async function insertTollOperatorsConnect() {
         Deno.exit(1);
     }
 
-    await insertTollOperators();
+    insertTollOperators();
 
     try {
         await disconnect();

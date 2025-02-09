@@ -300,25 +300,9 @@ async function insertPassesFromCSVConnection(path: string) {
 		Deno.exit(1);
 	}
 
-	try {
-		await insertPassesFromCSV(path);
-	} finally {
-		try {
-			await disconnect();
-			console.log('Disconnected from MongoDB');
-		} catch (disconnectError: unknown) {
-			if (disconnectError instanceof Error) {
-				console.error(
-					'Error disconnecting from MongoDB:',
-					disconnectError.message,
-				);
-			} else {
-				console.error(
-					'Unknown error occurred during disconnection.',
-				);
-			}
-		}
-	}
+	await insertPassesFromCSV(path);
+
+
 
 }
 
@@ -335,7 +319,21 @@ if (import.meta.main) {
 	
 	await insertPassesFromCSVConnection(path);
 
-	
+	try {
+		await disconnect();
+		console.log('Disconnected from MongoDB');
+	} catch (disconnectError: unknown) {
+		if (disconnectError instanceof Error) {
+			console.error(
+				'Error disconnecting from MongoDB:',
+				disconnectError.message,
+			);
+		} else {
+			console.error(
+				'Unknown error occurred during disconnection.',
+			);
+		}
+	}
 }
 
 export { insertPassesFromCSV };

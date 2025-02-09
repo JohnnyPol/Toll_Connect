@@ -3,14 +3,30 @@ import { Middleware, Request, Response, Router } from 'npm:express';
 import { MongoClient } from 'npm:mongodb';
 import * as path from "npm:path";
 import { insertTollsFromCSV } from '../../data-base_functions/inserts/toll_insert.ts';
-import { deleteAllDocuments } from '../../data-base_functions/deletes/delete_all.ts';
 import { fromFileUrl, dirname, join } from "https://deno.land/std/path/mod.ts";
 import { insertPassesFromCSV } from '../../data-base_functions/inserts/pass_insert.ts';
 import mongoose from "npm:mongoose";
 import multer,{ FileFilterCallback } from 'npm:multer';
+import { deleteCollection } from '../../data-base_functions/deletes/delete_collection.ts';
+import toll_operator from '../../models/toll_operator.ts';
 
 
 import * as fs from 'node:fs/promises';
+
+
+const hashPassword = async (password: string): Promise<string> => {
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+        return Array.from(new Uint8Array(hashBuffer))
+            .map((byte) => byte.toString(16).padStart(2, '0'))
+            .join('');
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        throw error;
+    }
+};
 
 const upload = multer({ 
     dest: 'uploads/',
@@ -31,20 +47,43 @@ async function validateCSVFile(filePath: string): Promise<boolean> {
         const csvContent = await fs.readFile(filePath, 'utf-8');
         const records = parse(csvContent, { columns: true, skip_empty_lines: true });
 
-        // Define required fields based on `passes-sample.csv`
-        const requiredFields = ['passId', 'stationId', 'tagId', 'date', 'time'];
-        return requiredFields.every(field => field in records[0]);
-    } catch (error) {
-        console.error('Error validating CSV file:', error);
+         // Check if the file is empty or the header row is missing
+    if (records.length === 0) {
+        console.error('CSV file is empty or missing header row.');
         return false;
+      }
+
+        // Define required fields based on `passes-sample.csv`
+        const requiredFields = ['timestamp', 'tollID', 'tagRef', 'tagHomeID', 'charge'];
+    
+        const headerFields = Object.keys(records[0]);
+
+        // Check if the number of fields matches the required format
+     if (headerFields.length !== requiredFields.length) {
+         console.error('CSV header field count does not match the required format.');
+         return false;
+       }
+       for (let i = 0; i < requiredFields.length; i++) {
+        if (headerFields[i] !== requiredFields[i]) {
+          console.error(
+            `Header field mismatch at position ${i + 1}: expected "${requiredFields[i]}", but found "${headerFields[i]}".`
+          );
+          return false;
+        }
+      }
+  
+      return true;
+    } catch (error) {
+      console.error('Error validating CSV file:', error);
+      return false;
     }
-}
+  }
 
 
 
 
 
-const client = new MongoClient('mongodb://localhost:27017/');
+//const client = new MongoClient('mongodb://localhost:27017/');
 
 export default function(oapi: Middleware): Router {
     const router = new Router();
@@ -52,11 +91,15 @@ export default function(oapi: Middleware): Router {
     // Healthcheck endpoint
     router.get('/healthcheck', async (_req: Request, res: Response) => {
         try {
-            const db = client.db();
+            if (mongoose.connection.readyState !== 1)
+                throw(new Error("no connected to db"));
+            //const db = client.db();
+            //const db = mongoose.connection.db;
+
             const [stations, tags, passes] = await Promise.all([
-                db.collection('toll').countDocuments(),
-                db.collection('tag').countDocuments(),
-                db.collection('pass').countDocuments()
+                mongoose.connection.collection('toll').countDocuments(),
+                mongoose.connection.collection('tag').countDocuments(),
+                mongoose.connection.collection('pass').countDocuments()
             ]);
 
             res.status(200).json({
@@ -66,7 +109,8 @@ export default function(oapi: Middleware): Router {
                 n_tags: tags,
                 n_passes: passes
             });
-        } catch (error) {
+        } catch(error)  {
+            console.error(error);
             res.status(401).json({
                 status: "failed",
                 dbconnection: "mongodb://localhost:27017/"
@@ -79,7 +123,9 @@ export default function(oapi: Middleware): Router {
   router.post('/resetstations', async (_req: Request, res: Response) => {
     try {
         // Step 1: Delete all existing documents
-        deleteAllDocuments;
+        await deleteCollection("payment");
+        await deleteCollection("pass");
+        await  deleteCollection("toll"); 
 
        // Step 2: Construct the correct path to the CSV file
        const currentFilePath = fromFileUrl(import.meta.url);
@@ -102,22 +148,23 @@ export default function(oapi: Middleware): Router {
 router.post('/resetpasses', async (_req: Request, res: Response) => {
     try {
         // Get database connection
-        const db = client.db();
+        //const db = client.db();
+    
+        if (mongoose.connection.readyState !== 1)
+            throw(new Error("no connected to db"));
 
-        // Get all collections
-        const collections = await db.listCollections()
-            .toArray();
+            await deleteCollection("payment");
+            await deleteCollection("pass");
+            await deleteCollection("tag");
 
-        // Drop pass and tag collections if they exist
-        if (collections.some((c) => c.name === 'pass')) {
-            await db.collection('pass').drop();
-            console.log('Dropped passes collection');
-        }
+            const testPassword = "freepasses4all";
 
-        if (collections.some((c) => c.name === 'tag')) {
-            await db.collection('tag').drop();
-            console.log('Dropped tags collection');
-        }
+            
+            const newPassword = await hashPassword(testPassword);
+            
+
+            await toll_operator.updateOne( {_id: 'admin'}, {passwordHash: newPassword});
+            
 
     
 

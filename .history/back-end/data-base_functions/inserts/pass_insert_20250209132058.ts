@@ -27,6 +27,13 @@ async function insertPassesFromCSV(path: string) {
 
 		console.log(`Found ${passes.length} passes to insert`);
 
+		try {
+			await connect('mongodb://localhost:27017');
+			console.log('OK connecting to db');
+		} catch (err) {
+			console.error('ERR connecting to db:', err);
+			Deno.exit(1);
+		}
 
 		const session = await startSession();
 		//session.startTransaction();
@@ -288,20 +295,6 @@ async function insertPassesFromCSV(path: string) {
 	} catch (error) {
 		console.error('Error during passes import:', error);
 		console.trace('Pass operator trace:');
-	} 
-}
-
-async function insertPassesFromCSVConnection(path: string) {
-	try {
-		await connect('mongodb://localhost:27017');
-		console.log('OK connecting to db');
-	} catch (err) {
-		console.error('ERR connecting to db:', err);
-		Deno.exit(1);
-	}
-
-	try {
-		await insertPassesFromCSV(path);
 	} finally {
 		try {
 			await disconnect();
@@ -319,7 +312,6 @@ async function insertPassesFromCSVConnection(path: string) {
 			}
 		}
 	}
-
 }
 
 // Execute the insertion
@@ -332,10 +324,7 @@ if (import.meta.main) {
 	} else {
 		path = './passes-sample.csv';
 	}
-	
-	await insertPassesFromCSVConnection(path);
-
-	
+	await insertPassesFromCSV(path);
 }
 
 export { insertPassesFromCSV };
