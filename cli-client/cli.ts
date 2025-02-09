@@ -1,10 +1,11 @@
-import Denomander from "https://deno.land/x/denomander/mod.ts";
-import { loginCommand } from "@/commands/login.ts";
-import { logoutCommand } from "@/commands/logout.ts";
-import { resetPassesCommand } from "@/commands/admin/resetpasses.ts";
-import { resetStationsCommand } from "@/commands/admin/resetstations.ts";
-import { healthCheckCommand } from "@/commands/admin/healthcheck.ts";
-import { adminCommands } from "@/commands/admin/admin.ts";
+import Denomander from "https://deno.land/x/denomander@0.9.3/mod.ts";
+import { loginCommand } from "@/src/commands/authentication/login.ts";
+import { logoutCommand } from "@/src/commands/authentication/logout.ts";
+import { resetPassesCommand } from "@/src/commands/admin/resetpasses.ts";
+import { resetStationsCommand } from "@/src/commands/admin/resetstations.ts";
+import { healthCheckCommand } from "@/src/commands/admin/healthcheck.ts";
+import { adminCommands } from "@/src/commands/admin/admin.ts";
+import { chargesByCommand } from "@/src/commands/chargesby.ts";
 
 const program = new Denomander({
   app_name: "Toll Connect Adminstration CLI",
@@ -21,5 +22,9 @@ resetPassesCommand(program);
 resetStationsCommand(program);
 healthCheckCommand(program);
 adminCommands(program);
+
+// Features
+chargesByCommand(program);
+
 
 program.parse(Deno.args);
