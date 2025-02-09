@@ -27,11 +27,11 @@ const paymentSchema = new Schema({
 	},
 });
 
-paymentSchema.virtual('status').get(function () : PaymentState {
-	const default = new Date(0);
-	if (this.dateofPayment === default)
+paymentSchema.virtual('status').get(function () : PaymentStatus {
+	const init = new Date(0);
+	if (this.dateofPayment === init)
 		return PaymentStatus.Created;
-	else if (this.dateofValidation === default)
+	else if (this.dateofValidation === init)
 		return PaymentStatus.Paid;
 	else
 		return PaymentStatus.Validated;
