@@ -27,29 +27,40 @@ const formSchema = z.object({
 	startDate: z.date().optional(),
 	endDate: z.date(),
 	targets: z.enum(['all', 'specific']),
-	specificOperator: z.string().optional() 
-}).superRefine((data, ctx) => {
-	if (data.endDate > new Date()) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			message: 'End date cannot be in the future',
-			path: ['endDate'],
-		});
+	specificOperator: z.string().optional()
+}).refine(
+	(data) => {
+		// Validate dates aren't in the future
+		return data.endDate <= new Date();
+	},
+	{
+		message: "End date cannot be in the future",
+		path: ["endDate"]
 	}
-
-	if (data.startDate && isAfter(data.startDate, data.endDate)) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			message: 'Start date must be before or equal to end date',
-			path: ['startDate'],
-		});
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			message: 'End date must be after or equal to start date',
-			path: ['endDate'],
-		});
+).refine(
+	(data) => {
+		// Validate start date is before end date when start date exists
+		if (!data.startDate) return true;
+		return data.startDate <= data.endDate;
+	},
+	{
+		message: "Start date must be before or equal to end date",
+		path: ["startDate"]
 	}
-});
+).refine(
+	(data) => {
+		// When targets is 'all', specificOperator must be undefined/null
+		if (data.targets === 'all') {
+			return !data.specificOperator;
+		}
+		// When targets is 'specific', specificOperator must be defined
+		return !!data.specificOperator;
+	},
+	{
+		message: "Bad Operator Selection",
+		path: ["specificOperator"]
+	}
+);
 
 export type PaymentFilterFormValues = z.infer<typeof formSchema>;
 
@@ -97,27 +108,25 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 		}
 	};
 
-
 	useEffect(() => {
-		if (form.formState.errors.startDate) {
-			toast.error(form.formState.errors.startDate.message, {
+		const { errors } = form.formState;
+		
+		if (errors.startDate) {
+			toast.error(errors.startDate.message, {
 				id: 'start-date-error',
 			});
 		}
-		if (form.formState.errors.endDate) {
-			toast.error(form.formState.errors.endDate.message, {
+		if (errors.endDate) {
+			toast.error(errors.endDate.message, {
 				id: 'end-date-error',
 			});
 		}
-	}, [form.formState.errors]);
-
-	form.watch((value) => {
-		if (value.startDate && value.endDate && value.startDate > value.endDate) {
-			toast.error('Start date cannot be after end date', {
-				id: 'date-range-error',
+		if (errors.specificOperator) {
+			toast.error(errors.specificOperator.message, {
+				id: 'operator-error',
 			});
 		}
-	});
+	}, [form.formState.errors]);
 
 	return (
 		<Form {...form}>
@@ -164,8 +173,13 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 						<FormItem className='space-y-3'>
 							<FormControl>
 								<RadioGroup
-									onValueChange={field.onChange}
-									defaultValue={field.value}
+									value={field.value}
+									onValueChange={(value) => {
+										field.onChange(value);
+										if (value === 'all') {
+											form.setValue('specificOperator', '');
+										}
+									}}
 									className='flex flex-row space-x-4'
 								>
 									<FormItem className='flex items-center space-x-2 space-y-0'>
@@ -185,7 +199,6 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 						</FormItem>
 					)}
 				/>
-
 					<FormField
 						control={form.control}
 						name='specificOperator'
@@ -194,7 +207,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 								<FormControl>
 									<Select
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										value={field.value}
 										disabled={form.watch('targets') === 'all'}
 									>
 										<SelectTrigger>
@@ -213,7 +226,6 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 							</FormItem>
 						)}
 					/>
-
 				<Button type='submit' className='flex-shrink-0'>
 					<CheckIcon className='h-4 w-4' />
 					<span className='sr-only'>Submit</span>

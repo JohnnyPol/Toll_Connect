@@ -1,3 +1,4 @@
+import { format, parse } from 'jsr:@std/datetime';
 import { Middleware, Request, Response, Router } from 'npm:express';
 
 export default function (oapi: Middleware): Router {
@@ -88,14 +89,14 @@ export default function (oapi: Middleware): Router {
 		}
 
 		if (startDate) {
-			const start = new Date(startDate);
+			const start = parse(startDate, "yyyyMMdd");
 			filteredPayments = filteredPayments.filter((payment) =>
 				new Date(payment.creationDate) >= start
 			);
 		}
 
 		if (endDate) {
-			const end = new Date(endDate);
+			const end = parse(endDate, "yyyyMMdd");
 			filteredPayments = filteredPayments.filter((payment) =>
 				new Date(payment.creationDate) <= end
 			);
