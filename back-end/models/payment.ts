@@ -1,7 +1,7 @@
-import { model, Schema } from 'npm:mongoose';
+import { model, Schema, Document, Types } from 'npm:mongoose';
 import { idtype, precision, range, require } from './util.ts';
 
-import TollOperator from './toll_operator.ts';
+import TollOperator, { TollOperatorDocument } from './toll_operator.ts';
 
 export enum PaymentStatus {
 	Created   = 0,
@@ -9,7 +9,18 @@ export enum PaymentStatus {
 	Validated = 2,
 };
 
-const paymentSchema = new Schema({
+export interface PaymentDocument extends Document {
+	_id: Types.ObjectId;
+	payer?: TollOperatorDocument['_id'];
+	payee?: TollOperatorDocument['_id'];
+	dateofCharge: Date;
+	amount: number;
+	dateofPayment: Date;
+	dateofValidation: Date;
+	status: PaymentStatus;
+}
+
+const paymentSchema = new Schema<PaymentDocument>({
 	payer: require(idtype(TollOperator), 'Toll Operator'),
 	payee: require(idtype(TollOperator), 'Toll Operator'),
 	dateofCharge: require(Date),
@@ -37,4 +48,4 @@ paymentSchema.virtual('status').get(function () : PaymentStatus {
 		return PaymentStatus.Validated;
 });
 
-export default model('Payment', paymentSchema, 'payment');
+export default model<PaymentDocument>('Payment', paymentSchema, 'payment');

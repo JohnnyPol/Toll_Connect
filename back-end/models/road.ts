@@ -1,8 +1,13 @@
-import { model, Schema } from 'npm:mongoose';
+import { model, Schema, Document, Types } from 'npm:mongoose';
 import { require, trim, unique } from './util.ts';
 
-const roadSchema = new Schema({
+export interface RoadDocument extends Document {
+	_id: Types.ObjectId;
+	name: string;
+};
+
+const roadSchema = new Schema<RoadDocument>({
 	name: unique(trim(require(String))),
 });
 
-export default model('Road', roadSchema, 'road');
+export default model<RoadDocument>('Road', roadSchema, 'road');
