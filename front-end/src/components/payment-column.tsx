@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Payment } from '@/types/payments.ts';
+import { Payment, PaymentStatus } from '@/types/payments.ts';
 import { PaymentCard } from '@/components/payment-card.tsx';
 import { Pagination } from '@/components/payment-pagination.tsx';
 import {
@@ -36,10 +36,10 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 	useEffect(() => {
 		if (paymentFilterFormValues.endDate) {
 			paymentService.getPayments(
-				paymentFilterFormValues.startDate || new Date('2000-01-01'),
-				paymentFilterFormValues.endDate,
-				'to be paid',
-				currentPage,
+				paymentFilterFormValues,
+				PaymentStatus.Created,
+				true,
+				currentPage
 			).then((data) => {
 				setTotalPages(data.pagination.totalPages);
 				if (currentPage > data.pagination.totalPages) {

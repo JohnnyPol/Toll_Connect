@@ -1,3 +1,9 @@
+export enum PaymentStatus {
+	Created = 0,
+	Paid = 1,
+	Validated = 2,
+}
+
 export interface Payment {
 	paymentId: string;
 	payer: string;
