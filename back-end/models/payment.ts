@@ -3,6 +3,12 @@ import { idtype, precision, range, require } from './util.ts';
 
 import TollOperator from './toll_operator.ts';
 
+export enum PaymentStatus {
+	Created   = 0,
+	Paid      = 1,
+	Validated = 2,
+};
+
 const paymentSchema = new Schema({
 	payer: require(idtype(TollOperator), 'Toll Operator'),
 	payee: require(idtype(TollOperator), 'Toll Operator'),
@@ -19,6 +25,16 @@ const paymentSchema = new Schema({
 		type: Date,
 		default: new Date(0), // Default to or epoch time
 	},
+});
+
+paymentSchema.virtual('status').get(function () : PaymentState {
+	const default = new Date(0);
+	if (this.dateofPayment === default)
+		return PaymentStatus.Created;
+	else if (this.dateofValidation === default)
+		return PaymentStatus.Paid;
+	else
+		return PaymentStatus.Validated;
 });
 
 export default model('Payment', paymentSchema, 'payment');

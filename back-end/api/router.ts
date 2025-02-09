@@ -7,6 +7,7 @@ import login from '../authentication/login.ts';
 import operators from './routes/operators.ts';
 import pass_analysis from './routes/pass_analysis.ts';
 import passes_cost from './routes/passes_cost.ts';
+import payments from './routes/payments.ts';
 import statistics from './routes/statistics.ts';
 import toll_passes from './routes/toll_station_passes.ts';
 
@@ -23,6 +24,7 @@ export default function (oapi: Middleware): Router {
 	router.use("/operators", operators(oapi));
 	router.use("/passAnalysis", pass_analysis(oapi));
 	router.use("/passesCost", passes_cost(oapi));
+	router.use('/payments', payments(oapi));
 	router.use("/statistics", statistics(oapi));
 	router.use("/tollStationPasses", toll_passes(oapi));
 
