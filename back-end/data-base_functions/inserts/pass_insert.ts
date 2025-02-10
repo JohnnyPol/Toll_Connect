@@ -248,6 +248,8 @@ async function insertPassesFromCSV(path: string, type: boolean) {
 							payment: existingCharge
 								.id,
 						})
+						const test = await pass.findById(Pass._id);
+						console.log(test);
 					}
 				}
 			} else {
