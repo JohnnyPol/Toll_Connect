@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useMemo } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
@@ -14,113 +14,105 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart.tsx';
+import { useOperators } from '@/hooks/use-operators.ts';
 
 export const description = 'An interactive bar chart';
 
 const outgoingChartData = [
 	{
 		date: '2023-01',
-		outgoing1: 1800,
-		outgoing2: 2400,
+		OO: 1800,
+		AM: 2400,
 	},
 	{
 		date: '2023-02',
-		outgoing1: 2800,
-		outgoing2: 1398,
+		OO: 2800,
+		AM: 1398,
 	},
 	{
 		date: '2023-03',
-		outgoing1: 2200,
-		outgoing2: 9800,
+		OO: 2200,
+		AM: 9800,
 	},
 	{
 		date: '2023-04',
-		outgoing1: 2000,
-		outgoing2: 3908,
+		OO: 2000,
+		AM: 3908,
 	},
 	{
 		date: '2023-05',
-		outgoing1: 2181,
-		outgoing2: 4800,
+		OO: 2181,
+		AM: 4800,
 	},
 	{
 		date: '2023-06',
-		outgoing1: 2500,
-		outgoing2: 3800,
+		OO: 2500,
+		AM: 3800,
 	},
 ];
 
 const incomingChartData = [
 	{
 		date: '2023-01',
-		incoming1: 4000,
-		incoming2: 2400,
+		OO: 4000,
+		AM: 2400,
 	},
 	{
 		date: '2023-02',
-		incoming1: 3000,
-		incoming2: 1398,
+		OO: 3000,
+		AM: 1398,
 	},
 	{
 		date: '2023-03',
-		incoming1: 2000,
-		incoming2: 9800,
+		OO: 2000,
+		AM: 9800,
 	},
 	{
 		date: '2023-04',
-		incoming1: 2780,
-		incoming2: 3908,
+		OO: 2780,
+		AM: 3908,
 	},
 	{
 		date: '2023-05',
-		incoming1: 1890,
-		incoming2: 4800,
+		OO: 1890,
+		AM: 4800,
 	},
 	{
 		date: '2023-06',
-		incoming1: 2390,
-		incoming2: 3800,
+		OO: 2390,
+		AM: 3800,
 	},
 ];
-
-const incomingChartConfig = {
-	incoming1: {
-		label: 'Incoming 1',
-		color: 'hsl(var(--chart-1))',
-	},
-	incoming2: {
-		label: 'Incoming 2',
-		color: 'hsl(var(--chart-2))',
-	},
-} satisfies ChartConfig;
-
-const outgoingChartConfig = {
-	outgoing1: {
-		label: 'Outgoing 1',
-		color: 'hsl(var(--chart-1))',
-	},
-	outgoing2: {
-		label: 'Outgoing 2',
-		color: 'hsl(var(--chart-2))',
-	},
-} satisfies ChartConfig;
 
 type Direction = 'incoming' | 'outgoing';
 
 export function StatisticsTimeseriesChart() {
-	const [direction, setDirection] = React.useState<Direction>('incoming');
+	const [direction, setDirection] = useState<Direction>('incoming');
 
-	const activeChart = direction === 'incoming' ? incomingChartConfig : outgoingChartConfig;
-	const activeData = direction === 'incoming' ? incomingChartData : outgoingChartData;
+	const { operators } = useOperators();
+	const chartConfig = useMemo<ChartConfig>(() => {
+		const config: ChartConfig = {};
+		operators.forEach((operator, _) => {
+			config[operator._id] = {
+				label: operator.name.toLocaleUpperCase(),
+				color: operator?.chartColor || '#3b82f6',
+			};
+		});
+		return config;
+	}, [operators]);
 
-	const total = React.useMemo(
+	const activeData = direction === 'incoming'
+		? incomingChartData
+		: outgoingChartData;
+
+	const total = useMemo(
 		() => ({
 			incoming: incomingChartData.reduce(
-				(acc, curr) => acc + curr.incoming1 + curr.incoming2,
+				(acc, curr) => acc + curr.OO + curr.AM,
 				0,
 			),
 			outgoing: outgoingChartData.reduce(
-				(acc, curr) => acc + curr.outgoing1 + curr.outgoing2,
+				(acc, curr) => acc + curr.OO + curr.AM,
 				0,
 			),
 		}),
@@ -169,7 +161,7 @@ export function StatisticsTimeseriesChart() {
 			</CardHeader>
 			<CardContent className='px-2 sm:p-6'>
 				<ChartContainer
-					config={activeChart}
+					config={chartConfig}
 					className='aspect-auto h-[250px] w-full'
 				>
 					<AreaChart
@@ -196,27 +188,27 @@ export function StatisticsTimeseriesChart() {
 							}}
 						/>
 						<ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[150px]"
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  }}
-                />
-              }
-            />
-						{Object.keys(activeChart).map((key) => (
+							content={
+								<ChartTooltipContent
+									className='w-[200px]'
+									labelFormatter={(value) => {
+										return new Date(value).toLocaleDateString('en-US', {
+											month: 'short',
+											day: 'numeric',
+											year: 'numeric',
+										});
+									}}
+								/>
+							}
+						/>
+						{Object.keys(chartConfig).map((key) => (
 							<Area
-								key={key}	
+								key={key}
 								type='monotone'
 								dataKey={key}
 								stackId='1'
-								stroke={activeChart[key].color}
-								fill={activeChart[key].color}
+								stroke={chartConfig[key].color}
+								fill={chartConfig[key].color}
 							/>
 						))}
 					</AreaChart>

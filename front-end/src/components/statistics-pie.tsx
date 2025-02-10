@@ -115,7 +115,7 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 						</Pie>
 						<ChartTooltip
 							cursor={false}
-							content={<ChartTooltipContent hideLabel />}
+							content={<ChartTooltipContent className='w-[200px]' hideLabel />}
 						/>
 						<ChartLegend
 							content={<ChartLegendContent nameKey='operator' />}

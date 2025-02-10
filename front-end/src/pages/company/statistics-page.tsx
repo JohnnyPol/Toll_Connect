@@ -16,7 +16,7 @@ export default function StatisticsPage() {
 	});
 
 	return (
-		<OperatorProvider>
+		<>
 			<Toaster position='bottom-center' richColors closeButton />
 			<div className=''>
 				<div className='p-4 pb-0'>
@@ -51,6 +51,6 @@ export default function StatisticsPage() {
 					/>
 				</div>
 			</div>
-		</OperatorProvider>
+		</>
 	);
 }

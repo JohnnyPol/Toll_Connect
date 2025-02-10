@@ -58,7 +58,7 @@ export default function CompanyPaymentsPage() {
 	}, [filterFormValues]);
 
 	return (
-		<OperatorProvider>
+		<>
 			<Toaster position='bottom-center' richColors closeButton />
 			<div>
 				<PaymentFilterForm
@@ -78,6 +78,6 @@ export default function CompanyPaymentsPage() {
 					</PaymentColorsProvider>
 				))}
 			</div>
-		</OperatorProvider>
+		</>
 	);
 }
