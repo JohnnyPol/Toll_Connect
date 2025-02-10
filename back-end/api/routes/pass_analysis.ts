@@ -69,9 +69,9 @@ export default function (oapi: Middleware): Router {
 					passList: passes.map((pass, index) => ({
 						passIndex: index + 1,
 						passID: pass._id,
-						stationID: pass.toll,
+						stationID: pass.toll._id,
 						timestamp: set_date(pass.time),
-						tagID: pass.tag,
+						tagID: pass.tag._id,
 						passCharge: pass.charge,
 					})),
 				});
