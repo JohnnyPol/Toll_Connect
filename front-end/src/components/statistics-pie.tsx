@@ -60,7 +60,8 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 	const chartData = data.map((item, index) => ({
 		operator: item.operator,
 		visitors: item.passes,
-		fill: operators.find((operator) => operator._id === item.operator)?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+		fill: operators.find((operator) => operator._id === item.operator)
+			?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
 	}));
 
 	return (
@@ -125,4 +126,4 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 			</CardContent>
 		</Card>
 	);
-}
+};
