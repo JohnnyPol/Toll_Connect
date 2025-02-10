@@ -118,7 +118,12 @@ export default function (oapi: Middleware): Router {
 					}
 				}, {
 					$project: {
-						total_pages: { $arrayElemAt: ['$total_pages.count', 0] },
+						total_pages: {
+							$divide: [
+								{ $arrayElemAt: ['$total_pages.count', 0] },
+								page_size
+							]
+						},
 						results: '$results',
 					}
 				}
