@@ -15,81 +15,34 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart.tsx';
 import { useOperators } from '@/hooks/use-operators.ts';
+import { Operator } from '@/types/operators.ts';
 
 export const description = 'An interactive bar chart';
 
-const outgoingChartData = [
-	{
-		date: '2023-01',
-		OO: 1800,
-		AM: 2400,
-	},
-	{
-		date: '2023-02',
-		OO: 2800,
-		AM: 1398,
-	},
-	{
-		date: '2023-03',
-		OO: 2200,
-		AM: 9800,
-	},
-	{
-		date: '2023-04',
-		OO: 2000,
-		AM: 3908,
-	},
-	{
-		date: '2023-05',
-		OO: 2181,
-		AM: 4800,
-	},
-	{
-		date: '2023-06',
-		OO: 2500,
-		AM: 3800,
-	},
-];
-
-const incomingChartData = [
-	{
-		date: '2023-01',
-		OO: 4000,
-		AM: 2400,
-	},
-	{
-		date: '2023-02',
-		OO: 3000,
-		AM: 1398,
-	},
-	{
-		date: '2023-03',
-		OO: 2000,
-		AM: 9800,
-	},
-	{
-		date: '2023-04',
-		OO: 2780,
-		AM: 3908,
-	},
-	{
-		date: '2023-05',
-		OO: 1890,
-		AM: 4800,
-	},
-	{
-		date: '2023-06',
-		OO: 2390,
-		AM: 3800,
-	},
-];
-
 type Direction = 'incoming' | 'outgoing';
 
-export function StatisticsTimeseriesChart() {
+interface TimeseriesData {
+	date: string;
+	operators: {
+		operator: Operator['_id'];
+		passes: number;
+		cost: number;
+	}[];
+}
+
+interface StatisticsTimeseriesChartProps {
+	incomingData: TimeseriesData[];
+	outgoingData: TimeseriesData[];
+}
+
+export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> = ({
+	incomingData,
+	outgoingData,
+}) => {
 	const [direction, setDirection] = useState<Direction>('incoming');
 
 	const { operators } = useOperators();
+	
 	const chartConfig = useMemo<ChartConfig>(() => {
 		const config: ChartConfig = {};
 		operators.forEach((operator, _) => {
@@ -101,20 +54,54 @@ export function StatisticsTimeseriesChart() {
 		return config;
 	}, [operators]);
 
+	const incomingChartData = incomingData.map((item) => {
+		const operatorData = item.operators.reduce(
+			(acc, curr) => ({
+				...acc,
+				[curr.operator]: curr.cost,
+			}),
+			{},
+		);
+
+		operators.forEach((operator) => {
+			if (!operatorData[operator._id]) {
+				operatorData[operator._id] = 0;
+			}
+		});
+
+		return {
+			date: item.date,
+			...operatorData,
+		};
+	});
+
+	const outgoingChartData = outgoingData.map((item) => ({
+		date: item.date,
+		...item.operators.reduce(
+			(acc, curr) => ({
+				...acc,
+				[curr.operator]: curr.cost,
+			}),
+			{},
+		),
+	}));
+
 	const activeData = direction === 'incoming'
 		? incomingChartData
 		: outgoingChartData;
 
 	const total = useMemo(
 		() => ({
-			incoming: incomingChartData.reduce(
-				(acc, curr) => acc + curr.OO + curr.AM,
-				0,
-			),
-			outgoing: outgoingChartData.reduce(
-				(acc, curr) => acc + curr.OO + curr.AM,
-				0,
-			),
+			incoming: incomingData.reduce((acc, curr) => {
+				return acc + curr.operators.reduce((acc, curr) => {
+					return acc + curr.cost;
+				}, 0);
+			}, 0),
+			outgoing: outgoingData.reduce((acc, curr) => {
+				return acc + curr.operators.reduce((acc, curr) => {
+					return acc + curr.cost;
+				}, 0);
+			}, 0),
 		}),
 		[],
 	);
