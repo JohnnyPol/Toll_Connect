@@ -37,6 +37,35 @@ function parse_query(query: object): PaymentsQuery | string {
 	return { page_size, page_number, target_op_id, is_payer };
 }
 
+function operators_to_query (
+	is_payer: boolean | undefined,
+	user: TollOperatorDocument['_id'],
+	target: TollOperatorDocument['_id'] | undefined
+) {
+	if (is_payer === undefined || is_payer === true) // admin case
+		return target ? { payer: user, payee: target } : { payer: user };
+	else
+		return target ? { payee: user, payer: target } : { payee: user };
+}
+
+function status_to_query (status: PaymentStatus) {
+	const epoch = new Date(0);
+	switch (status) {
+		case PaymentStatus.Created: return {
+			dateofPayment: epoch,
+			dateofValidation: epoch,
+		};
+		case PaymentStatus.Paid: return {
+			dateofPayment: { $gt: epoch },
+			dateofValidation: epoch,
+		};
+		case PaymentStatus.Validated: return {
+			dateofPayment: { $gt: epoch },
+			dateofValidation: { $gt: epoch },
+		};
+	}
+}
+
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
@@ -71,46 +100,31 @@ export default function (oapi: Middleware): Router {
 				return die(res, ErrorType.BadRequest, 'is_payer required');
 			}
 
-			const payments = await Payments.aggregate([
+			const results = await Payments.aggregate([
 				{
-					$match: is_payer === true
-						? {
-							payer: user,
-							...(target_op_id ? { payee: target_op_id } : {}),
-							status,
-							dateofCharge: {
-								$gte: date_from,
-								$lte: date_to,
-							},
-						}
-						: is_payer === undefined
-						? {
-							payee: user,
-							...(target_op_id ? { payer: target_op_id } : {}),
-							status,
-							dateofCharge: {
-								$gte: date_from,
-								$lte: date_to,
-							},
-						}
-						: {
-							...(target_op_id ? { payer: target_op_id } : {}),
-							status,
-							dateofCharge: {
-								$gte: date_from,
-								$lte: date_to,
-							},
-						}
-				},
-				{ $sort: { dateOfCharge: -1 } },
-				{ $skip: page_size * (page_number - 1) },
-				{ $limit: page_size },
+					$match: {
+						...operators_to_query(is_payer, user, target_op_id),
+						...status_to_query(status),
+						dateofCharge: { $gte: date_from, $lte: date_to },
+					}
+				}, {
+					$facet: {
+						total_pages: [{ $count: 'count' }],
+						results: [
+							{ $sort: { dateOfCharge: -1 } },
+							{ $skip: page_size * (page_number - 1) },
+							{ $limit: page_size },
+						],
+					}
+				}, {
+					$project: {
+						total_pages: { $arrayElemAt: ['$total_pages.count', 0] },
+						results: '$results',
+					}
+				}
 			]);
 
-			res.status(200).json({
-				total_pages: Math.ceil(payments.length / page_size),
-				results: payments,
-			});
+			res.status(200).json(results);
 		},
 	);
 
