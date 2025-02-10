@@ -27,7 +27,7 @@ const hashPassword = async (password: string): Promise<string> => {
 };
 
 const upload = multer({ 
-    dest: 'uploads/',
+    storage: multer.memoryStorage(),
     fileFilter: (_req: Request, file: multer.File, cb: FileFilterCallback) => {
         // Check if file is CSV (required by spec)
         if (file.mimetype !== 'text/csv') {
@@ -41,9 +41,9 @@ const upload = multer({
 
 import { parse } from 'npm:csv-parse/sync';
 
-async function validateCSVFile(filePath: string): Promise<boolean> {
+async function validateCSVFile(csvContent: string): Promise<boolean> {
 	try {
-		const csvContent = await fs.readFile(filePath, 'utf-8');
+		//const csvContent = await fs.readFile(filePath, 'utf-8');
 		const records = parse(csvContent, {
 			columns: true,
 			skip_empty_lines: true,
@@ -326,18 +326,18 @@ router.post('/resetpasses',
 				console.log(
 					`File received: ${req.file.originalname}`,
 				);
-				console.log(`Stored at: ${req.file.path}`);
+				console.log(`Stored at: ${req.file.buffer}`);
 
 				// Validate and process the file
-				const filePath = req.file.path;
-				const isValid = await validateCSVFile(filePath);
+				const csvContent = req.file.buffer.toString('utf-8');
+				const isValid = await validateCSVFile(csvContent);
 				if (!isValid) {
 					throw new Error(
 						'Invalid CSV format. Please upload a valid file.',
 					);
 				}
 
-				await insertPassesFromCSV(filePath);
+				await insertPassesFromCSV(csvContent, false);
 				console.log(
 					' Successfully inserted passes from CSV.',
 				);

@@ -7,16 +7,22 @@ import moment from 'npm:moment';
 
 import pass, {PassDocument} from '../../models/pass.ts';
 import { ObjectId } from 'mongodb';
+import { trusted } from 'mongoose';
 
 // Function to convert timestamp to Date using moment.js
 function parseTimestamp(timestamp: string): Date {
 	return moment(timestamp, 'YYYY/M/D HH:mm').toDate(); // Specify format
 }
 
-async function insertPassesFromCSV(path: string) {
+async function insertPassesFromCSV(path: string, type: boolean) {
 	try {
 		console.log('Reading passes data...');
-		const passesText = await Deno.readTextFile(path);
+		let passesText;
+		if(type){
+			passesText = await Deno.readTextFile(path);
+		} else {
+			passesText = path;
+		}
 
 		const passes = Papa.parse(passesText, {
 			header: true,
@@ -277,7 +283,7 @@ async function insertPassesFromCSVConnection(path: string) {
 	}
 
 	try {
-		await insertPassesFromCSV(path);
+		await insertPassesFromCSV(path, true);
 	} finally {
 		try {
 			await disconnect();
