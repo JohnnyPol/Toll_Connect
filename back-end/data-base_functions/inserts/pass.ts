@@ -1,8 +1,9 @@
 import Pass from '../../models/pass.ts';
 import Tag from '../../models/tag.ts';
 import Toll from '../../models/toll.ts';
-import { insert_tag } from './tag.ts';
-import { connect, disconnect } from 'npm:mongoose';
+import { insertTag } from './tag.ts';
+import { ClientSession, connect, disconnect } from 'npm:mongoose';
+import { MongoError } from 'npm:mongodb';
 
 /**
  * Inserts a new toll operator into the database - connects and disconnects to db.
@@ -12,7 +13,7 @@ import { connect, disconnect } from 'npm:mongoose';
  * @param {number} charge - The amount that was charged on the Tag
  * @param {string} tagOperator - Optional Parameter to allow adding the tag if not previously inserted
  */
-async function insert_pass_connect({
+async function insertPassConnect({
 	tag,
 	toll,
 	time,
@@ -38,7 +39,7 @@ async function insert_pass_connect({
 					console.log(
 						'Tag not found, inserting new Tag...',
 					);
-					await insert_tag({
+					await insertTag({
 						_id: tag,
 						tollOperator: tagOperator,
 					}); // Insert the tag if not found
@@ -58,26 +59,30 @@ async function insert_pass_connect({
 
 		// Insert pass into the database
 		const pass = new Pass(passData);
-		const newPass = await pass.save();
-		console.log('Inserted Pass:', newPass);
+		try {
+			const newPass = await pass.save();
+			console.log('Inserted Pass:', newPass);
+		} catch (error) {
+			if (error instanceof MongoError && error.code === 11000) {
+				// This means the unique index violation occurred
+				console.log('Error: Duplicate pass entry detected');
+				// Handle the error as needed, e.g., sending a specific message to the user
+			} else {
+				// Other errors
+				console.error('Error while inserting', error);
+			}
+			throw (new Error('Duplicate pass'));
+		}
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
 			// Type narrowing to handle 'unknown' error type
 			if (dbError.message.includes('ECONNREFUSED')) {
-				console.error(
-					'Database connection failed:',
-					dbError.message,
-				);
+				console.error('Database connection failed:', dbError.message);
 			} else {
-				console.error(
-					'Failed to insert Pass:',
-					dbError.message,
-				);
+				console.error('Failed to insert Pass:', dbError.message);
 			}
 		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
+			console.error('Unknown error occurred during database operation.');
 		}
 		throw dbError;
 	} finally {
@@ -92,9 +97,7 @@ async function insert_pass_connect({
 					disconnectError.message,
 				);
 			} else {
-				console.error(
-					'Unknown error occurred during disconnection.',
-				);
+				console.error('Unknown error occurred during disconnection.');
 			}
 		}
 	}
@@ -108,7 +111,7 @@ async function insert_pass_connect({
  * @param {number} charge - The amount that was charged on the Tag
  * @param {string} tagOperator - Optional Parameter to allow adding the tag if not previously inserted
  */
-async function insert_pass({
+async function insertPass({
 	tag,
 	toll,
 	time,
@@ -120,38 +123,47 @@ async function insert_pass({
 	time: Date;
 	charge: number;
 	tagOperator: string;
-}) {
+}, session?: ClientSession) {
 	try {
-		if (tagOperator) {
-			try {
-				// Find the Tag by its custom string ID (tagId)
+		try {
+			// Find the Tag by its custom string ID (tagId)
+			if (session) {
+				const test_tag = await Tag.findById(tag).session(session);
+				if (!test_tag) {
+					console.log('Tag not found, inserting new Tag...');
+					await insertTag(
+						{ _id: tag, tollOperator: tagOperator },
+						session,
+					); // Insert the tag if not found
+				}
+			} else {
 				const test_tag = await Tag.findById(tag);
 				if (!test_tag) {
-					console.log(
-						'Tag not found, inserting new Tag...',
-					);
-					await insert_tag({
-						_id: tag,
-						tollOperator: tagOperator,
-					}); // Insert the tag if not found
+					console.log('Tag not found, inserting new Tag...');
+					await insertTag({ _id: tag, tollOperator: tagOperator }); // Insert the tag if not found
 				}
-			} catch (error) {
-				console.error('Error checking for Tag:', error);
-				throw error;
 			}
+		} catch (error) {
+			console.error('Error checking for Tag:', error);
 		}
 
 		let tollOperator;
 
 		try {
-			const test_toll = await Toll.findById(toll);
+			let test_toll; 
+
+      if(session) {
+        test_toll= await Toll.findById(toll).session(session);
+      } else {
+        test_toll = await Toll.findById(toll);
+      }
 
 			if (!test_toll) {
 				console.log('Toll not found');
 				throw (new Error('Toll not found'));
 			}
 
-			tollOperator = test_toll._id;
+			tollOperator = test_toll.tollOperator;
 		} catch (error) {
 			console.error('Error checking for Toll:', error);
 			throw error;
@@ -167,21 +179,33 @@ async function insert_pass({
 
 		// Insert pass into the database
 		const pass = new Pass(passData);
-		const newPass = await pass.save();
-		console.log('Inserted Pass:', newPass);
+		try {
+			if (session) {
+				const newPass = await pass.save({ session });
+				console.log('Inserted Pass:', newPass);
+			} else {
+				const newPass = await pass.save();
+				console.log('Inserted Pass:', newPass);
+			}
+		} catch (error) {
+			if (error instanceof MongoError && error.code === 11000) {
+				// This means the unique index violation occurred
+				console.log('Error: Duplicate pass entry detected');
+				// Handle the error as needed, e.g., sending a specific message to the user
+			} else {
+				// Other errors
+				console.error('Error while inserting', error);
+			}
+			throw (new Error('Duplicate pass'));
+		}
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
-			console.error(
-				'Failed to insert Pass:',
-				dbError.message,
-			);
+			console.error('Failed to insert Pass:', dbError.message);
 		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
+			console.error('Unknown error occurred during database operation.');
 		}
 		throw dbError;
 	}
 }
 
-export { insert_pass, insert_pass_connect };
+export { insertPass, insertPassConnect };

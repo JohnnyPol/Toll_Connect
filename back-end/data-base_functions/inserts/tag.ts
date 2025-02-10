@@ -1,4 +1,4 @@
-import { connect, disconnect } from 'npm:mongoose';
+import { connect, disconnect, ClientSession } from 'npm:mongoose';
 import Tag from '../../models/tag.ts';
 
 /**
@@ -6,9 +6,9 @@ import Tag from '../../models/tag.ts';
  * @param {string} _id - The ID of the tag
  * @param {string} tollOperator - The ID of the toll operator
  */
-async function insert_tag_connect({
-	_id,
-	tollOperator,
+async function insertTagConnect({
+    _id,
+    tollOperator
 }: {
 	_id: string;
 	tollOperator: string;
@@ -66,28 +66,33 @@ async function insert_tag_connect({
  * @param {string} _id - The ID of the tag
  * @param {string} tollOperator - The ID of the toll operator
  */
-async function insert_tag({
-	_id,
-	tollOperator,
+async function insertTag({
+    _id,
+    tollOperator
 }: {
-	_id: string;
-	tollOperator: string;
-}) {
-	try {
-		const tagData = { _id, tollOperator };
-		const tag = new Tag(tagData);
-		const newTag = await tag.save();
-		console.log('Inserted Tag:', newTag);
-	} catch (dbError: unknown) {
-		if (dbError instanceof Error) {
-			console.error('Failed to insert Tag:', dbError.message);
-		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
-		}
-		throw dbError;
-	}
+    _id: string;
+    tollOperator: string;
+}, session?:ClientSession) {
+    try {
+        const tagData = { _id, tollOperator };
+        const tag = new Tag(tagData);
+        if(session) {
+            const newTag = await tag.save({session});
+            console.log('Inserted Tag:', newTag);
+        } else {
+            const newTag = await tag.save();
+            console.log('Inserted Tag:', newTag);
+        }        
+        
+    } catch (dbError: unknown) {
+        if (dbError instanceof Error) {
+            console.error('Failed to insert Tag:', dbError.message);
+        } else {
+            console.error('Unknown error occurred during database operation.');
+        }
+        throw(dbError);
+    }
 }
 
-export { insert_tag, insert_tag_connect };
+
+export { insertTag, insertTagConnect };

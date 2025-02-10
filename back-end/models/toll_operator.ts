@@ -13,6 +13,7 @@ export interface TollOperatorDocument extends Document {
 	_id: string;
 	name: string;
 	passwordHash: string;
+	userLevel: UserLevel;
 	email: string;
 	VAT: string;
 	addressStreet: string;

@@ -1,90 +1,191 @@
 // api/routes/admin.ts
 import { Middleware, Request, Response, Router } from 'npm:express';
-import { MongoClient } from 'npm:mongodb';
-import multer from 'npm:multer';
-import * as path from 'npm:path';
 import { insertTollsFromCSV } from '../../data-base_functions/inserts/toll_insert.ts';
-import { deleteAllDocuments } from '../../data-base_functions/deletes/delete_all.ts';
 import { dirname, fromFileUrl, join } from 'https://deno.land/std/path/mod.ts';
 import { insertPassesFromCSV } from '../../data-base_functions/inserts/pass_insert.ts';
+import mongoose from "npm:mongoose";
+import multer,{ FileFilterCallback } from 'npm:multer';
+import { deleteCollection } from '../../data-base_functions/deletes/delete_collection.ts';
+import toll_operator from '../../models/toll_operator.ts';
+import { insertTollOperators } from '../../data-base_functions/inserts/initialize_operators.ts';
 
-import * as fs from 'node:fs/promises';
+
+//import * as fs from 'node:fs/promises';
+
+
+const hashPassword = async (password: string): Promise<string> => {
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+        return Array.from(new Uint8Array(hashBuffer))
+            .map((byte) => byte.toString(16).padStart(2, '0'))
+            .join('');
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        throw error;
+    }
+};
+
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    fileFilter: (_req: Request, file: multer.File, cb: FileFilterCallback) => {
+        // Check if file is CSV (required by spec)
+        if (file.mimetype !== 'text/csv') {
+            cb(new Error('Only CSV files are allowed (mimetype: text/csv)'));
+            return;
+        }
+        cb(null, true);
+    }
+});
+
 
 import { parse } from 'npm:csv-parse/sync';
 
-async function validateCSVFile(filePath: string): Promise<boolean> {
+async function validateCSVFile(csvContent: string): Promise<boolean> {
 	try {
-		const csvContent = await fs.readFile(filePath, 'utf-8');
+		//const csvContent = await fs.readFile(filePath, 'utf-8');
 		const records = parse(csvContent, {
 			columns: true,
 			skip_empty_lines: true,
 		});
 
-		// Define required fields based on `passes-sample.csv`
-		const requiredFields = [
-			'passId',
-			'stationId',
-			'tagId',
-			'date',
-			'time',
-		];
-		return requiredFields.every((field) => field in records[0]);
-	} catch (error) {
-		console.error('Error validating CSV file:', error);
-		return false;
-	}
-}
+         // Check if the file is empty or the header row is missing
+    if (records.length === 0) {
+        console.error('CSV file is empty or missing header row.');
+        return false;
+      }
 
-const upload = multer({
-	dest: 'uploads/',
-	fileFilter: (_req, file, cb) => {
-		// Check if file is CSV (required by spec)
-		if (file.mimetype !== 'text/csv') {
-			cb(
-				new Error(
-					'Only CSV files are allowed (mimetype: text/csv)',
-				),
-			);
-			return;
-		}
-		cb(null, true);
-	},
-});
-const client = new MongoClient('mongodb://localhost:27017/');
+        // Define required fields based on `passes-sample.csv`
+        const requiredFields = ['timestamp', 'tollID', 'tagRef', 'tagHomeID', 'charge'];
+    
+        const headerFields = Object.keys(records[0]);
+
+        // Check if the number of fields matches the required format
+     if (headerFields.length !== requiredFields.length) {
+         console.error('CSV header field count does not match the required format.');
+         return false;
+       }
+       for (let i = 0; i < requiredFields.length; i++) {
+        if (headerFields[i] !== requiredFields[i]) {
+          console.error(
+            `Header field mismatch at position ${i + 1}: expected "${requiredFields[i]}", but found "${headerFields[i]}".`
+          );
+          return false;
+        }
+      }
+  
+      return true;
+    } catch (error) {
+      console.error('Error validating CSV file:', error);
+      return false;
+    }
+  }
+
+
+
+
+
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
-	// Healthcheck endpoint
-	router.get('/healthcheck', async (_req: Request, res: Response) => {
-		try {
-			const db = client.db();
-			const [stations, tags, passes] = await Promise.all([
-				db.collection('toll').countDocuments(),
-				db.collection('tag').countDocuments(),
-				db.collection('pass').countDocuments(),
-			]);
+    // Healthcheck endpoint
+    router.get('/healthcheck',
+        oapi.path({
+            tags: ['Admin'],
+            summary: 'Check system health',
+            operationId: 'getHealthcheck',
+            responses: {200: {
+                description: 'System healthy',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/HealthcheckResponse'
+                        }
+                    }
+                }
+            },
+            401: {
+                description: 'System unhealthy',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminErrorResponse'
+                        }
+                    }
+                }
+            }
+        }
+    }),
+         async (_req: Request, res: Response) => {
+        try {
+            if (mongoose.connection.readyState !== 1)
+                throw(new Error("no connected to db"));
+            //const db = client.db();
+            //const db = mongoose.connection.db;
 
-			res.status(200).json({
-				status: 'OK',
-				dbconnection: 'mongodb://localhost:27017/',
-				n_stations: stations,
-				n_tags: tags,
-				n_passes: passes,
-			});
-		} catch (error) {
-			res.status(401).json({
-				status: 'failed',
-				dbconnection: 'mongodb://localhost:27017/',
-			});
-		}
-	});
+            const [stations, tags, passes] = await Promise.all([
+                mongoose.connection.collection('toll').countDocuments(),
+                mongoose.connection.collection('tag').countDocuments(),
+                mongoose.connection.collection('pass').countDocuments()
+            ]);
 
-	// Reset stations endpoint
-	router.post('/resetstations', async (_req: Request, res: Response) => {
-		try {
-			// Step 1: Delete all existing documents
-			await deleteAllDocuments();
+            res.status(200).json({
+                status: "OK",
+                dbconnection: "mongodb://localhost:27017/",
+                n_stations: stations,
+                n_tags: tags,
+                n_passes: passes
+            });
+        } catch(error)  {
+            console.error(error);
+            res.status(401).json({
+                status: "failed",
+                dbconnection: "mongodb://localhost:27017/"
+            });
+        }
+    });
+
+
+  // Reset stations endpoint
+  router.post('/resetstations',
+   
+    oapi.path({
+        tags: ['Admin'],
+        summary: 'Reset stations data',
+        operationId: 'resetStations',
+        responses: {
+            200: {
+                description: 'Reset successful',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminResponse'
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Reset failed',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminErrorResponse'
+                        }
+                    }
+                }
+            }
+        }
+    }),
+    async (_req: Request, res: Response) => {
+    try {
+        // Step 1: Delete all existing documents
+        await deleteCollection("payment");
+        await deleteCollection("pass");
+        await  deleteCollection("toll"); 
+        
+        await insertTollOperators();
 
 			// Step 2: Construct the correct path to the CSV file
 			const currentFilePath = fromFileUrl(import.meta.url);
@@ -111,39 +212,57 @@ export default function (oapi: Middleware): Router {
 		}
 	});
 
-	router.post('/resetpasses', async (_req: Request, res: Response) => {
-		try {
-			// Get database connection
-			const db = client.db();
+router.post('/resetpasses', 
+    
+    oapi.path({
+        tags: ['Admin'],
+        summary: 'Reset passes data',
+        operationId: 'resetPasses',
+        responses: {
+            200: {
+                description: 'Reset successful',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminResponse'
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Reset failed',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/definitions/AdminErrorResponse'
+                        }
+                    }
+                }
+            }
+        }
+    }),
+    async (_req: Request, res: Response) => {
+    try {
+        // Get database connection
+        //const db = client.db();
+    
+            if (mongoose.connection.readyState !== 1)
+                throw(new Error("no connected to db"));
 
-			// Get all collections
-			const collections = await db.listCollections()
-				.toArray();
+            await deleteCollection("payment");
+            await deleteCollection("pass");
+            await deleteCollection("tag");
 
-			// Drop pass and tag collections if they exist
-			if (collections.some((c) => c.name === 'pass')) {
-				await db.collection('pass').drop();
-				console.log('Dropped passes collection');
-			}
+            await insertTollOperators();
 
-			if (collections.some((c) => c.name === 'tag')) {
-				await db.collection('tag').drop();
-				console.log('Dropped tags collection');
-			}
+            const testPassword = "freepasses4all";
 
-			// Check if users collection exists and reset admin if it does
-			if (collections.some((c) => c.name === 'users')) {
-				await TollOperator.findOneAndUpdate(
-					{ _id: 'admin' },
-					{
-						_id: 'admin',
-						passwordHash: 'freepasses4all',
-						blacklist: [],
-					},
-					{ upsert: true },
-				).exec();
-				console.log('Reset admin user');
-			}
+            
+            const newPassword = await hashPassword(testPassword);
+            
+
+            await toll_operator.updateOne( {_id: 'admin'}, {passwordHash: newPassword});
+            
 
 			res.status(200).json({ status: 'OK' });
 		} catch (error) {
@@ -156,54 +275,87 @@ export default function (oapi: Middleware): Router {
 			});
 		}
 	});
-	// Add passes endpoint
+
 	router.post(
 		'/addpasses',
+        oapi.path({
+            tags: ['Admin'],
+            summary: 'Add passes from CSV',
+            operationId: 'addPasses',
+            parameters: [
+                {
+                    in: 'formData',
+                    name: 'file',
+                    required: true,
+                    type: 'file',
+                    description: 'CSV file with passes data'
+                }
+            ],
+            responses: {
+                200: {
+                    description: 'Passes added successfully',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/definitions/AdminResponse'
+                            }
+                        }
+                    }
+                },
+                500: {
+                    description: 'Operation failed',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/definitions/AdminErrorResponse'
+                            }
+                        }
+                    }
+                }
+            }
+        }),
 		upload.single('file'),
 		async (req: Request, res: Response) => {
 			try {
+				console.log(
+					' Received request to upload passes',
+				);
+				console.log(' req.body:', req.body);
+				console.log(' req.file:', req.file);
+
 				if (!req.file) {
+					console.error(' No file uploaded');
 					throw new Error('No file uploaded');
 				}
-				// Step 1: Validate the CSV file path (file saved on disk)
-				const filePath = req.file.path; // Access the file path
-				const isValid = await validateCSVFile(filePath); // Function to validate the CSV format on disk
 
+				console.log(
+					`File received: ${req.file.originalname}`,
+				);
+				console.log(`Stored at: ${req.file.buffer}`);
+
+				// Validate and process the file
+				const csvContent = req.file.buffer.toString('utf-8');
+				const isValid = await validateCSVFile(csvContent);
 				if (!isValid) {
 					throw new Error(
 						'Invalid CSV format. Please upload a valid file.',
 					);
 				}
 
-				// Use the existing insertPassesFromCSV function
-				await insertPassesFromCSV(filePath);
+				await insertPassesFromCSV(csvContent, false);
+				console.log(
+					' Successfully inserted passes from CSV.',
+				);
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error('Error in addpasses:', error);
+				console.error(' Error in /addpasses:', error);
 				res.status(500).json({
 					status: 'failed',
 					info: error instanceof Error
 						? error.message
 						: 'Unknown error occurred',
 				});
-			} finally {
-				// Cleanup: remove uploaded file
-				// import fs from 'fs/promises';
-
-				if (req.file?.path) {
-					try {
-						await fs.unlink(req.file.path);
-						console.log(
-							'Temporary file deleted',
-						);
-					} catch (error) {
-						console.error(
-							'Error removing temp file:',
-							error,
-						);
-					}
-				}
 			}
 		},
 	);

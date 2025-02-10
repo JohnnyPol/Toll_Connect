@@ -1,7 +1,7 @@
 import { connect, disconnect, Types } from 'npm:mongoose';
 import Toll from '../../models/toll.ts';
 import { findRoadIdByName } from '../find/road.ts';
-import { insert_road } from './road.ts';
+import { insertRoad } from './road.ts';
 
 /**
  * Inserts a new toll station into the database - connects and disconnects to db.
@@ -15,19 +15,19 @@ import { insert_road } from './road.ts';
  * @param {string} tollOperator - The ID of the associated toll operator.
  * @param {string} roadName - The Name of the associated road.
  */
-async function insert_toll_connect({
-	_id,
-	name,
-	latitude,
-	longitude,
-	locality,
-	price1,
-	price2,
-	price3,
-	price4,
-	PM,
-	tollOperator,
-	roadName,
+async function insertTollConnect({
+  _id,
+  name,
+  latitude,
+  longitude,
+  locality,
+  price1,
+  price2,
+  price3,
+  price4,
+  PM,
+  tollOperator,
+  roadName,
 }: {
 	_id: string;
 	name: string;
@@ -47,18 +47,18 @@ async function insert_toll_connect({
 		await connect('mongodb://localhost:27017');
 		console.log('Connected to MongoDB');
 
-		// If road does not exist insert it
-		const roadId = await findRoadIdByName(roadName);
-		let road_for_use: string = 'Invalid';
-
-		if (!roadId) {
-			console.log('Road not found, inserting new Road...');
-			await insert_road({ name: roadName });
-			const temp = await findRoadIdByName(roadName);
-			if (temp) road_for_use = temp;
-		} else {
-			road_for_use = roadId;
-		}
+    // If road does not exist insert it
+    const roadId = await findRoadIdByName(roadName);
+    let road_for_use : string = 'Invalid';
+    
+    if (!roadId) {
+      console.log('Road not found, inserting new Road...');
+      await insertRoad({name: roadName});
+      const temp = await findRoadIdByName(roadName);
+      if(temp) road_for_use = temp;
+    } else {
+      road_for_use = roadId;
+    }
 
 		// Get toll Date
 		const tollData = {
@@ -121,19 +121,19 @@ async function insert_toll_connect({
  * @param {string} tollOperator - The ID of the associated toll operator.
  * @param {string} roadName - The Name of the associated road.
  */
-async function insert_toll({
-	_id,
-	name,
-	latitude,
-	longitude,
-	locality,
-	price1,
-	price2,
-	price3,
-	price4,
-	PM,
-	tollOperator,
-	roadName,
+async function insertToll({
+_id,
+name,
+latitude,
+longitude,
+locality,
+price1,
+price2,
+price3,
+price4,
+PM,
+tollOperator,
+roadName,
 }: {
 	_id: string;
 	name: string;
@@ -148,19 +148,19 @@ async function insert_toll({
 	tollOperator: string;
 	roadName: string;
 }) {
-	try {
-		// If road does not exist insert it
-		const roadId = await findRoadIdByName(roadName);
-		let road_for_use: string = 'Invalid';
-
-		if (!roadId) {
-			console.log('Road not found, inserting new Road...');
-			await insert_road({ name: roadName });
-			const temp = await findRoadIdByName(roadName);
-			if (temp) road_for_use = temp;
-		} else {
-			road_for_use = roadId;
-		}
+  try {
+    // If road does not exist insert it
+    const roadId = await findRoadIdByName(roadName);
+    let road_for_use : string = 'Invalid';
+    
+    if (!roadId) {
+      console.log('Road not found, inserting new Road...');
+      await insertRoad({name: roadName});
+      const temp = await findRoadIdByName(roadName);
+      if(temp) road_for_use = temp;
+    } else {
+      road_for_use = roadId;
+    }
 
 		// Get toll data
 		const tollData = {
@@ -194,4 +194,4 @@ async function insert_toll({
 	}
 }
 
-export { insert_toll, insert_toll_connect };
+export { insertToll, insertTollConnect };

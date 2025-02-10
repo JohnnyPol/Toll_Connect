@@ -14,17 +14,17 @@ import { connect, disconnect } from 'npm:mongoose';
  * @param {string} addressArea - The area of the toll operator's address.
  * @param {number} addressZip - The postal code (ZIP) of the toll operator.
  */
-async function insert_toll_operator_connect({
-	_id,
-	name,
-	passwordHash,
-	userLevel,
-	email,
-	VAT,
-	addressStreet,
-	addressNumber,
-	addressArea,
-	addressZip,
+async function insertTollOperatorConnect({
+    _id,
+    name,
+    passwordHash,
+		userLevel,
+    email,
+    VAT,
+    addressStreet,
+    addressNumber,
+    addressArea,
+    addressZip
 }: {
 	_id: string;
 	name: string;
@@ -113,17 +113,17 @@ async function insert_toll_operator_connect({
  * @param {string} addressArea - The area of the toll operator's address.
  * @param {number} addressZip - The postal code (ZIP) of the toll operator.
  */
-async function insert_toll_operator({
-	_id,
-	name,
-	passwordHash,
+async function insertTollOperator({
+  _id,
+  name,
+  passwordHash,
 	userLevel,
-	email,
-	VAT,
-	addressStreet,
-	addressNumber,
-	addressArea,
-	addressZip,
+  email,
+  VAT,
+  addressStreet,
+  addressNumber,
+  addressArea,
+  addressZip
 }: {
 	_id: string;
 	name: string;
@@ -151,23 +151,14 @@ async function insert_toll_operator({
 			addressZip,
 		};
 
-		// Insert the toll operator into the database
 		const tollOperator = new TollOperator(tollOperatorData);
 		const newTollOperator = await tollOperator.save();
 		console.log('Inserted Toll Operator:', newTollOperator);
-	} catch (dbError: unknown) {
-		if (dbError instanceof Error) {
-			console.error(
-				'Failed to insert Toll Operator:',
-				dbError.message,
-			);
-		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
-		}
-		throw dbError;
+
+	} catch(error) {
+		console.error('Failed to insert Toll Operator:', error);
+		throw(error);
 	}
 }
 
-export { insert_toll_operator, insert_toll_operator_connect };
+export{insertTollOperator, insertTollOperatorConnect}

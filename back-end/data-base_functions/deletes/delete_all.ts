@@ -16,7 +16,7 @@ async function deleteAllDocuments() {
 
 		// Step 4: Iterate over each collection and delete all documents
 		for (const collection of collections) {
-			await collection.drop();
+			await collection.deleteMany({});
 			console.log(
 				`Deleted all documents from collection: ${collection.collectionName}`,
 			);
@@ -36,10 +36,9 @@ async function deleteAllDocuments() {
 	}
 }
 
-// Run the function
-if (import.meta.main) {
-	console.log('Deleting everything...');
-	await deleteAllDocuments();
-}
+export {deleteAllDocuments};
 
-export { deleteAllDocuments };
+// Run the function
+if(import.meta.main) {
+  deleteAllDocuments();
+}

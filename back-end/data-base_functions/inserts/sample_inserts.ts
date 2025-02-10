@@ -1,25 +1,26 @@
-import { insert_toll_operator_connect } from './tollOperator.ts';
-import { insert_payment_connect } from './payment.ts';
-import { insert_road_connect } from './road.ts';
-import { insert_toll_connect } from './toll.ts';
-import { insert_tag_connect } from './tag.ts';
-import { insert_pass_connect } from './pass.ts';
+import { insertTollOperatorConnect } from './tollOperator.ts';
+import { insertPaymentConnect } from './payment.ts';
+import { insertRoadConnect } from './road.ts';
+import { insertTollConnect } from './toll.ts';
+import { insertTagConnect } from './tag.ts';
+import { insertPassConnect } from './pass.ts';
 
 //Sample Usage
-insert_toll_operator_connect({
+/*
+insertTollOperatorConnect({
 	_id: 'operator123',
 	name: 'Operator One',
-	passwordHash: 123456789,
+	passwordHash: '123456789',
 	email: 'operator@example.com',
 	VAT: 'VAT12345',
 	addressStreet: 'Main Street',
 	addressNumber: 123,
 	addressArea: 'Central Area',
 	addressZip: 12345,
-});
+});*/
 
 // Sample Usage
-insert_payment_connect({
+insertPaymentConnect({
 	payer: 'operator123',
 	payee: 'operator456',
 	dateofCharge: new Date('2024-01-15'),
@@ -29,17 +30,17 @@ insert_payment_connect({
 });
 
 // Sample Usage
-insert_road_connect({
+insertRoadConnect({
 	name: 'Highway A1',
 });
 
-insert_tag_connect({
+insertTagConnect({
 	_id: 'TA0357',
 	tollOperator: 'operator123',
 });
 
 // Sample Usage
-insert_toll_connect({
+insertTollConnect({
 	_id: 'toll123',
 	name: 'Athens North Toll Station',
 	latitude: 37.9838,
@@ -54,7 +55,7 @@ insert_toll_connect({
 	roadName: 'road456', // References the road ID
 });
 
-insert_pass_connect({
+insertPassConnect({
 	tag: 'TA0358',
 	toll: 'NO25',
 	time: new Date('2024-01-03-00-18'),

@@ -4,6 +4,7 @@ import { idtype, precision, range, require } from './util.ts';
 import Tag, { TagDocument } from './tag.ts';
 import Toll, { TollDocument } from './toll.ts';
 import TollOperator, { TollOperatorDocument } from './toll_operator.ts'
+import Payment, {PaymentDocument} from './payment.ts'
 
 export interface PassDocument extends Document {
 	_id: Types.ObjectId;
@@ -17,6 +18,7 @@ export interface PassDocument extends Document {
 	};
 	time: Date;
 	charge: number;
+	payment?: PaymentDocument['_id']; 
 };
 
 const passSchema = new Schema<PassDocument>({
@@ -33,6 +35,13 @@ const passSchema = new Schema<PassDocument>({
 		...require(Number),
 		validate: [range('Charge', 0), precision('Charge', 2)],
 	},
+	payment: {
+		type: idtype(Payment),
+		ref:'Payment'
+	},
 });
+
+passSchema.index({tag:1, toll:1, time: 1}, {unique: true});
+
 
 export default model<PassDocument>('Pass', passSchema, 'pass');
