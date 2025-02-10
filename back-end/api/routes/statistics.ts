@@ -213,7 +213,7 @@ export default function (oapi: Middleware): Router {
 					{
 						$match: {
 							'toll.tollOperator': op_id,
-							date: { $gte: date_from, $lte: date_to },
+							time: { $gte: date_from, $lte: date_to },
 						}
 					},
 					groupByDateOperator('tag'),
@@ -259,7 +259,7 @@ export default function (oapi: Middleware): Router {
 					{
 						$match: {
 							'tag.tollOperator': op_id,
-							date: { $gte: date_from, $lte: date_to },
+							time: { $gte: date_from, $lte: date_to },
 						}
 					},
 					groupByDateOperator('toll'),
@@ -303,7 +303,7 @@ export default function (oapi: Middleware): Router {
 					{
 						$match: {
 							'toll.tollOperator': op_id,
-							date: { $gte: date_from, $lte: date_to },
+							time: { $gte: date_from, $lte: date_to },
 						}
 					},
 					groupByOperator('tag'),
@@ -344,7 +344,7 @@ export default function (oapi: Middleware): Router {
 					{
 						$match: {
 							'tag.tollOperator': op_id,
-							date: { $gte: date_from, $lte: date_to },
+							time: { $gte: date_from, $lte: date_to },
 						}
 					},
 					groupByOperator('toll'),
