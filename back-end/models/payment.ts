@@ -13,8 +13,8 @@ export interface PaymentDocument extends Document {
 	_id: Types.ObjectId;
 	payer?: TollOperatorDocument['_id'];
 	payee?: TollOperatorDocument['_id'];
-	dateofCharge: Date;
 	amount: number;
+	dateofCharge: Date;
 	dateofPayment: Date;
 	dateofValidation: Date;
 	status: PaymentStatus;
