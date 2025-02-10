@@ -58,7 +58,7 @@ export default function (oapi: Middleware): Router {
 				return die(res, ErrorType.BadRequest, query);
 			}
 
-			const status: PaymentStatus = req.params.status;
+			const status: PaymentStatus = parseInt(req.params.status);
 			const date_from: Date = get_date(req.params.date_from);
 			const date_to: Date = get_date(req.params.date_to);
 			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
