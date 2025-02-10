@@ -19,61 +19,74 @@ async function insertPaymentConnect({
     dateofPayment,
     dateofValidation
 }: {
-    payer: string;
-    payee: string;
-    dateofCharge: Date;
-    amount: number;
-    dateofPayment?: Date; // Optional
-    dateofValidation?: Date; // Optional
+	payer: string;
+	payee: string;
+	dateofCharge: Date;
+	amount: number;
+	dateofPayment?: Date; // Optional
+	dateofValidation?: Date; // Optional
 }) {
-    try {
-        // Connect to MongoDB
-        await connect('mongodb://localhost:27017');
-        console.log('Connected to MongoDB');
+	try {
+		// Connect to MongoDB
+		await connect('mongodb://localhost:27017');
+		console.log('Connected to MongoDB');
 
-        // Prepare and insert payment data
-        const paymentData: { 
-            payer: string; 
-            payee: string; 
-            dateofCharge: Date; 
-            amount: number; 
-            dateofPayment?: Date; 
-            dateofValidation?: Date; 
-        } = {
-            payer,
-            payee,
-            dateofCharge,
-            amount,
-            dateofPayment,
-            dateofValidation
-        };
+		// Prepare and insert payment data
+		const paymentData: {
+			payer: string;
+			payee: string;
+			dateofCharge: Date;
+			amount: number;
+			dateofPayment?: Date;
+			dateofValidation?: Date;
+		} = {
+			payer,
+			payee,
+			dateofCharge,
+			amount,
+			dateofPayment,
+			dateofValidation,
+		};
 
-        const payment = new Payment(paymentData);
-        const newPayment = await payment.save();
-        console.log('Inserted Payment:', newPayment);
-    } catch (dbError: unknown) {
-        if (dbError instanceof Error) {
-            if (dbError.message.includes('ECONNREFUSED')) {
-                console.error('Database connection failed:', dbError.message);
-            } else {
-                console.error('Failed to insert Payment:', dbError.message);
-            }
-        } else {
-            console.error('Unknown error occurred during database operation.');
-        }
-        throw(dbError);
-    } finally {
-        try {
-            await disconnect();
-            console.log('Disconnected from MongoDB');
-        } catch (disconnectError: unknown) {
-            if (disconnectError instanceof Error) {
-                console.error('Error disconnecting from MongoDB:', disconnectError.message);
-            } else {
-                console.error('Unknown error occurred during disconnection.');
-            }
-        }
-    }
+		const payment = new Payment(paymentData);
+		const newPayment = await payment.save();
+		console.log('Inserted Payment:', newPayment);
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			if (dbError.message.includes('ECONNREFUSED')) {
+				console.error(
+					'Database connection failed:',
+					dbError.message,
+				);
+			} else {
+				console.error(
+					'Failed to insert Payment:',
+					dbError.message,
+				);
+			}
+		} else {
+			console.error(
+				'Unknown error occurred during database operation.',
+			);
+		}
+		throw dbError;
+	} finally {
+		try {
+			await disconnect();
+			console.log('Disconnected from MongoDB');
+		} catch (disconnectError: unknown) {
+			if (disconnectError instanceof Error) {
+				console.error(
+					'Error disconnecting from MongoDB:',
+					disconnectError.message,
+				);
+			} else {
+				console.error(
+					'Unknown error occurred during disconnection.',
+				);
+			}
+		}
+	}
 }
 
 /**

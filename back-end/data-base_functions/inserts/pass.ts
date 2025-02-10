@@ -1,9 +1,14 @@
 import Pass from '../../models/pass.ts';
 import Tag from '../../models/tag.ts';
 import Toll from '../../models/toll.ts';
+<<<<<<< HEAD
 import { insertTag } from './tag.ts';
 import { ClientSession, connect, disconnect } from 'npm:mongoose';
 import { MongoError } from 'npm:mongodb';
+=======
+import { insert_tag } from './tag.ts';
+import { connect, disconnect } from 'npm:mongoose';
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 
 /**
  * Inserts a new toll operator into the database - connects and disconnects to db.
@@ -13,7 +18,11 @@ import { MongoError } from 'npm:mongodb';
  * @param {number} charge - The amount that was charged on the Tag
  * @param {string} tagOperator - Optional Parameter to allow adding the tag if not previously inserted
  */
+<<<<<<< HEAD
 async function insertPassConnect({
+=======
+async function insert_pass_connect({
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 	tag,
 	toll,
 	time,
@@ -36,8 +45,18 @@ async function insertPassConnect({
 				// Find the Tag by its custom string ID (tagId)
 				const test_tag = await Tag.findById(tag);
 				if (!test_tag) {
+<<<<<<< HEAD
 					console.log('Tag not found, inserting new Tag...');
 					await insertTag({ _id: tag, tollOperator: tagOperator }); // Insert the tag if not found
+=======
+					console.log(
+						'Tag not found, inserting new Tag...',
+					);
+					await insert_tag({
+						_id: tag,
+						tollOperator: tagOperator,
+					}); // Insert the tag if not found
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 				}
 			} catch (error) {
 				console.error('Error checking for Tag:', error);
@@ -54,6 +73,7 @@ async function insertPassConnect({
 
 		// Insert pass into the database
 		const pass = new Pass(passData);
+<<<<<<< HEAD
 		try {
 			const newPass = await pass.save();
 			console.log('Inserted Pass:', newPass);
@@ -68,16 +88,37 @@ async function insertPassConnect({
 			}
 			throw (new Error('Duplicate pass'));
 		}
+=======
+		const newPass = await pass.save();
+		console.log('Inserted Pass:', newPass);
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
 			// Type narrowing to handle 'unknown' error type
 			if (dbError.message.includes('ECONNREFUSED')) {
+<<<<<<< HEAD
 				console.error('Database connection failed:', dbError.message);
 			} else {
 				console.error('Failed to insert Pass:', dbError.message);
 			}
 		} else {
 			console.error('Unknown error occurred during database operation.');
+=======
+				console.error(
+					'Database connection failed:',
+					dbError.message,
+				);
+			} else {
+				console.error(
+					'Failed to insert Pass:',
+					dbError.message,
+				);
+			}
+		} else {
+			console.error(
+				'Unknown error occurred during database operation.',
+			);
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 		}
 		throw dbError;
 	} finally {
@@ -92,7 +133,13 @@ async function insertPassConnect({
 					disconnectError.message,
 				);
 			} else {
+<<<<<<< HEAD
 				console.error('Unknown error occurred during disconnection.');
+=======
+				console.error(
+					'Unknown error occurred during disconnection.',
+				);
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 			}
 		}
 	}
@@ -106,7 +153,11 @@ async function insertPassConnect({
  * @param {number} charge - The amount that was charged on the Tag
  * @param {string} tagOperator - Optional Parameter to allow adding the tag if not previously inserted
  */
+<<<<<<< HEAD
 async function insertPass({
+=======
+async function insert_pass({
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 	tag,
 	toll,
 	time,

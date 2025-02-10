@@ -1,7 +1,7 @@
 {
 	"tasks": {
 		"start": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file         main.ts",
-		"dev": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file --watch main.ts",
+		"dev": "deno run  --allow-sys --allow-env --allow-read --allow-write --allow-net --env-file --watch main.ts",
 		"db-create": "docker pull mongodb/mongodb-community-server:latest && docker run --name softeng-mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest",
 		"db": "docker start softeng-mongodb",
 		"db-stop": "docker stop softeng-mongodb",

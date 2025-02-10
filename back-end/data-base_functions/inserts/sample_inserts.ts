@@ -6,6 +6,7 @@ import { insertTagConnect } from './tag.ts';
 import { insertPassConnect } from './pass.ts';
 
 //Sample Usage
+/*
 insertTollOperatorConnect({
 	_id: 'operator123',
 	name: 'Operator One',
@@ -16,7 +17,7 @@ insertTollOperatorConnect({
 	addressNumber: 123,
 	addressArea: 'Central Area',
 	addressZip: 12345,
-});
+});*/
 
 // Sample Usage
 insertPaymentConnect({

@@ -1,12 +1,35 @@
-import { model, Schema } from 'npm:mongoose';
+import { model, Schema, Document } from 'npm:mongoose';
 import { precision, range, require, trim, unique } from './util.ts';
 
 const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-const tollOperatorSchema = new Schema({
-	_id: unique(trim(require(String))),
-	name: trim(require(String)), // TODO: Why unique?
+export enum UserLevel {
+	Anonymous = 0,
+	Operator = 1,
+	Admin = 2,
+}
+
+export interface TollOperatorDocument extends Document {
+	_id: string;
+	name: string;
+	passwordHash: string;
+	email: string;
+	VAT: string;
+	addressStreet: string;
+	addressNumber: number;
+	addressArea: string;
+	addressZip: number;
+	address: string;
+};
+
+const tollOperatorSchema = new Schema<TollOperatorDocument>({
+	_id: unique(trim(require(String))), // username
+	name: trim(require(String)),
 	passwordHash: require(String),
+	userLevel: {
+		type: Number,
+		enum: UserLevel
+	}, 
 	email: {
 		...trim(require(String)),
 		validate: {
@@ -37,4 +60,4 @@ tollOperatorSchema.virtual('address').get(function (): string {
 	return `${this.addressStreet} ${this.addressNumber}, ${this.addressArea} ${this.addressZip}`;
 });
 
-export default model('Toll Operator', tollOperatorSchema, 'tollOperator');
+export default model<TollOperatorDocument>('Toll Operator', tollOperatorSchema, 'tollOperator');

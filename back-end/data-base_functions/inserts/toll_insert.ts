@@ -13,7 +13,9 @@ async function insertTollsFromCSV(path:string,) {
             skipEmptyLines: true
         }).data; 
 
-        console.log(`Found ${tollStations.length} toll stations to insert`);
+		console.log(
+			`Found ${tollStations.length} toll stations to insert`,
+		);
 
         for (const station of tollStations) {
             try {

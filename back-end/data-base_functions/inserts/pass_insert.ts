@@ -320,7 +320,10 @@ async function insertPassesFromCSVConnection(path: string) {
 			}
 		}
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 }
 
 // Execute the insertion

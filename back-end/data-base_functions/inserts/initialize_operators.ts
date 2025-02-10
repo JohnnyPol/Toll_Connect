@@ -139,21 +139,28 @@ async function insertTollOperatorsConnect() {
 
     await insertTollOperators();
 
-    try {
-        await disconnect();
-        console.log('Disconnected from MongoDB');
-    } catch (disconnectError: unknown) {
-        if (disconnectError instanceof Error) {
-            console.error('Error disconnecting from MongoDB:', disconnectError.message);
-        } else {
-            console.error('Unknown error occurred during disconnection.');
-        }
-    }
+	try {
+		await disconnect();
+		console.log('Disconnected from MongoDB');
+	} catch (disconnectError: unknown) {
+		if (disconnectError instanceof Error) {
+			console.error(
+				'Error disconnecting from MongoDB:',
+				disconnectError.message,
+			);
+		} else {
+			console.error(
+				'Unknown error occurred during disconnection.',
+			);
+		}
+	}
 }
 
 
 // Execute the insertion
-if(import.meta.main) {
-    console.log('Starting toll stations import...');
-    await insertTollOperatorsConnect();
+if (import.meta.main) {
+	console.log('Starting toll stations import...');
+	await insertTollOperators();
 }
+
+export { insertTollOperators };
