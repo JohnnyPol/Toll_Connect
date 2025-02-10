@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
 export enum UserLevel {
-	Anonymous,
-	Operator,
-	Admin,
+	Anonymous = 0,
+	Operator = 1,
+	Admin = 2,
 }
 
 export type Token = {
@@ -25,7 +25,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<'form'>) {
 	const navigate = useNavigate();
 	const [errors, setErrors] = useState<{
-		email?: string;
+		username?: string;
 		password?: string;
 		general?: string;
 	}>({}); // State for error messages
@@ -34,7 +34,8 @@ export function LoginForm({
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const form = event.target as HTMLFormElement;
-		const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+		const username = (form.elements.namedItem('username') as HTMLInputElement)
+			.value;
 		const password = (form.elements.namedItem('password') as HTMLInputElement)
 			.value;
 
@@ -46,14 +47,14 @@ export function LoginForm({
 			const passwordHash = await hashPassword(password);
 
 			// Make a POST request to the /login API
-			const response = await fetch('http://localhost:9115/login', {
+			const response = await fetch('http://localhost:9115/api/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-					'X-OBSERVATORY-AUTH': 'true',
+					// 'X-OBSERVATORY-AUTH': 'true',
 				},
 				body: new URLSearchParams({
-					username: email,
+					username: username,
 					password: passwordHash,
 				}).toString(),
 			});
@@ -81,7 +82,7 @@ export function LoginForm({
 			}
 		} catch (error) {
 			setErrors({
-				general: error instanceof Error ? error.message : 'An error occured.',
+				general: error instanceof Error ? error.message : 'An error occurred.',
 			});
 		}
 	};
@@ -105,24 +106,24 @@ export function LoginForm({
 			<div className='flex flex-col items-center gap-2 text-center'>
 				<h1 className='text-2xl font-bold'>Login to your account</h1>
 				<p className='text-balance text-sm text-muted-foreground'>
-					Enter your company credentials below to login to your account
+					Enter your credentials below to login to your account
 				</p>
 			</div>
-			{/* Error message for emails*/}
-			{errors.email && (
-				<div className='text-red-500 text-sm'>{errors.email}</div>
+			{/* Error message for username */}
+			{errors.username && (
+				<div className='text-red-500 text-sm'>{errors.username}</div>
 			)}
 			<div className='grid gap-6'>
 				<div className='grid gap-2'>
-					<Label htmlFor='email' className='text-left'>
-						Email
+					<Label htmlFor='username' className='text-left'>
+						Username
 					</Label>
 					<Input
-						id='email'
-						type='email'
-						placeholder='m@example.com'
+						id='username'
+						type='text'
+						placeholder='Enter your username'
 						required
-						className={errors.email ? 'border-red-500' : ''}
+						className={errors.username ? 'border-red-500' : ''}
 					/>
 				</div>
 				<div className='grid gap-2'>
@@ -135,7 +136,7 @@ export function LoginForm({
 						required
 						className={errors.password ? 'border-red-500' : ''}
 					/>
-					{/* Error Message for Password Field*/}
+					{/* Error Message for Password Field */}
 					{errors.password && (
 						<div className='text-red-500 text-sm'>{errors.password}</div>
 					)}

@@ -8,7 +8,7 @@ import {
 import { Types } from 'npm:mongoose';
 import { assert } from '@std/assert';
 
-import TollOperator from '../models/toll_operator.ts';
+import TollOperator, { UserLevel } from '../models/toll_operator.ts';
 
 if (!Deno.env.has('JWT_ENCODE')) {
 	console.error(
@@ -23,12 +23,6 @@ const key: CryptoKey = await crypto.subtle.generateKey(
 	['sign', 'verify'],
 );
 const header: Header = { alg: 'HS512', type: 'JWT' };
-
-export enum UserLevel {
-	Anonymous,
-	Operator,
-	Admin,
-}
 
 export type Token = {
 	level: UserLevel;
