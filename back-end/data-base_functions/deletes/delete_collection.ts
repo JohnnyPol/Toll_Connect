@@ -8,7 +8,7 @@ async function deleteCollection(collection: string) {
 
     const col = await mongoose.connection.collection(collection);
     if(col) {
-        await col.drop();
+        await col.deleteMany({});
         console.log(`Deleted all documents from collection: ${mongoose.connection.collection(collection).collectionName}`);
     }
     
