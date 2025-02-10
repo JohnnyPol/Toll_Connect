@@ -1,3 +1,4 @@
+import { MongoError } from 'mongodb';
 import { UserLevel } from '../../models/toll_operator.ts';
 import { insertTollOperator } from './tollOperator.ts';
 import { connect, disconnect } from 'npm:mongoose';
@@ -133,6 +134,9 @@ async function insertTollOperators() {
             console.log(`Successfully inserted toll operator: ${TollOperator}`);
         } catch (error) {
             console.error(`Failed to insert toll operator ${TollOperator}:`, error);
+            if(!(error instanceof MongoError && error.code === 11000)) {
+                throw(error);
+            }
         }
     }
 

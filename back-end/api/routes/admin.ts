@@ -7,9 +7,10 @@ import mongoose from "npm:mongoose";
 import multer,{ FileFilterCallback } from 'npm:multer';
 import { deleteCollection } from '../../data-base_functions/deletes/delete_collection.ts';
 import toll_operator from '../../models/toll_operator.ts';
+import { insertTollOperators } from '../../data-base_functions/inserts/initialize_operators.ts';
 
 
-import * as fs from 'node:fs/promises';
+//import * as fs from 'node:fs/promises';
 
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -183,6 +184,8 @@ export default function (oapi: Middleware): Router {
         await deleteCollection("payment");
         await deleteCollection("pass");
         await  deleteCollection("toll"); 
+        
+        await insertTollOperators();
 
 			// Step 2: Construct the correct path to the CSV file
 			const currentFilePath = fromFileUrl(import.meta.url);
@@ -243,12 +246,14 @@ router.post('/resetpasses',
         // Get database connection
         //const db = client.db();
     
-        if (mongoose.connection.readyState !== 1)
-            throw(new Error("no connected to db"));
+            if (mongoose.connection.readyState !== 1)
+                throw(new Error("no connected to db"));
 
             await deleteCollection("payment");
             await deleteCollection("pass");
             await deleteCollection("tag");
+
+            await insertTollOperators();
 
             const testPassword = "freepasses4all";
 
