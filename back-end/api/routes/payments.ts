@@ -104,12 +104,56 @@ export default function (oapi: Middleware): Router {
 
 	router.put(
 		'/pay/:id',
-		(req: Request, res: Response) => {},
+		async (req: Request, res: Response) => {
+			const id: PaymentDocument['_id'] = req.params.id;
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
+
+			try {
+				const payment = await Payments.findById(id);
+				if (payment == null)
+					return die(res, ErrorType.BadRequest, 'Invalid payment id');
+				if (payment.payee !== user)
+					return die(res, ErrorType.BadRequest, 'You cannot pay this payment');
+
+				payment.dateofPayment = new Date();
+				const resp = await payment.save();
+
+				if (resp !== payment)
+					die(res, ErrorType.Internal, 'Internal db error');
+				else
+					res.status(200).json({ status: 'ok', info: 'ok' });
+			} catch (err) {
+				console.error('Error at /pay:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
 	);
 
 	router.put(
 		'/validate/:id',
-		(req: Request, res: Response) => {},
+		async (req: Request, res: Response) => {
+			const id: PaymentDocument['_id'] = req.params.id;
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
+
+			try {
+				const payment = await Payments.findById(id);
+				if (payment == null)
+					return die(res, ErrorType.BadRequest, 'Invalid payment id');
+				if (payment.payer !== user)
+					return die(res, ErrorType.BadRequest, 'You cannot validate this payment');
+
+				payment.dateofValidation = new Date();
+				const resp = await payment.save();
+
+				if (resp !== payment)
+					die(res, ErrorType.Internal, 'Internal db error');
+				else
+					res.status(200).json({ status: 'ok', info: 'ok' });
+			} catch (err) {
+				console.error('Error at /pay:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
 	);
 
 	return router;
