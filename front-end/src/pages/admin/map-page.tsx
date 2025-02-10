@@ -54,6 +54,8 @@ export default function AdminMapPage() {
 						<MapOperatorMarkers
 							key={id}
 							id={id}
+							startDate={filterFormValues.startDate}
+							endDate={filterFormValues.endDate}
 						/>
 					))}
 

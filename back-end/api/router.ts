@@ -17,9 +17,6 @@ import road          from './routes/db/road.ts';
 import tag           from './routes/db/tag.ts';
 import toll_operators from './routes/db/toll_operators.ts';
 
-
-import payments from './routes/payments.ts';
-
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
