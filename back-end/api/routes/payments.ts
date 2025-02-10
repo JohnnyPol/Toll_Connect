@@ -95,10 +95,13 @@ export default function (oapi: Middleware): Router {
 				},
 				{ $sort: { dateOfCharge: -1 } },
 				{ $skip: page_size * (page_number - 1) },
-				{ $limit: page_number },
+				{ $limit: page_size },
 			]);
 
-			res.status(200).json(payments);
+			res.status(200).json({
+				total_pages: Math.ceil(payments.length / page_size),
+				results: payments,
+			});
 		},
 	);
 
