@@ -73,7 +73,7 @@ export default function (oapi: Middleware): Router {
 
 			const payments = await Payments.aggregate([
 				{
-					$match: is_payer
+					$match: is_payer === true
 						? {
 							payer: user,
 							...(target_op_id ? { payee: target_op_id } : {}),
@@ -83,15 +83,24 @@ export default function (oapi: Middleware): Router {
 								$lte: date_to,
 							},
 						}
-							: {
-								payee: user,
-								...(target_op_id ? { payer: target_op_id } : {}),
-								status,
-								dateofCharge: {
-									$gte: date_from,
-									$lte: date_to,
-								},
+						: is_payer === undefined
+						? {
+							payee: user,
+							...(target_op_id ? { payer: target_op_id } : {}),
+							status,
+							dateofCharge: {
+								$gte: date_from,
+								$lte: date_to,
 							},
+						}
+						: {
+							...(target_op_id ? { payer: target_op_id } : {}),
+							status,
+							dateofCharge: {
+								$gte: date_from,
+								$lte: date_to,
+							},
+						}
 				},
 				{ $sort: { dateOfCharge: -1 } },
 				{ $skip: page_size * (page_number - 1) },
