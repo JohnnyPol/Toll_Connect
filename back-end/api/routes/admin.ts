@@ -9,9 +9,8 @@ import { deleteCollection } from '../../data-base_functions/deletes/delete_colle
 import toll_operator from '../../models/toll_operator.ts';
 import { insertTollOperators } from '../../data-base_functions/inserts/initialize_operators.ts';
 
-
-//import * as fs from 'node:fs/promises';
-
+import Pass from '@/models/pass.ts';
+import { die, ErrorType, get_date } from '@/api/util.ts';
 
 const hashPassword = async (password: string): Promise<string> => {
     try {
@@ -38,6 +37,27 @@ const upload = multer({
         cb(null, true);
     }
 });
+
+const groupByOperatorPair = () => [
+	{
+		$group: {
+			_id: {
+				toll: '$toll.tollOperator',
+				tag: '$tag.tollOperator',
+			},
+			passes: { $sum: 1 },
+			cost: { $sum: '$charge' },
+		}
+	}, {
+		$project: {
+			tollOperator: '$_id.toll',
+			tagOperator: '$_id.tag',
+			passes: '$passes',
+			cost: '$cost',
+			_id: 0,
+		}
+	}
+];
 
 
 import { parse } from 'npm:csv-parse/sync';
@@ -358,6 +378,43 @@ router.post('/resetpasses',
 				});
 			}
 		},
+	);
+
+	router.get(
+		'/allpasses/:date_from/:date_to',
+		/**
+		 * Returns all aggregated pass data in range between all pair of operators
+		 * in both directions.
+		 *
+		 * Return: {
+		 * 		tollOperator: string,
+		 * 		tagOperator: string,
+		 * 		passes: number,
+		 * 		cost: number
+		 * }[]
+		 *
+		 * Notes:
+		 *  - Only allowed on admin
+		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to   = get_date(req.params.date_to);
+
+			if (false /* TODO: not logged in as admin && */)
+				return die(res, ErrorType.BadRequest, 'only admin allowed');
+
+			try {
+				const response = await Pass.aggregate([
+					{ $match: { time: { $gte: date_from, $lte: date_to } } },
+					...groupByOperatorPair()
+				]);
+
+				res.status(200).json(response);
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		}
 	);
 
 	return router;

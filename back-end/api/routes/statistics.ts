@@ -16,26 +16,6 @@ const groupByOperator = (field: string) => ({
 	}
 });
 
-const groupByOperatorPair = () => [
-	{
-		$group: {
-			_id: {
-				toll: '$toll.tollOperator',
-				tag: '$tag.tollOperator',
-			},
-			passes: { $sum: 1 },
-			cost: { $sum: '$charge' },
-		}
-	}, {
-		$project: {
-			tollOperator: '$_id.toll',
-			tagOperator: '$_id.tag',
-			passes: '$passes',
-			cost: '$cost',
-		}
-	}
-];
-
 const groupByDateOperator = (field: string) => ({
 	$group: {
 		_id: {
@@ -349,43 +329,6 @@ export default function (oapi: Middleware): Router {
 					},
 					groupByOperator('toll'),
 					{ $sort: { '_id': 1 } }
-				]);
-
-				res.status(200).json(response);
-			} catch (err) {
-				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
-			}
-		}
-	);
-
-	router.get(
-		'/allPasses/:date_from/:date_to',
-		/**
-		 * Returns all aggregated pass data in range between all pair of operators
-		 * in both directions.
-		 *
-		 * Return: { 
-		 * 		tollOperator: string, 
-		 * 		tagOperator: string, 
-		 * 		passes: number, 
-		 * 		cost: number 
-		 * }[]
-		 *
-		 * Notes:
-		 *  - Only allowed on admin
-		 */
-		async (req: Request, res: Response) => {
-			const date_from = get_date(req.params.date_from);
-			const date_to   = get_date(req.params.date_to);
-
-			if (true /* TODO: not logged in as admin && */)
-				return die(res, ErrorType.BadRequest, 'only admin allowed');
-
-			try {
-				const response = await Pass.aggregate([
-					{ $match: { date: { $gte: date_from, $lte: date_to } } },
-					...groupByOperatorPair()
 				]);
 
 				res.status(200).json(response);
