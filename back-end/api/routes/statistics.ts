@@ -8,6 +8,34 @@ import Pass from '@/models/pass.ts';
 import Tag from '@/models/tag.ts';
 import moment from 'npm:moment';
 
+const groupByOperator = (field: string) => ({
+	$group: {
+		_id: '$' + field + '.tollOperator',
+		passes: { $sum: 1 },
+		cost: { $sum: '$charge' },
+	}
+});
+
+const groupByOperatorPair = () => [
+	{
+		$group: {
+			_id: {
+				toll: '$toll.tollOperator',
+				tag: '$tag.tollOperator',
+			},
+			passes: { $sum: 1 },
+			cost: { $sum: '$charge' },
+		}
+	}, {
+		$project: {
+			tollOperator: '$_id.toll',
+			tagOperator: '$_id.tag',
+			passes: '$passes',
+			cost: '$cost',
+		}
+	}
+];
+
 const groupByDateOperator = (field: string) => ({
 	$group: {
 		_id: {
@@ -55,7 +83,7 @@ export default function (oapi: Middleware): Router {
 
 				let i = 0;
 				tolls.forEach((toll) => {
-					const { _id, lratitude, longitude } = toll;
+					const { _id, latitude, longitude } = toll;
 					let len = resp.push({ latitude, longitude, count: 0 });
 					for (
 						;
@@ -252,6 +280,27 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to   = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined = req.query.as_operator;
+
+			if (/* TODO: logged in as admin && */ op_id === undefined)
+				return die(res, ErrorType.BadRequest, 'as_operator required');
+
+			try {
+				const response = await Pass.aggregate([
+					{ $match: { 'toll.tollOperator': op_id } },
+					groupByOperator('tag'),
+					{ $sort: { '_id': 1 } }
+				]);
+
+				res.status(200).json(response);
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		}
 	);
 
 	router.get(
@@ -267,6 +316,27 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to   = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined = req.query.as_operator;
+
+			if (/* TODO: logged in as admin && */ op_id === undefined)
+				return die(res, ErrorType.BadRequest, 'as_operator required');
+
+			try {
+				const response = await Pass.aggregate([
+					{ $match: { 'tag.tollOperator': op_id } },
+					groupByOperator('toll'),
+					{ $sort: { '_id': 1 } }
+				]);
+
+				res.status(200).json(response);
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		}
 	);
 
 	router.get(
@@ -276,8 +346,8 @@ export default function (oapi: Middleware): Router {
 		 * in both directions.
 		 *
 		 * Return: { 
-		 * 		stationOperatorId: string, 
-		 * 		tagOperatorId: string, 
+		 * 		tollOperator: string, 
+		 * 		tagOperator: string, 
 		 * 		passes: number, 
 		 * 		cost: number 
 		 * }[]
@@ -285,6 +355,24 @@ export default function (oapi: Middleware): Router {
 		 * Notes:
 		 *  - Only allowed on admin
 		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to   = get_date(req.params.date_to);
+
+			if (true /* TODO: not logged in as admin && */)
+				return die(res, ErrorType.BadRequest, 'only admin allowed');
+
+			try {
+				const response = await Pass.aggregate([
+					...groupByOperatorPair()
+				]);
+
+				res.status(200).json(response);
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		}
 	);
 
 	return router;
