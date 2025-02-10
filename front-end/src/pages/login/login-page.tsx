@@ -26,12 +26,8 @@ export default function LoginPage() {
 						// Token is expired, remove it
 						localStorage.removeItem('authToken');
 					} else {
-						// Redirect based on user level
-						if (decodedToken.level === UserLevel.Operator) {
-							navigate('/company/dashboard');
-						} else if (decodedToken.level === UserLevel.Admin) {
-							navigate('/admin/dashboard');
-						}
+						// TODO: 1. verify token
+						// if response 200 then go to the relative route /company and /admin dashboard correspondingly
 					}
 				}
 			} catch (error) {

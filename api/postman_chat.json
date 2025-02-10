@@ -1,0 +1,157 @@
+{
+	"info": {
+		"name": "Toll Connect API",
+		"description": "This is the Postman collection for the Toll Connect REST API, which facilitates toll interoperability across multiple operators. All endpoints require authentication via JWT tokens obtained from the login endpoint.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": "Logs in a user and returns a JWT token to be used in subsequent requests."
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}"
+							}
+						],
+						"url": "https://{{host}}:9115/api/logout"
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"url": "https://{{host}}:9115/api/admin/healthcheck"
+					}
+				},
+				{
+					"name": "Reset Stations",
+					"request": {
+						"method": "POST",
+						"url": "https://{{host}}:9115/api/admin/resetstations"
+					}
+				},
+				{
+					"name": "Reset Passes",
+					"request": {
+						"method": "POST",
+						"url": "https://{{host}}:9115/api/admin/resetpasses"
+					}
+				}
+			]
+		},
+		{
+			"name": "Toll Station Passes",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "https://{{host}}:9115/api/tollStationPasses/{{stationID}}/{{date_from}}/{{date_to}}?format={{format}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"tollStationPasses",
+						"{{stationID}}",
+						"{{date_from}}",
+						"{{date_to}}"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json",
+							"disabled": false
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Pass Analysis",
+			"request": {
+				"method": "GET",
+				"url": "https://{{host}}:9115/api/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}"
+			}
+		},
+		{
+			"name": "Passes Cost",
+			"request": {
+				"method": "GET",
+				"url": "https://{{host}}:9115/api/passesCost/{{tollOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}"
+			}
+		},
+		{
+			"name": "Charges By Operator",
+			"request": {
+				"method": "GET",
+				"url": "https://{{host}}:9115/api/chargesBy/{{tollOpID}}/{{date_from}}/{{date_to}}"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:9115/api"
+		},
+		{
+			"key": "jwt_token",
+			"value": ""
+		}
+	]
+}

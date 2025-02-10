@@ -34,10 +34,114 @@ const apiDoc = {
 		},
 		Error: {
 			type: 'object',
+			properties: {
+				status: { type: 'string' },
+				info: { type: 'string' },
+				dbconnection: { type: 'string' },
+			},
+			required: ['status'],
 			additionalProperties: true,
 		},
+		HealthcheckResponse: {
+			type: 'object',
+			properties: {
+				status: { type: 'string' },
+				dbconnection: { type: 'string' },
+				n_stations: { type: 'integer' },
+				n_tags: { type: 'integer' },
+				n_passes: { type: 'integer' }
+			}
+		},
+		AdminResponse: {
+			type: 'object',
+			properties: {
+				status: { type: 'string' }
+			}
+		},
+		AdminErrorResponse: {
+			type: 'object',
+			properties: {
+				status: { type: 'string' },
+				info: { type: 'string' }
+			}
+		}
 	},
-	paths: {},
+	paths: {
+		'/admin/healthcheck': {
+			get: {
+				tags: ['Admin'],
+				summary: 'Check system health',
+				responses: {
+					200: {
+						description: 'System healthy',
+						schema: { $ref: '#/definitions/HealthcheckResponse' }
+					},
+					401: {
+						description: 'System unhealthy',
+						schema: { $ref: '#/definitions/AdminErrorResponse' }
+					}
+				}
+			}
+		},
+		'/admin/resetstations': {
+			post: {
+				tags: ['Admin'],
+				summary: 'Reset stations data',
+				responses: {
+					200: {
+						description: 'Reset successful',
+						schema: { $ref: '#/definitions/AdminResponse' }
+					},
+					500: {
+						description: 'Reset failed',
+						schema: { $ref: '#/definitions/AdminErrorResponse' }
+					}
+				}
+			}
+		},
+		'/admin/resetpasses': {
+			post: {
+				tags: ['Admin'],
+				summary: 'Reset passes data',
+				responses: {
+					200: {
+						description: 'Reset successful',
+						schema: { $ref: '#/definitions/AdminResponse' }
+					},
+					500: {
+						description: 'Reset failed',
+						schema: { $ref: '#/definitions/AdminErrorResponse' }
+					}
+				}
+			}
+		},
+		'/admin/addpasses': {
+			post: {
+				tags: ['Admin'],
+				summary: 'Add passes from CSV',
+				consumes: ['multipart/form-data'],
+				parameters: [
+					{
+						name: 'file',
+						in: 'formData',
+						description: 'CSV file with passes data',
+						required: true,
+						type: 'file'
+					}
+				],
+				responses: {
+					200: {
+						description: 'Passes added successfully',
+						schema: { $ref: '#/definitions/AdminResponse' }
+					},
+					500: {
+						description: 'Operation failed',
+						schema: { $ref: '#/definitions/AdminErrorResponse' }
+					}
+				}
+			}
+		}
+	}
 };
 
 export default apiDoc;

@@ -1,11 +1,25 @@
 import { model, Schema } from 'npm:mongoose';
 import { idtype, precision, range, require, trim, unique } from './util.ts';
 
-import TollOperator from './toll_operator.ts';
-import Road from './road.ts';
-import Pass from './pass.ts';
+import { Document } from 'npm:mongoose';
 
-const tollSchema = new Schema({
+import TollOperator, { TollOperatorDocument } from './toll_operator.ts';
+import Road, { RoadDocument } from './road.ts';
+
+export interface TollDocument extends Document {
+	_id: string;
+	name: string;
+	latitude: number;
+	longitude: number;
+	locality: string;
+	price: number[];
+	PM: string;
+	tollOperator?: TollOperatorDocument['_id'];
+	road?: RoadDocument['_id'];
+	county: string;
+};
+
+const tollSchema = new Schema<TollDocument>({
 	_id: trim(unique(require(String))),
 	name: trim(require(String)),
 	latitude: { ...require(Number), validate: range('Latitude', -90, 90) },
@@ -39,4 +53,4 @@ tollSchema.virtual('county').get(function (): string {
 	return this.locality.split('-')[0];
 });
 
-export default model('Toll', tollSchema, 'toll');
+export default model<TollDocument>('Toll', tollSchema, 'toll');
