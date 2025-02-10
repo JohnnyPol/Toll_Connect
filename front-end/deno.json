@@ -28,6 +28,7 @@
 		"@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.1.1",
 		"@radix-ui/react-switch": "npm:@radix-ui/react-switch@^1.1.2",
 		"@radix-ui/react-tooltip": "npm:@radix-ui/react-tooltip@^1.1.6",
+		"@tanstack/react-query": "npm:@tanstack/react-query@^5.66.0",
 		"@types/node": "npm:@types/node@^22.10.2",
 		"@types/react": "npm:@types/react@^18.3.12",
 		"@types/react-dom": "npm:@types/react-dom@^18.3.1",

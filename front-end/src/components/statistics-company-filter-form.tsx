@@ -47,11 +47,11 @@ const formSchema = z.object({
 	}
 );
 
-export type StatisticsCompanyFilterFormValues = z.infer<typeof formSchema>;
+export type StatisticsFilterFormValues = z.infer<typeof formSchema>;
 
 interface StatisticsCompanyFilterFormProps {
-	defaultValues: StatisticsCompanyFilterFormValues;
-	onSubmit: (values: StatisticsCompanyFilterFormValues) => void;
+	defaultValues: StatisticsFilterFormValues;
+	onSubmit: (values: StatisticsFilterFormValues) => void;
 }
 
 export const StatisticsCompanyFilterForm: React.FC<StatisticsCompanyFilterFormProps> = ({

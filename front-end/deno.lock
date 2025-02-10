@@ -15,6 +15,7 @@
     "npm:@radix-ui/react-slot@^1.1.1": "1.1.1_@types+react@18.3.18_react@18.3.1",
     "npm:@radix-ui/react-switch@^1.1.2": "1.1.2_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@radix-ui/react-tooltip@^1.1.6": "1.1.6_@types+react@18.3.18_@types+react-dom@18.3.5__@types+react@18.3.18_react@18.3.1_react-dom@18.3.1__react@18.3.1",
+    "npm:@tanstack/react-query@^5.66.0": "5.66.0_react@18.3.1",
     "npm:@types/node@*": "22.5.4",
     "npm:@types/node@^22.10.2": "22.10.6",
     "npm:@types/react-dom@^18.3.1": "18.3.5_@types+react@18.3.18",
@@ -885,6 +886,16 @@
     },
     "@rollup/rollup-win32-x64-msvc@4.30.1": {
       "integrity": "sha512-D6qjsXGcvhTjv0kI4fU8tUuBDF/Ueee4SVX79VfNDXZa64TfCW1Slkb6Z7O1p7vflqZjcmOVdZlqf8gvJxc6og=="
+    },
+    "@tanstack/query-core@5.66.0": {
+      "integrity": "sha512-J+JeBtthiKxrpzUu7rfIPDzhscXF2p5zE/hVdrqkACBP8Yu0M96mwJ5m/8cPPYQE9aRNvXztXHlNwIh4FEeMZw=="
+    },
+    "@tanstack/react-query@5.66.0_react@18.3.1": {
+      "integrity": "sha512-z3sYixFQJe8hndFnXgWu7C79ctL+pI0KAelYyW+khaNJ1m22lWrhJU2QrsTcRKMuVPtoZvfBYrTStIdKo+x0Xw==",
+      "dependencies": [
+        "@tanstack/query-core",
+        "react"
+      ]
     },
     "@types/babel__core@7.20.5": {
       "integrity": "sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==",
@@ -2330,6 +2341,7 @@
       "npm:@radix-ui/react-slot@^1.1.1",
       "npm:@radix-ui/react-switch@^1.1.2",
       "npm:@radix-ui/react-tooltip@^1.1.6",
+      "npm:@tanstack/react-query@^5.66.0",
       "npm:@types/node@^22.10.2",
       "npm:@types/react-dom@^18.3.1",
       "npm:@types/react@^18.3.12",

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
@@ -17,24 +17,15 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart.tsx';
 import { useOperators } from '@/hooks/use-operators.ts';
-import { Operator } from '@/types/operators.ts';
+import { TimeseriesPassData } from '@/types/statistics.ts';
 
 export const description = 'An interactive bar chart';
 
 type Direction = 'incoming' | 'outgoing';
 
-interface TimeseriesData {
-	date: string;
-	operators: {
-		operator: Operator['_id'];
-		passes: number;
-		cost: number;
-	}[];
-}
-
 interface StatisticsTimeseriesChartProps {
-	incomingData: TimeseriesData[];
-	outgoingData: TimeseriesData[];
+	incomingData: TimeseriesPassData[];
+	outgoingData: TimeseriesPassData[];
 }
 
 const DEFAULT_COLORS = [
@@ -48,20 +39,23 @@ const DEFAULT_COLORS = [
 	'#f97316',
 ];
 
-export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> = ({
+export const StatisticsTimeseriesChart: React.FC<
+	StatisticsTimeseriesChartProps
+> = ({
 	incomingData,
 	outgoingData,
 }) => {
 	const [direction, setDirection] = useState<Direction>('incoming');
 
 	const { operators } = useOperators();
-	
+
 	const chartConfig = useMemo<ChartConfig>(() => {
 		const config: ChartConfig = {};
 		operators.forEach((operator, index) => {
 			config[operator._id] = {
 				label: operator.name.toLocaleUpperCase(),
-				color: operator?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+				color: operator?.chartColor ||
+					DEFAULT_COLORS[index % DEFAULT_COLORS.length],
 			};
 		});
 		return config;
@@ -88,36 +82,43 @@ export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> 
 		};
 	});
 
-	const outgoingChartData = outgoingData.map((item) => ({
-		date: item.date,
-		...item.operators.reduce(
+	const outgoingChartData = outgoingData.map((item) => {
+		const operatorData = item.operators.reduce(
 			(acc, curr) => ({
 				...acc,
 				[curr.operator]: curr.cost,
 			}),
-			{},
-		),
-	}));
+			{} as { [key: string]: number },
+		);
+
+		operators.forEach((operator) => {
+			if (!operatorData[operator._id]) {
+				operatorData[operator._id] = 0;
+			}
+		});
+
+		return {
+			date: item.date,
+			...operatorData,
+		};
+	});
 
 	const activeData = direction === 'incoming'
 		? incomingChartData
 		: outgoingChartData;
 
-	const total = useMemo(
-		() => ({
-			incoming: incomingData.reduce((acc, curr) => {
-				return acc + curr.operators.reduce((acc, curr) => {
-					return acc + curr.cost;
-				}, 0);
-			}, 0),
-			outgoing: outgoingData.reduce((acc, curr) => {
-				return acc + curr.operators.reduce((acc, curr) => {
-					return acc + curr.cost;
-				}, 0);
-			}, 0),
-		}),
-		[],
-	);
+	const total = {
+		incoming: incomingData.reduce((acc, curr) => {
+			return acc + curr.operators.reduce((acc, curr) => {
+				return acc + curr.cost;
+			}, 0);
+		}, 0),
+		outgoing: outgoingData.reduce((acc, curr) => {
+			return acc + curr.operators.reduce((acc, curr) => {
+				return acc + curr.cost;
+			}, 0);
+		}, 0),
+	};
 
 	return (
 		<Card>
@@ -217,4 +218,4 @@ export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> 
 			</CardContent>
 		</Card>
 	);
-}
+};

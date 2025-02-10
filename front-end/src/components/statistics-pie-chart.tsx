@@ -18,16 +18,12 @@ import {
 } from '@/components/ui/chart.tsx';
 import { Operator } from '@/types/operators.ts';
 import { useOperators } from '@/hooks/use-operators.ts';
-
-interface OperatorPassData {
-	operator: Operator['_id'];
-	passes: number;
-}
+import { AggregatePassData } from '@/types/statistics.ts';
 
 interface StatisticsPieChartProps {
 	title: string;
 	description: string;
-	data: OperatorPassData[];
+	data: AggregatePassData[];
 }
 
 const DEFAULT_COLORS = [
@@ -58,9 +54,9 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 	}, [operators]);
 
 	const chartData = data.map((item, index) => ({
-		operator: item.operator,
+		operator: item._id,
 		visitors: item.passes,
-		fill: operators.find((operator) => operator._id === item.operator)
+		fill: operators.find((operator) => operator._id === item._id)
 			?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
 	}));
 
