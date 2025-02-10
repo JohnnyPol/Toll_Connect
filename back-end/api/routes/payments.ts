@@ -33,6 +33,7 @@ function parse_query(query: object): PaymentsQuery | string {
 	const is_payer = ('is_payer' in query)
 		? <boolean> query.is_payer
 		: undefined;
+
 	return { page_size, page_number, target_op_id, is_payer };
 }
 
@@ -60,10 +61,9 @@ export default function (oapi: Middleware): Router {
 			const status: PaymentStatus = req.params.status;
 			const date_from: Date = get_date(req.params.date_from);
 			const date_to: Date = get_date(req.params.date_to);
-			const user: TollOperatorDocument['_id'] = /* TODO */ 'foo';
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
 			const { page_size, page_number, target_op_id, is_payer, } = query;
 
-			console.log(is_payer);
 			if (PaymentStatus[req.params.status] === undefined) {
 				return die(res, ErrorType.BadRequest, 'Invalid status');
 			}
@@ -71,30 +71,34 @@ export default function (oapi: Middleware): Router {
 				return die(res, ErrorType.BadRequest, 'is_payer required');
 			}
 
-			const payments = await Payments.find(
-				is_payer
-					? {
-						payer: user,
-						...(target_op_id ? { payee: target_op_id } : {}),
-						status,
-						dateofCharge: {
-							$gte: date_from,
-							$lte: date_to,
-						},
-					}
-					: {
-						payee: user,
-						...(target_op_id ? { payer: target_op_id } : {}),
-						status,
-						dateofCharge: {
-							$gte: date_from,
-							$lte: date_to,
-						},
-					},
-			);
+			const payments = await Payments.aggregate([
+				{
+					$match: is_payer
+						? {
+							payer: user,
+							...(target_op_id ? { payee: target_op_id } : {}),
+							status,
+							dateofCharge: {
+								$gte: date_from,
+								$lte: date_to,
+							},
+						}
+							: {
+								payee: user,
+								...(target_op_id ? { payer: target_op_id } : {}),
+								status,
+								dateofCharge: {
+									$gte: date_from,
+									$lte: date_to,
+								},
+							},
+				},
+				{ $sort: { dateOfCharge: -1 } },
+				{ $skip: page_size * (page_number - 1) },
+				{ $limit: page_number },
+			]);
 
 			res.status(200).json(payments);
-			/* TODO: paging missing */
 		},
 	);
 
