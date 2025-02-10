@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
 	Card,
@@ -11,6 +11,8 @@ import {
 import {
 	ChartConfig,
 	ChartContainer,
+	ChartLegend,
+	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart.tsx';
@@ -35,6 +37,17 @@ interface StatisticsTimeseriesChartProps {
 	outgoingData: TimeseriesData[];
 }
 
+const DEFAULT_COLORS = [
+	'#3b82f6',
+	'#22c55e',
+	'#0ea5e9',
+	'#ec4899',
+	'#a855f7',
+	'#ef4444',
+	'#eab308',
+	'#f97316',
+];
+
 export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> = ({
 	incomingData,
 	outgoingData,
@@ -45,10 +58,10 @@ export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> 
 	
 	const chartConfig = useMemo<ChartConfig>(() => {
 		const config: ChartConfig = {};
-		operators.forEach((operator, _) => {
+		operators.forEach((operator, index) => {
 			config[operator._id] = {
 				label: operator.name.toLocaleUpperCase(),
-				color: operator?.chartColor || '#3b82f6',
+				color: operator?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
 			};
 		});
 		return config;
@@ -60,7 +73,7 @@ export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> 
 				...acc,
 				[curr.operator]: curr.cost,
 			}),
-			{},
+			{} as { [key: string]: number },
 		);
 
 		operators.forEach((operator) => {
@@ -198,6 +211,7 @@ export const StatisticsTimeseriesChart:React.FC<StatisticsTimeseriesChartProps> 
 								fill={chartConfig[key].color}
 							/>
 						))}
+						<ChartLegend content={<ChartLegendContent />} />
 					</AreaChart>
 				</ChartContainer>
 			</CardContent>

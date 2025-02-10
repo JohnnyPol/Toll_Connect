@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { StatisticsTimeseriesChart } from '@/components/statistics-timeseries-chart.tsx';
 import { Toaster } from '@/components/ui/toast.tsx';
-import { OperatorProvider } from '@/context/operator-context.tsx';
 import {
 	StatisticsCompanyFilterForm,
 	StatisticsCompanyFilterFormValues,
 } from '@/components/statistics-company-filter-form.tsx';
-import { Component, StatisticsPieChart } from '@/components/statistics-pie.tsx';
+import { StatisticsTimeseriesChart } from '@/components/statistics-timeseries-chart.tsx';
+import { StatisticsPieChart } from '@/components/statistics-pie.tsx';
 
 export default function StatisticsPage() {
 	const [filterFormValues, setFilterFormValues] = useState<

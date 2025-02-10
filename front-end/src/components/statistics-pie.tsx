@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Cell, Label, Pie, PieChart } from 'recharts';
+import { Label, Pie, PieChart } from 'recharts';
 
 import {
 	Card,
