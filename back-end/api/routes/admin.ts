@@ -13,7 +13,7 @@ import { die, ErrorType, get_date } from '@/api/util.ts';
 
 import toll_operator from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
-import { ConnectionStates } from 'mongoose';
+import { ConnectionStates } from '@/api/util.ts';
 
 const hashPassword = async (password: string): Promise<string> => {
 	try {

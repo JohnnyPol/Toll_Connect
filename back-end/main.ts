@@ -8,10 +8,10 @@ import mongoose, { connect } from 'npm:mongoose';
 // SEE: https://docs.deno.com/examples/mongo/
 
 import { clearBlacklist } from './authentication/jwt.ts';
+import { ConnectionStates } from '@/api/util.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
 import cors from 'cors';
-import { ConnectionStates } from 'mongoose';
 
 async function check_connection(): Promise<void> {
 	if (mongoose.connection.readyState === ConnectionStates.connected) {
