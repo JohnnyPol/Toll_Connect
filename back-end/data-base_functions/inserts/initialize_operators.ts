@@ -1,4 +1,6 @@
-import { insert_toll_operator } from './tollOperator.ts';
+import { MongoError } from 'mongodb';
+import { UserLevel } from '../../models/toll_operator.ts';
+import { insertTollOperator } from './tollOperator.ts';
 import { connect, disconnect } from 'npm:mongoose';
 
 const list_of_operators = [
@@ -6,6 +8,7 @@ const list_of_operators = [
         _id: 'AM',
         name: 'aegeanmotorway',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -18,6 +21,7 @@ const list_of_operators = [
         _id: 'EG',
         name: 'egnatia',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -30,6 +34,7 @@ const list_of_operators = [
         _id: 'GE',
         name: 'gefyra',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -42,6 +47,7 @@ const list_of_operators = [
         _id: 'KO',
         name: 'kentrikiodos',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -54,6 +60,7 @@ const list_of_operators = [
         _id: 'MO',
         name: 'moreas',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -66,6 +73,7 @@ const list_of_operators = [
         _id: 'NAO',
         name: 'naodos',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -78,6 +86,7 @@ const list_of_operators = [
         _id: 'NO',
         name: 'neaodos',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -90,6 +99,7 @@ const list_of_operators = [
         _id: 'OO',
         name: 'olympiaodos',
         passwordHash: "123456789",
+        userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -99,9 +109,10 @@ const list_of_operators = [
         markerIcon: 'http://maps.google.com/mapfiles/kml/paddle/orange-circle.png'  
     },
     {
-        _id: 'Admin',
+        _id: 'admin',
         name: 'admin',
         passwordHash: "123456789",
+        userLevel: UserLevel.Admin,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -113,6 +124,7 @@ const list_of_operators = [
         _id: 'dummy@mail', // testing the login page 
         name: 'admin',
         passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+        userLevel: UserLevel.Admin,
         email: 'operator@example.com',
         VAT: 'VAT12345',
         addressStreet: 'Main Street',
@@ -134,6 +146,23 @@ const list_of_operators = [
 ];
 
 async function insertTollOperators() {
+    for (const TollOperator of list_of_operators) {
+        try {
+            await insertTollOperator(TollOperator);
+
+            console.log(`Successfully inserted toll operator: ${TollOperator}`);
+        } catch (error) {
+            console.error(`Failed to insert toll operator ${TollOperator}:`, error);
+            if(!(error instanceof MongoError && error.code === 11000)) {
+                throw(error);
+            }
+        }
+    }
+
+    console.log('Completed toll stations insertion');
+}
+
+async function insertTollOperatorsConnect() {
     try {
         await connect('mongodb://localhost:27017');
         console.log('OK connecting to db');
@@ -142,30 +171,30 @@ async function insertTollOperators() {
         Deno.exit(1);
     }
 
-    for (const TollOperator of list_of_operators) {
-        try {
-            await insert_toll_operator(TollOperator);
+    await insertTollOperators();
 
-            console.log(`Successfully inserted toll operator: ${TollOperator}`);
-        } catch (error) {
-            console.error(`Failed to insert toll station ${TollOperator}:`, error);
-        }
-    }
-
-    console.log('Completed toll stations insertion');
-
-    try {
-        await disconnect();
-        console.log('Disconnected from MongoDB');
-    } catch (disconnectError: unknown) {
-        if (disconnectError instanceof Error) {
-            console.error('Error disconnecting from MongoDB:', disconnectError.message);
-        } else {
-            console.error('Unknown error occurred during disconnection.');
-        }
-    }
+	try {
+		await disconnect();
+		console.log('Disconnected from MongoDB');
+	} catch (disconnectError: unknown) {
+		if (disconnectError instanceof Error) {
+			console.error(
+				'Error disconnecting from MongoDB:',
+				disconnectError.message,
+			);
+		} else {
+			console.error(
+				'Unknown error occurred during disconnection.',
+			);
+		}
+	}
 }
 
+
 // Execute the insertion
-console.log('Starting toll stations import...');
-await insertTollOperators();
+if (import.meta.main) {
+	console.log('Starting toll stations import...');
+	await insertTollOperatorsConnect();
+}
+
+export { insertTollOperators, insertTollOperatorsConnect };

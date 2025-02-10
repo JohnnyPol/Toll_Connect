@@ -6,70 +6,88 @@ import Road from '../../models/road.ts';
  * Inserts a new road into the database - connects and disconnects to db.
  * @param {string} name - The name of the road
  */
-async function insert_road_connect({
+async function insertRoadConnect({
     name
 }: {
-    name: string;
+	name: string;
 }) {
-    try {
-        // Connect to MongoDB
-        await connect('mongodb://localhost:27017');
-        console.log('Connected to MongoDB');
+	try {
+		// Connect to MongoDB
+		await connect('mongodb://localhost:27017');
+		console.log('Connected to MongoDB');
 
-        // Prepare and insert road data
-        const roadData = { name };
-        const road = new Road(roadData);
-        const newRoad = await road.save();
-        console.log('Inserted Road:', newRoad);
-    } catch (dbError: unknown) {
-        if (dbError instanceof Error) {
-            if (dbError.message.includes('ECONNREFUSED')) {
-                console.error('Database connection failed:', dbError.message);
-            } else {
-                console.error('Failed to insert Road:', dbError.message);
-            }
-        } else {
-            console.error('Unknown error occurred during database operation.');
-        }
-        throw(dbError);
-    } finally {
-        try {
-            await disconnect();
-            console.log('Disconnected from MongoDB');
-        } catch (disconnectError: unknown) {
-            if (disconnectError instanceof Error) {
-                console.error('Error disconnecting from MongoDB:', disconnectError.message);
-            } else {
-                console.error('Unknown error occurred during disconnection.');
-            }
-        }
-    }
+		// Prepare and insert road data
+		const roadData = { name };
+		const road = new Road(roadData);
+		const newRoad = await road.save();
+		console.log('Inserted Road:', newRoad);
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			if (dbError.message.includes('ECONNREFUSED')) {
+				console.error(
+					'Database connection failed:',
+					dbError.message,
+				);
+			} else {
+				console.error(
+					'Failed to insert Road:',
+					dbError.message,
+				);
+			}
+		} else {
+			console.error(
+				'Unknown error occurred during database operation.',
+			);
+		}
+		throw dbError;
+	} finally {
+		try {
+			await disconnect();
+			console.log('Disconnected from MongoDB');
+		} catch (disconnectError: unknown) {
+			if (disconnectError instanceof Error) {
+				console.error(
+					'Error disconnecting from MongoDB:',
+					disconnectError.message,
+				);
+			} else {
+				console.error(
+					'Unknown error occurred during disconnection.',
+				);
+			}
+		}
+	}
 }
 
 /**
  * Inserts a new road into the database (without connection handling)
  * @param {string} name - The name of the road
  */
-async function insert_road({
+async function insertRoad({
     name
 }: {
-    name: string;
+	name: string;
 }) {
-    try {
-        const roadData = { name };
-        const road = new Road(roadData);
-        const newRoad = await road.save();
-        console.log('Inserted Road:', newRoad);
-    } catch (dbError: unknown) {
-        if (dbError instanceof Error) {
-            console.error('Failed to insert Road:', dbError.message);
-        } else {
-            console.error('Unknown error occurred during database operation.');
-        }
-        throw(dbError);
-    }
+	try {
+		const roadData = { name };
+		const road = new Road(roadData);
+		const newRoad = await road.save();
+		console.log('Inserted Road:', newRoad);
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			console.error(
+				'Failed to insert Road:',
+				dbError.message,
+			);
+		} else {
+			console.error(
+				'Unknown error occurred during database operation.',
+			);
+		}
+		throw dbError;
+	}
 }
 
 
 
-export { insert_road, insert_road_connect };
+export { insertRoad, insertRoadConnect };

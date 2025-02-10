@@ -1,9 +1,8 @@
 import {
-	Document,
 	Model,
 	Schema,
 	SchemaType,
-	SchemaTypeOptions,
+	SchemaDefinitionType,
 } from 'npm:mongoose';
 import { assert } from '@std/assert';
 
@@ -18,7 +17,7 @@ type validator<T> = { validator: (val: T) => boolean; message: string };
 function require<T>(
 	type: T,
 	ref: string = '',
-): { type: T; ref?: string; required: boolean } {
+): SchemaDefinitionType<{ type: T; ref?: string; required: boolean }> {
 	//assert(ref === '' || type instanceof Schema.Types.ObjectId);
 	if (ref === '') {
 		return { type, required: true };
@@ -33,7 +32,7 @@ function require<T>(
  * @param {{ type: T,... }} obj - object to be added
  * @returns extended object {type: T, trimmed: true, ...}
  */
-function trim<T>(obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
+function trim<T>(obj: SchemaDefinitionType<T>): SchemaDefinitionType<T> {
 	return { ...obj, trimmed: true };
 }
 
@@ -43,7 +42,7 @@ function trim<T>(obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
  * @param {{ type: T,... }} obj - object to be added
  * @returns extended object {type: T, unique: true, ...}
  */
-function unique<T>(obj: SchemaTypeOptions<T>): SchemaTypeOptions<T> {
+function unique<T>(obj: SchemaDefinitionType<T>): SchemaDefinitionType<T> {
 	return { ...obj, unique: true };
 }
 

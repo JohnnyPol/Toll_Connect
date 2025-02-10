@@ -57,12 +57,26 @@ const Breadcrumbs = () => {
 export default function AdminLayout() {
 	const navigate = useNavigate();
 
-	const signOut = () => {
+	const signOut = async () => {
+		// Check for token in localStorage
+		const token = localStorage.getItem('authToken');
 		// Remove the token from localStorage
 		localStorage.removeItem('authToken');
 
-		// Redirect to the login page
-		navigate('/login');
+		// Make a POST request to the /login API
+		const response = await fetch('http://localhost:9115/api/logout', {
+			method: 'POST',
+			headers: {
+				'X-OBSERVATORY-AUTH': token,
+			},
+		});
+
+		if (response.ok) {
+			// Redirect to the login page
+			navigate('/login');
+		} else {
+			//show error message
+		}
 	};
 
 	return (

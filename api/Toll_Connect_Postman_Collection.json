@@ -1,0 +1,177 @@
+{
+    "info": {
+        "name": "Toll Connect API",
+        "description": "This is the Postman collection for the Toll Connect REST API, which facilitates toll interoperability across multiple operators. All endpoints require authentication via JWT tokens obtained from the login endpoint.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{jwt_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "Login",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/login",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "login"
+                    ]
+                },
+                "body": {
+                    "mode": "urlencoded",
+                    "urlencoded": [
+                        {
+                            "key": "username",
+                            "value": "user123",
+                            "type": "text"
+                        },
+                        {
+                            "key": "password",
+                            "value": "password123",
+                            "type": "text"
+                        }
+                    ]
+                },
+                "description": "Logs in a user and returns a JWT token to be used in subsequent requests."
+            },
+            "response": []
+        },
+        {
+            "name": "Logout",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "X-OBSERVATORY-AUTH",
+                        "value": "{{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/logout",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "logout"
+                    ]
+                },
+                "description": "Logs out the authenticated user by invalidating their session token."
+            },
+            "response": []
+        },
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-OBSERVATORY-AUTH",
+                        "value": "{{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/admin/healthcheck",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "admin",
+                        "healthcheck"
+                    ]
+                },
+                "description": "Checks the connectivity between the API and the database."
+            },
+            "response": []
+        },
+        {
+            "name": "Get Toll Station Passes",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-OBSERVATORY-AUTH",
+                        "value": "{{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/tollStationPasses/NAO01/20241101/20241130",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "tollStationPasses",
+                        "NAO01",
+                        "20241101",
+                        "20241130"
+                    ],
+                    "query": [
+                        {
+                            "key": "format",
+                            "value": "json"
+                        }
+                    ]
+                },
+                "description": "Retrieves all toll station passes for a specific toll station (NAO01) within the given date range. The response includes details such as pass ID, timestamp, tag ID, provider, pass type, and charge."
+            },
+            "response": []
+        },
+        {
+            "name": "Passes Cost Between Operators",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-OBSERVATORY-AUTH",
+                        "value": "{{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/passesCost/OpA/OpB/20240101/20240131",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "passesCost",
+                        "OpA",
+                        "OpB",
+                        "20240101",
+                        "20240131"
+                    ]
+                },
+                "description": "Returns the number of toll passes and total cost that Operator B owes to Operator A for the given date range."
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "https://localhost:9115/api"
+        },
+        {
+            "key": "jwt_token",
+            "value": ""
+        }
+    ]
+}
