@@ -18,7 +18,7 @@ export interface PassDocument extends Document {
 	};
 	time: Date;
 	charge: number;
-	payment: PaymentDocument['_id']; 
+	payment?: PaymentDocument['_id']; 
 };
 
 const passSchema = new Schema<PassDocument>({

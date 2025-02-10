@@ -163,7 +163,7 @@ async function insertPass({
 				throw (new Error('Toll not found'));
 			}
 
-			tollOperator = test_toll._id;
+			tollOperator = test_toll.tollOperator;
 		} catch (error) {
 			console.error('Error checking for Toll:', error);
 			throw error;
