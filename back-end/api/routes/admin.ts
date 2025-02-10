@@ -13,6 +13,7 @@ import { die, ErrorType, get_date } from '@/api/util.ts';
 
 import toll_operator from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
+import { ConnectionStates } from 'mongoose';
 
 const hashPassword = async (password: string): Promise<string> => {
 	try {
@@ -62,7 +63,7 @@ const groupByOperatorPair = () => [
 	},
 ];
 
-async function validateCSVFile(csvContent: string): Promise<boolean> {
+function validateCSVFile(csvContent: string): boolean {
 	try {
 		//const csvContent = await fs.readFile(filePath, 'utf-8');
 		const records = parse(csvContent, {
@@ -147,7 +148,10 @@ export default function (oapi: Middleware): Router {
 		}),
 		async (_req: Request, res: Response) => {
 			try {
-				if (mongoose.connection.readyState !== 1) {
+				if (
+					mongoose.connection.readyState !==
+						ConnectionStates.connected
+				) {
 					throw (new Error('no connected to db'));
 				}
 				//const db = client.db();
@@ -410,6 +414,7 @@ export default function (oapi: Middleware): Router {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to);
 
+			// deno-lint-ignore no-constant-condition
 			if (false /* TODO: not logged in as admin && */) {
 				return die(res, ErrorType.BadRequest, 'only admin allowed');
 			}
@@ -430,4 +435,3 @@ export default function (oapi: Middleware): Router {
 
 	return router;
 }
-

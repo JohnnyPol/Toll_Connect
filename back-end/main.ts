@@ -14,7 +14,7 @@ import cors from 'cors';
 import { ConnectionStates } from 'mongoose';
 
 async function check_connection(): Promise<void> {
-	if (mongoose.connection.readyState === 1) {
+	if (mongoose.connection.readyState === ConnectionStates.connected) {
 		console.log('OK db already connected');
 		return;
 	}
@@ -25,7 +25,10 @@ async function check_connection(): Promise<void> {
 		console.error('ERR connecting to db:', err);
 	}
 	// clear blacklists
-	if (mongoose.connections[0].readyState === ConnectionStates.connected) {
+	if (
+		<ConnectionStates> mongoose.connection.readyState ===
+			ConnectionStates.connected
+	) {
 		console.log('OK connecting to DB');
 		try {
 			await clearBlacklist();
