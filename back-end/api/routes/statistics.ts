@@ -210,7 +210,12 @@ export default function (oapi: Middleware): Router {
 
 			try {
 				const response = await Pass.aggregate([
-					{ $match: { 'toll.tollOperator': op_id } },
+					{
+						$match: {
+							'toll.tollOperator': op_id,
+							date: { $gte: date_from, $lte: date_to },
+						}
+					},
 					groupByDateOperator('tag'),
 					makeDateArray,
 					{ $sort: { '_id': 1 } }
@@ -251,7 +256,12 @@ export default function (oapi: Middleware): Router {
 
 			try {
 				const response = await Pass.aggregate([
-					{ $match: { 'tag.tollOperator': op_id } },
+					{
+						$match: {
+							'tag.tollOperator': op_id,
+							date: { $gte: date_from, $lte: date_to },
+						}
+					},
 					groupByDateOperator('toll'),
 					makeDateArray,
 					{ $sort: { '_id': 1 } }
@@ -290,7 +300,12 @@ export default function (oapi: Middleware): Router {
 
 			try {
 				const response = await Pass.aggregate([
-					{ $match: { 'toll.tollOperator': op_id } },
+					{
+						$match: {
+							'toll.tollOperator': op_id,
+							date: { $gte: date_from, $lte: date_to },
+						}
+					},
 					groupByOperator('tag'),
 					{ $sort: { '_id': 1 } }
 				]);
@@ -326,7 +341,12 @@ export default function (oapi: Middleware): Router {
 
 			try {
 				const response = await Pass.aggregate([
-					{ $match: { 'tag.tollOperator': op_id } },
+					{
+						$match: {
+							'tag.tollOperator': op_id,
+							date: { $gte: date_from, $lte: date_to },
+						}
+					},
 					groupByOperator('toll'),
 					{ $sort: { '_id': 1 } }
 				]);
@@ -364,6 +384,7 @@ export default function (oapi: Middleware): Router {
 
 			try {
 				const response = await Pass.aggregate([
+					{ $match: { date: { $gte: date_from, $lte: date_to } } },
 					...groupByOperatorPair()
 				]);
 
