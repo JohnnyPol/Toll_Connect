@@ -60,15 +60,6 @@ async function insertTollConnect({
       road_for_use = roadId;
     }
 
-		if (!roadId) {
-			console.log('Road not found, inserting new Road...');
-			await insert_road({ name: roadName });
-			const temp = await findRoadIdByName(roadName);
-			if (temp) road_for_use = temp;
-		} else {
-			road_for_use = roadId;
-		}
-
 		// Get toll Date
 		const tollData = {
 			_id,
@@ -170,15 +161,6 @@ roadName,
     } else {
       road_for_use = roadId;
     }
-
-		if (!roadId) {
-			console.log('Road not found, inserting new Road...');
-			await insert_road({ name: roadName });
-			const temp = await findRoadIdByName(roadName);
-			if (temp) road_for_use = temp;
-		} else {
-			road_for_use = roadId;
-		}
 
 		// Get toll data
 		const tollData = {

@@ -5,9 +5,7 @@ import mongoose from "npm:mongoose";
 import Papa from 'npm:papaparse';
 import moment from 'npm:moment';
 
-import pass from '../../models/pass.ts';
-import toll from '../../models/toll.ts';
-import tag from '../../models/tag.ts';
+import pass, {PassDocument} from '../../models/pass.ts';
 import { ObjectId } from 'mongodb';
 
 // Function to convert timestamp to Date using moment.js
@@ -30,7 +28,6 @@ async function insertPassesFromCSV(path: string) {
 
 
 		const session = await mongoose.connection.startSession();
-		session.startTransaction();
 
 		try {
 			for (const pass of passes) {
@@ -62,27 +59,15 @@ async function insertPassesFromCSV(path: string) {
 				}
 			}
 
-			interface myPass {
-				_id: Types.ObjectId;
-				toll: string;
-				tag: string;
-				time: Date;
-				charge: number;
-			}
-
-			interface myString {
-				tollOperator: string;
-			}
 
 			// 1. Find passes with null Payment
 			const passesWithoutPayment = await pass.find({
 				payment: null,
-			}, { _id: 1, toll: 1, tag: 1, time: 1, charge: 1 }) as unknown as myPass[];
+			}) as unknown as PassDocument[];
 
 			if (passesWithoutPayment.length > 0) {
 				const operatorCharges = new Map<
-					string,
-					{
+					string, 					{
 						operatorID: string;
 						tagHomeID: string;
 						date: Date;
@@ -101,10 +86,8 @@ async function insertPassesFromCSV(path: string) {
 					const date = moment(Pass.time).startOf(
 						'day',
 					).toDate();
-					const Toll = await toll.findById(
-						Pass.toll,
-						{ tollOperator: 1 },
-					) as unknown as myString; // Use session here!
+					const Toll = Pass.toll;
+
 					if (!Toll) {
 						console.error(
 							`Toll not found for ID: ${Pass.toll}`,
@@ -116,10 +99,8 @@ async function insertPassesFromCSV(path: string) {
 					}
 					const operatorID = Toll.tollOperator; // Assuming toll has operatorID
 
-					const Tag = await tag.findById(
-						Pass.tag,
-						{ tollOperator: 1 },
-					) as unknown as myString; // Use session here!
+					const Tag = Pass.tag;
+
 					if (!Tag) {
 						console.error(
 							`Tag not found for ID: ${Pass.toll}`,
@@ -214,10 +195,7 @@ async function insertPassesFromCSV(path: string) {
 					const date = moment(Pass.time).startOf(
 						'day',
 					).toDate();
-					const Toll = await toll.findById(
-						Pass.toll,
-						{ tollOperator: 1 },
-					) as unknown as myString; // Use session here!
+					const Toll = Pass.toll;
 					if (!Toll) {
 						console.error(
 							`Toll not found for ID: ${Pass.toll}`,
@@ -229,10 +207,7 @@ async function insertPassesFromCSV(path: string) {
 					}
 					const operatorID = Toll.tollOperator; // Assuming toll has operatorID
 
-					const Tag = await tag.findById(
-						Pass.tag,
-						{ tollOperator: 1 },
-                     ) as unknown as myString; // Use session here!
+					const Tag = Pass.tag;
 					if (!Tag) {
 						console.error(
 							`Tag not found for ID: ${Pass.toll}`,
@@ -294,7 +269,7 @@ async function insertPassesFromCSV(path: string) {
 
 async function insertPassesFromCSVConnection(path: string) {
 	try {
-		await mongoose.connect('mongodb://localhost:27017/?replicaSet=rs0');
+		await mongoose.connect('mongodb://localhost:27017');
 		console.log('OK connecting to db');
 	} catch (err) {
 		console.error('ERR connecting to db:', err);
@@ -320,10 +295,6 @@ async function insertPassesFromCSVConnection(path: string) {
 			}
 		}
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 463e1530bf94d50988bb654748287ca1cdfdbfed
 }
 
 // Execute the insertion
