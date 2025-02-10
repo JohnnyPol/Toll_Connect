@@ -1,7 +1,7 @@
 // @ts-types='npm:@types/express'
 import express from 'npm:express';
 import morgan from 'npm:morgan';
-import cors from 'npm:cors';
+// import cors from 'npm:cors';
 import openapi from 'npm:@wesleytodd/openapi';
 // SEE: https://docs.deno.com/examples/express_tutorial/
 import mongoose, { connect } from 'npm:mongoose';
@@ -11,6 +11,7 @@ import { clearBlacklist } from './authentication/jwt.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
 import cors from "cors";
+
 
 async function check_connection () : void {
 	if (mongoose.connection.readyState === 1) {
@@ -47,7 +48,6 @@ const oapi = openapi(apiDoc);
 app.use(cors());
 
 // Middleware
-app.use(cors());
 app.use(morgan('dev'));
 
 app.use(oapi);

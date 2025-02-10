@@ -48,6 +48,9 @@ export default function (oapi: Middleware): Router {
 			// Fetch the toll document
 			const tollDocument = await Toll.findById(tollID);
 			if (!tollDocument) return die(res, ErrorType.BadRequest, 'Toll station not found');
+			
+			// Populate the 'road' field in the tollDocument
+			await tollDocument.populate('road');
 
 			// Fetch passes and ensure 'tag' is fully populated
 			const passes = await Pass.find({

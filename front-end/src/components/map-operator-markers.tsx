@@ -2,20 +2,23 @@ import { useOperatorTolls } from '@/hooks/use-operator-tolls.ts';
 import { Operator } from '@/types/operators.ts';
 import { toast } from 'sonner';
 import { MapTollMarker } from '@/components/map-toll-marker.tsx';
-import { MapTollPopup } from "@/components/map-toll-popup.tsx";
+import { MapTollPopup } from '@/components/map-toll-popup.tsx';
 import { useOperators } from '@/hooks/use-operators.ts';
 
 interface MapOperatorMarkersProps {
 	id: Operator['_id'];
+	startDate: Date;
+	endDate: Date;
 }
 
 export const MapOperatorMarkers: React.FC<MapOperatorMarkersProps> = (
-	{ id },
+	{ id, startDate, endDate },
 ) => {
 	const { operators } = useOperators();
 	const { operatorTolls, loading, error } = useOperatorTolls(id);
 
-	const markerIcon = operators.find((operator) => operator._id === id)?.markerIcon;
+	const markerIcon = operators.find((operator) => operator._id === id)
+		?.markerIcon;
 
 	if (loading) {
 		toast.loading('Loading toll markers...', {
@@ -45,6 +48,8 @@ export const MapOperatorMarkers: React.FC<MapOperatorMarkersProps> = (
 						>
 							<MapTollPopup
 								tollId={toll._id}
+								startDate={startDate}
+								endDate={endDate}
 							/>
 						</MapTollMarker>
 					))}

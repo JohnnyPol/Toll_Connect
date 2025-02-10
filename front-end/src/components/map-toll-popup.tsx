@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Toll } from '@/types/tolls.ts';
+import { Toll, TollStatistics } from '@/types/tolls.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { useToll } from '@/hooks/use-toll.ts';
@@ -18,13 +18,17 @@ enum PopupType {
 
 interface MapTollPopupProps {
 	tollId: Toll['_id'];
+	startDate: Date;
+	endDate: Date;
 }
 
 export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 	tollId,
+	startDate,
+	endDate,
 }) => {
 	const { operators } = useOperators();
-	const { toll, loading, error } = useToll(tollId);
+	const { toll, loading, error } = useToll(tollId, startDate, endDate);
 
 	if (loading) {
 		toast.loading('Loading toll information...', {
@@ -74,21 +78,29 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 
 	const popupType = toll.my_passes
 		? PopupType.OPERATOR_MINE
-		: toll.other_passes
+		: toll.operators
 		? PopupType.OPERATOR_OTHER
 		: PopupType.BASIC;
 
 	const basicComponent = (
 		<div className='grid gap-4 py-4 flex-1'>
 			<Label htmlFor='name'>Name</Label>
-			<Input id='name' value={toll.name} disabled />
+			<Input id='name' value={toll.toll.name} disabled />
 			<Label htmlFor='price'>Price</Label>
-			<Input id='price' value={toll.price} disabled />
+			<Input id='price' value={toll.toll.price[1]} disabled />
 			<Label htmlFor='road'>Road</Label>
-			<Input id='road' value={toll.road} disabled />
+			<Input id='road' value={toll.toll.road.name} disabled />
 			<Label htmlFor='operator'>Operator</Label>
-			<Input id='operator' value={toll.operator_name} disabled />
-			<Label htmlFor='avg-passes'>Average Passes</Label>
+			<Input
+				id='operator'
+				value={
+					operators.find(
+						(operator) => operator._id === toll.toll.tollOperator
+					)?.name || 'Unknown'
+				}
+				disabled
+			/>
+			<Label htmlFor='avg-passes'>Average Passes per Day</Label>
 			<Input id='avg-passes' value={toll.avg_passes} disabled />
 			{popupType === PopupType.OPERATOR_MINE && (
 				<>
@@ -107,8 +119,16 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 			operator?.chartColor || 'rgba(159, 75, 255, 0.81)'
 		);
 		const operatorPasses = operators.map((operator) =>
-			toll.other_passes?.find((pass) => pass.operatorId === operator._id)
+			toll.operators?.find((pass) => pass.operator === operator._id)
 				?.passes || 0
+		);
+
+		const filteredOperators = operatorPasses.filter((passes) => passes > 0);
+		const filteredOperatorNames = operatorNames.filter(
+			(_, index) => operatorPasses[index] > 0
+		);
+		const filteredOperatorColors = operatorColors.filter(
+			(_, index) => operatorPasses[index] > 0
 		);
 
 		return (
@@ -121,9 +141,9 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 				<div className='flex-1'>
 					<PieChart
 						title='Operator Distribution'
-						names={operatorNames}
-						values={operatorPasses}
-						colors={operatorColors}
+						names={filteredOperatorNames}
+						values={filteredOperators}
+						colors={filteredOperatorColors}
 						tooltipFormat='<b>{point.y}</b> passes ({point.percentage:.1f}%)'
 					/>
 				</div>

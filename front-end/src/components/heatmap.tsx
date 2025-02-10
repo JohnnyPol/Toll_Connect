@@ -21,8 +21,7 @@ const Heatmap: React.FC<HeatmapProps> = ({ radius, opacity }) => {
 		});
 	}, [visualization, radius, opacity]);
 
-	//TODO: Get the operator ID through login context
-	const { data, loading, error } = useHeatmapData('00');
+	const { data, loading, error } = useHeatmapData();
 
 	if (loading) {
 		toast.loading('Loading heatmap data...', {
@@ -35,7 +34,7 @@ const Heatmap: React.FC<HeatmapProps> = ({ radius, opacity }) => {
 	}
 
 	if (error) {
-		toast.error('Error loading heatmap data: ' + error.message, {
+		toast.error('Error loading heatmap data: ' + error, {
 			id: 'heatmap-error'
 		});
 	}
@@ -47,8 +46,8 @@ const Heatmap: React.FC<HeatmapProps> = ({ radius, opacity }) => {
 		heatmap.setData(
 			data.map((point) => {
 				return {
-					location: new google.maps.LatLng(point.lat, point.lng),
-					weight: point.mag,
+					location: new google.maps.LatLng(point.latitude, point.longitude),
+					weight: point.count,
 				};
 			}),
 		);
