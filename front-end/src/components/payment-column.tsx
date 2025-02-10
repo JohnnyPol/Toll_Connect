@@ -20,11 +20,15 @@ import { PaymentPopup } from '@/components/payment-popup.tsx';
 interface PaymentColumnProps {
 	paymentFilterFormValues: PaymentFilterFormValues;
 	title: string;
+	status: PaymentStatus;
+	isPayer?: boolean;
 }
 
 export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 	paymentFilterFormValues,
 	title,
+	status,
+	isPayer,
 }) => {
 	const { colorScheme } = usePaymentColors();
 
@@ -37,8 +41,8 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 		if (paymentFilterFormValues.endDate) {
 			paymentService.getPayments(
 				paymentFilterFormValues,
-				PaymentStatus.Created,
-				true,
+				status,
+				isPayer,
 				currentPage
 			).then((data) => {
 				setTotalPages(data.pagination.totalPages);

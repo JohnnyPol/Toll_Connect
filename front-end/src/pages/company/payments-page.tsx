@@ -8,6 +8,40 @@ import {
 } from '@/components/payment-filter-form.tsx';
 import { OperatorProvider } from '@/context/operator-context.tsx';
 import { Toaster } from '@/components/ui/toast.tsx';
+import { PaymentStatus } from '@/types/payments.ts';
+import { color } from 'highcharts';
+
+const columns = [
+	{
+		title: 'Owed to Company',
+		color: 'orange',
+		status: PaymentStatus.Created,
+		isPayer: false,
+	},
+	{
+		title: 'Owed to Others',
+		color: 'red',
+		status: PaymentStatus.Created,
+		isPayer: true,
+	},
+	{
+		title: 'To Validate',
+		color: 'blue',
+		status: PaymentStatus.Paid,
+		isPayer: false,
+	},
+	{
+		title: 'To Be Validated',
+		color: 'purple',
+		status: PaymentStatus.Paid,
+		isPayer: true,
+	},
+	{
+		title: 'Completed',
+		color: 'green',
+		status: PaymentStatus.Validated,
+	}
+];
 
 export default function CompanyPaymentsPage() {
 	const [filterFormValues, setFilterFormValues] = useState<
@@ -33,36 +67,16 @@ export default function CompanyPaymentsPage() {
 				/>
 			</div>
 			<div className='grid grid-cols-5 gap-4 h-full p-4 pt-0'>
-				<PaymentColorsProvider color='orange'>
-					<PaymentColumn
-						paymentFilterFormValues={filterFormValues}
-						title='Owed to Company'
-					/>
-				</PaymentColorsProvider>
-				<PaymentColorsProvider color='red'>
-					<PaymentColumn
-						paymentFilterFormValues={filterFormValues}
-						title='Owed to Others'
-					/>
-				</PaymentColorsProvider>
-				<PaymentColorsProvider color='blue'>
-					<PaymentColumn
-						paymentFilterFormValues={filterFormValues}
-						title='To Validate'
-					/>
-				</PaymentColorsProvider>
-				<PaymentColorsProvider color='purple'>
-					<PaymentColumn
-						paymentFilterFormValues={filterFormValues}
-						title='To Be Validated'
-					/>
-				</PaymentColorsProvider>
-				<PaymentColorsProvider color='green'>
-					<PaymentColumn
-						paymentFilterFormValues={filterFormValues}
-						title='Completed'
-					/>
-				</PaymentColorsProvider>
+				{columns.map((column, index) => (
+					<PaymentColorsProvider color={column.color} key={index}>
+						<PaymentColumn
+							paymentFilterFormValues={filterFormValues}
+							title={column.title}
+							status={column.status}
+							isPayer={column.isPayer}
+						/>
+					</PaymentColorsProvider>
+				))}
 			</div>
 		</OperatorProvider>
 	);

@@ -1,10 +1,21 @@
 import { ArrowLeft } from 'lucide-react';
-import { Payment } from '@/types/payments.ts';
+import { Payment, PaymentStatus } from '@/types/payments.ts';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 
 interface PaymentPopupProps {
 	payment: Payment;
+}
+
+function convertStatus (status: PaymentStatus) {
+	switch (status) {
+		case PaymentStatus.Created:
+			return 'To Be Paid';
+		case PaymentStatus.Paid:
+			return 'To Be Validated';
+		case PaymentStatus.Validated:
+			return 'Completed';
+	}
 }
 
 export const PaymentPopup: React.FC<PaymentPopupProps> = ({ payment }) => {
@@ -82,12 +93,7 @@ export const PaymentPopup: React.FC<PaymentPopupProps> = ({ payment }) => {
 				<div className='text-right'>
 					<p className='text-sm font-medium'>Status</p>
 					<p className='text-sm text-muted-foreground'>
-						{payment.status.replace(
-							/\w\S*/g,
-							(
-								w: string,
-							) => (w.replace(/^\w/, (c) => c.toUpperCase())),
-						)}
+						{convertStatus(payment.status)}
 					</p>
 				</div>
 			</div>

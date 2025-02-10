@@ -1,6 +1,12 @@
 import { format, parse } from 'jsr:@std/datetime';
 import { Middleware, Request, Response, Router } from 'npm:express';
 
+enum PaymentStatus {
+	Created = 0,
+	Paid = 1,
+	Validated = 2,
+}
+
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
@@ -41,11 +47,11 @@ export default function (oapi: Middleware): Router {
 			// Determine status
 			let status;
 			if (!paymentDate) {
-				status = 'to be paid';
+				status = PaymentStatus.Created;
 			} else if (!validationDate) {
-				status = 'to be validated';
+				status = PaymentStatus.Paid;
 			} else {
-				status = 'completed';
+				status = PaymentStatus.Validated;
 			}
 
 			payments.push({
@@ -67,36 +73,54 @@ export default function (oapi: Middleware): Router {
 	const allPayments = generateDummyPayments();
 
 	// Updated endpoint with status filtering
-	router.get('/', (req, res) => {
+	router.get('/:status/:startDate/:endDate', (req, res) => {
+		const { status, startDate, endDate } = req.params;
 		const {
-			page = 1,
-			size = 10,
+			page_number = 1,
+			page_size = 10,
 			sortBy = 'creationDate',
 			sortOrder = 'desc',
-			status,
-			startDate,
-			endDate,
+			is_payer,
+			target_op_id,
 		} = req.query;
-		const pageNum = parseInt(page);
-		const sizeNum = parseInt(size);
+		const pageNum = parseInt(page_number);
+		const sizeNum = parseInt(page_size);
+		const status_ = parseInt(status);
 
 		// Filter first
 		let filteredPayments = [...allPayments];
-		if (status) {
-			filteredPayments = filteredPayments.filter((payment) =>
-				payment.status === status
+		filteredPayments = filteredPayments.filter((payment) =>
+			payment.status === status_
+		);
+
+		if (target_op_id) {
+			filteredPayments = filteredPayments.filter(
+				(payment) => {
+					if (is_payer === 'true') {
+						return payment.payer ===
+							target_op_id;
+					} else if (is_payer === 'false') {
+						return payment.payee ===
+							target_op_id;
+					} else {
+						return (
+							payment.payer === target_op_id ||
+							payment.payee === target_op_id
+						);
+					}
+				},
 			);
 		}
 
 		if (startDate) {
-			const start = parse(startDate, "yyyyMMdd");
+			const start = parse(startDate, 'yyyyMMdd');
 			filteredPayments = filteredPayments.filter((payment) =>
 				new Date(payment.creationDate) >= start
 			);
 		}
 
 		if (endDate) {
-			const end = parse(endDate, "yyyyMMdd");
+			const end = parse(endDate, 'yyyyMMdd');
 			filteredPayments = filteredPayments.filter((payment) =>
 				new Date(payment.creationDate) <= end
 			);

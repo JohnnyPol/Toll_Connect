@@ -12,5 +12,5 @@ export interface Payment {
 	paymentDate: string | null;
 	validationDate: string | null;
 	amount: number;
-	status: 'to be paid' | 'to be validated' | 'completed';
+	status: PaymentStatus;
 }

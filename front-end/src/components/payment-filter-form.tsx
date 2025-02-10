@@ -216,7 +216,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 										<SelectContent>
 											{!loading && !error &&
 												operators.map((operator) => (
-													<SelectItem key={operator._id} value={operator.name}>
+													<SelectItem key={operator._id} value={operator._id}>
 														{operator.name.toUpperCase()}
 													</SelectItem>
 												))}
