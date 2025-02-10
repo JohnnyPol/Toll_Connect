@@ -23,7 +23,7 @@ async function login(req: Request, res: Response): Promise<void> {
 				level: username === 'dummy@mail' // TODO: Maybe a change in the schema is needed
 					? UserLevel.Admin
 					: UserLevel.Operator,
-				name: username,
+				id: username,
 			}),
 		});
 	} catch (err) {
@@ -41,14 +41,14 @@ async function logout(req: Request, res: Response): Promise<void> {
 	}
 
 	try {
-		const { name, exp } = await verify(token);
+		const { id, exp } = await verify(token);
 		await TollOperator.findByIdAndUpdate(
-			name,
+			id,
 			{ $push: { blacklist: token } },
 		);
 		setTimeout(async () => {
 			await TollOperator.findByIdAndUpdate(
-				name,
+				id,
 				{ $pull: { blacklist: token } },
 			);
 		}, (exp - new Date().getTime()) * 1000);

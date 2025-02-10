@@ -1369,7 +1369,9 @@
     "https://deno.land/x/djwt@v3.0.2/deps.ts": "a7954fe567f2097b4f6aca11d091b6df658e485a817ac4dee47257ed5c28fd6e",
     "https://deno.land/x/djwt@v3.0.2/mod.ts": "962d8f2c4d6a4db111f45d777b152356aec31ba7db0ca664601175a422629857",
     "https://deno.land/x/djwt@v3.0.2/signature.ts": "16238fbf558267c85dd6c0178045f006c8b914a7301db87149f3318326569272",
-    "https://deno.land/x/djwt@v3.0.2/util.ts": "5cb264d2125c553678e11446bcfa0494025d120e3f59d0a3ab38f6800def697d"
+    "https://deno.land/x/djwt@v3.0.2/util.ts": "5cb264d2125c553678e11446bcfa0494025d120e3f59d0a3ab38f6800def697d",
+    "https://esm.sh/jwt-decode@3.1.2": "b4957c9dfca2bb65fae16f37580ab82199a775a3f9435827ceee3a98b2605491",
+    "https://esm.sh/jwt-decode@3.1.2/denonext/jwt-decode.mjs": "a7acace47a21ed4d3e685be5835822dcb725355d5645afe45ea4b12604cbec65"
   },
   "workspace": {
     "dependencies": [

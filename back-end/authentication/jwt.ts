@@ -26,7 +26,7 @@ const header: Header = { alg: 'HS512', type: 'JWT' };
 
 export type Token = {
 	level: UserLevel;
-	name: string;
+	id: string;
 	exp: number;
 };
 
