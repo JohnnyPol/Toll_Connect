@@ -19,9 +19,7 @@ async function login(req: Request, res: Response): Promise<void> {
 		}
 		res.status(200).json({
 			token: await create({
-				level: username === 'admin'
-					? UserLevel.Admin
-					: UserLevel.Operator,
+				level: user.userLevel,
 				id: username,
 			}),
 		});

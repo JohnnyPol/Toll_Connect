@@ -1,21 +1,12 @@
 import { NextFunction, Request, Response } from "npm:express";
 import { verify } from "./jwt.ts"; // Import verify function from jwt.ts
-
-export enum UserLevel {
-  Anonymous = 0,
-  Operator = 1,
-  Admin = 2,
-}
-export type Token = {
-  level: UserLevel;
-  name: string;
-  exp: number;
-};
+import { UserLevel } from '@/models/toll_operator.ts'; }
+import { Token } from '@/authentication/jwt.ts'; }
 
 export async function authenticateUser(req: Request, res: Response, next: NextFunction) {
   try {
     console.log("Request: ", req);
-    const token = req.headers["x-observatory-auth"] as string;
+    const token = req.headers as string;
     console.log("Token in Header: ", token);
 
     if (!token) {
