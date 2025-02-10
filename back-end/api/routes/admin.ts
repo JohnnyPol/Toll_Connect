@@ -1,41 +1,43 @@
 // api/routes/admin.ts
-import { Middleware, Request, Response, Router } from 'npm:express';
-import { insertTollsFromCSV } from '../../data-base_functions/inserts/toll_insert.ts';
-import { dirname, fromFileUrl, join } from 'https://deno.land/std/path/mod.ts';
-import { insertPassesFromCSV } from '../../data-base_functions/inserts/pass_insert.ts';
-import mongoose from "npm:mongoose";
-import multer,{ FileFilterCallback } from 'npm:multer';
-import { deleteCollection } from '../../data-base_functions/deletes/delete_collection.ts';
-import toll_operator from '../../models/toll_operator.ts';
-import { insertTollOperators } from '../../data-base_functions/inserts/initialize_operators.ts';
+import { Middleware, Request, Response, Router } from 'express';
+import mongoose from 'mongoose';
+import multer, { FileFilterCallback } from 'multer';
+import { dirname, fromFileUrl, join } from '@std/path';
+import { parse } from 'csv-parse/sync';
 
-import Pass from '@/models/pass.ts';
+import { insertTollsFromCSV } from '@/data-base_functions/inserts/toll_insert.ts';
+import { insertPassesFromCSV } from '@/data-base_functions/inserts/pass_insert.ts';
+import { deleteCollection } from '@/data-base_functions/deletes/delete_collection.ts';
+import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
 import { die, ErrorType, get_date } from '@/api/util.ts';
 
+import toll_operator from '@/models/toll_operator.ts';
+import Pass from '@/models/pass.ts';
+
 const hashPassword = async (password: string): Promise<string> => {
-    try {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-512', data);
-        return Array.from(new Uint8Array(hashBuffer))
-            .map((byte) => byte.toString(16).padStart(2, '0'))
-            .join('');
-    } catch (error) {
-        console.error('Error hashing password:', error);
-        throw error;
-    }
+	try {
+		const encoder = new TextEncoder();
+		const data = encoder.encode(password);
+		const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+		return Array.from(new Uint8Array(hashBuffer))
+			.map((byte) => byte.toString(16).padStart(2, '0'))
+			.join('');
+	} catch (error) {
+		console.error('Error hashing password:', error);
+		throw error;
+	}
 };
 
-const upload = multer({ 
-    storage: multer.memoryStorage(),
-    fileFilter: (_req: Request, file: multer.File, cb: FileFilterCallback) => {
-        // Check if file is CSV (required by spec)
-        if (file.mimetype !== 'text/csv') {
-            cb(new Error('Only CSV files are allowed (mimetype: text/csv)'));
-            return;
-        }
-        cb(null, true);
-    }
+const upload = multer({
+	storage: multer.memoryStorage(),
+	fileFilter: (_req: Request, file: multer.File, cb: FileFilterCallback) => {
+		// Check if file is CSV (required by spec)
+		if (file.mimetype !== 'text/csv') {
+			cb(new Error('Only CSV files are allowed (mimetype: text/csv)'));
+			return;
+		}
+		cb(null, true);
+	},
 });
 
 const groupByOperatorPair = () => [
@@ -47,20 +49,18 @@ const groupByOperatorPair = () => [
 			},
 			passes: { $sum: 1 },
 			cost: { $sum: '$charge' },
-		}
-	}, {
+		},
+	},
+	{
 		$project: {
 			tollOperator: '$_id.toll',
 			tagOperator: '$_id.tag',
 			passes: '$passes',
 			cost: '$cost',
 			_id: 0,
-		}
-	}
+		},
+	},
 ];
-
-
-import { parse } from 'npm:csv-parse/sync';
 
 async function validateCSVFile(csvContent: string): Promise<boolean> {
 	try {
@@ -70,270 +70,280 @@ async function validateCSVFile(csvContent: string): Promise<boolean> {
 			skip_empty_lines: true,
 		});
 
-         // Check if the file is empty or the header row is missing
-    if (records.length === 0) {
-        console.error('CSV file is empty or missing header row.');
-        return false;
-      }
+		// Check if the file is empty or the header row is missing
+		if (records.length === 0) {
+			console.error('CSV file is empty or missing header row.');
+			return false;
+		}
 
-        // Define required fields based on `passes-sample.csv`
-        const requiredFields = ['timestamp', 'tollID', 'tagRef', 'tagHomeID', 'charge'];
-    
-        const headerFields = Object.keys(records[0]);
+		// Define required fields based on `passes-sample.csv`
+		const requiredFields = [
+			'timestamp',
+			'tollID',
+			'tagRef',
+			'tagHomeID',
+			'charge',
+		];
 
-        // Check if the number of fields matches the required format
-     if (headerFields.length !== requiredFields.length) {
-         console.error('CSV header field count does not match the required format.');
-         return false;
-       }
-       for (let i = 0; i < requiredFields.length; i++) {
-        if (headerFields[i] !== requiredFields[i]) {
-          console.error(
-            `Header field mismatch at position ${i + 1}: expected "${requiredFields[i]}", but found "${headerFields[i]}".`
-          );
-          return false;
-        }
-      }
-  
-      return true;
-    } catch (error) {
-      console.error('Error validating CSV file:', error);
-      return false;
-    }
-  }
+		const headerFields = Object.keys(records[0]);
 
+		// Check if the number of fields matches the required format
+		if (headerFields.length !== requiredFields.length) {
+			console.error(
+				'CSV header field count does not match the required format.',
+			);
+			return false;
+		}
+		for (let i = 0; i < requiredFields.length; i++) {
+			if (headerFields[i] !== requiredFields[i]) {
+				console.error(
+					`Header field mismatch at position ${i + 1}: expected "${
+						requiredFields[i]
+					}", but found "${headerFields[i]}".`,
+				);
+				return false;
+			}
+		}
 
-
-
-
+		return true;
+	} catch (error) {
+		console.error('Error validating CSV file:', error);
+		return false;
+	}
+}
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
-    // Healthcheck endpoint
-    router.get('/healthcheck',
-        oapi.path({
-            tags: ['Admin'],
-            summary: 'Check system health',
-            operationId: 'getHealthcheck',
-            responses: {200: {
-                description: 'System healthy',
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/definitions/HealthcheckResponse'
-                        }
-                    }
-                }
-            },
-            401: {
-                description: 'System unhealthy',
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/definitions/AdminErrorResponse'
-                        }
-                    }
-                }
-            }
-        }
-    }),
-         async (_req: Request, res: Response) => {
-        try {
-            if (mongoose.connection.readyState !== 1)
-                throw(new Error("no connected to db"));
-            //const db = client.db();
-            //const db = mongoose.connection.db;
+	// Healthcheck endpoint
+	router.get(
+		'/healthcheck',
+		oapi.path({
+			tags: ['Admin'],
+			summary: 'Check system health',
+			operationId: 'getHealthcheck',
+			responses: {
+				200: {
+					description: 'System healthy',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/HealthcheckResponse',
+							},
+						},
+					},
+				},
+				401: {
+					description: 'System unhealthy',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminErrorResponse',
+							},
+						},
+					},
+				},
+			},
+		}),
+		async (_req: Request, res: Response) => {
+			try {
+				if (mongoose.connection.readyState !== 1) {
+					throw (new Error('no connected to db'));
+				}
+				//const db = client.db();
+				//const db = mongoose.connection.db;
 
-            const [stations, tags, passes] = await Promise.all([
-                mongoose.connection.collection('toll').countDocuments(),
-                mongoose.connection.collection('tag').countDocuments(),
-                mongoose.connection.collection('pass').countDocuments()
-            ]);
+				const [stations, tags, passes] = await Promise.all([
+					mongoose.connection.collection('toll').countDocuments(),
+					mongoose.connection.collection('tag').countDocuments(),
+					mongoose.connection.collection('pass').countDocuments(),
+				]);
 
-            res.status(200).json({
-                status: "OK",
-                dbconnection: "mongodb://localhost:27017/",
-                n_stations: stations,
-                n_tags: tags,
-                n_passes: passes
-            });
-        } catch(error)  {
-            console.error(error);
-            res.status(401).json({
-                status: "failed",
-                dbconnection: "mongodb://localhost:27017/"
-            });
-        }
-    });
+				res.status(200).json({
+					status: 'OK',
+					dbconnection: 'mongodb://localhost:27017/',
+					n_stations: stations,
+					n_tags: tags,
+					n_passes: passes,
+				});
+			} catch (error) {
+				console.error(error);
+				res.status(401).json({
+					status: 'failed',
+					dbconnection: 'mongodb://localhost:27017/',
+				});
+			}
+		},
+	);
 
+	// Reset stations endpoint
+	router.post(
+		'/resetstations',
+		oapi.path({
+			tags: ['Admin'],
+			summary: 'Reset stations data',
+			operationId: 'resetStations',
+			responses: {
+				200: {
+					description: 'Reset successful',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminResponse',
+							},
+						},
+					},
+				},
+				500: {
+					description: 'Reset failed',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminErrorResponse',
+							},
+						},
+					},
+				},
+			},
+		}),
+		async (_req: Request, res: Response) => {
+			try {
+				// Step 1: Delete all existing documents
+				await deleteCollection('payment');
+				await deleteCollection('pass');
+				await deleteCollection('toll');
 
-  // Reset stations endpoint
-  router.post('/resetstations',
-   
-    oapi.path({
-        tags: ['Admin'],
-        summary: 'Reset stations data',
-        operationId: 'resetStations',
-        responses: {
-            200: {
-                description: 'Reset successful',
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/definitions/AdminResponse'
-                        }
-                    }
-                }
-            },
-            500: {
-                description: 'Reset failed',
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/definitions/AdminErrorResponse'
-                        }
-                    }
-                }
-            }
-        }
-    }),
-    async (_req: Request, res: Response) => {
-    try {
-        // Step 1: Delete all existing documents
-        await deleteCollection("payment");
-        await deleteCollection("pass");
-        await  deleteCollection("toll"); 
-        
-        await insertTollOperators();
+				await insertTollOperators();
 
-			// Step 2: Construct the correct path to the CSV file
-			const currentFilePath = fromFileUrl(import.meta.url);
-			const currentDir = dirname(currentFilePath);
-			const projectRoot = join(currentDir, '..', '..');
-			const csvPath = join(
-				projectRoot,
-				'data-base_functions',
-				'inserts',
-				'tollstations2024.csv',
-			);
-			// Step 3: Insert new stations using the existing function
-			await insertTollsFromCSV(csvPath);
+				// Step 2: Construct the correct path to the CSV file
+				const currentFilePath = fromFileUrl(import.meta.url);
+				const currentDir = dirname(currentFilePath);
+				const projectRoot = join(currentDir, '..', '..');
+				const csvPath = join(
+					projectRoot,
+					'data-base_functions',
+					'inserts',
+					'tollstations2024.csv',
+				);
+				// Step 3: Insert new stations using the existing function
+				await insertTollsFromCSV(csvPath);
 
-			res.status(200).json({ status: 'OK' });
-		} catch (error) {
-			console.error('Error in resetstations:', error);
-			res.status(500).json({
-				status: 'failed',
-				info: error instanceof Error
-					? error.message
-					: 'Unknown error occurred',
-			});
-		}
-	});
+				res.status(200).json({ status: 'OK' });
+			} catch (error) {
+				console.error('Error in resetstations:', error);
+				res.status(500).json({
+					status: 'failed',
+					info: error instanceof Error
+						? error.message
+						: 'Unknown error occurred',
+				});
+			}
+		},
+	);
 
-router.post('/resetpasses', 
-    
-    oapi.path({
-        tags: ['Admin'],
-        summary: 'Reset passes data',
-        operationId: 'resetPasses',
-        responses: {
-            200: {
-                description: 'Reset successful',
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/definitions/AdminResponse'
-                        }
-                    }
-                }
-            },
-            500: {
-                description: 'Reset failed',
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/definitions/AdminErrorResponse'
-                        }
-                    }
-                }
-            }
-        }
-    }),
-    async (_req: Request, res: Response) => {
-    try {
-        // Get database connection
-        //const db = client.db();
-    
-            if (mongoose.connection.readyState !== 1)
-                throw(new Error("no connected to db"));
+	router.post(
+		'/resetpasses',
+		oapi.path({
+			tags: ['Admin'],
+			summary: 'Reset passes data',
+			operationId: 'resetPasses',
+			responses: {
+				200: {
+					description: 'Reset successful',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminResponse',
+							},
+						},
+					},
+				},
+				500: {
+					description: 'Reset failed',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminErrorResponse',
+							},
+						},
+					},
+				},
+			},
+		}),
+		async (_req: Request, res: Response) => {
+			try {
+				// Get database connection
+				//const db = client.db();
 
-            await deleteCollection("payment");
-            await deleteCollection("pass");
-            await deleteCollection("tag");
+				if (mongoose.connection.readyState !== 1) {
+					throw (new Error('no connected to db'));
+				}
 
-            await insertTollOperators();
+				await deleteCollection('payment');
+				await deleteCollection('pass');
+				await deleteCollection('tag');
 
-            const testPassword = "freepasses4all";
+				await insertTollOperators();
 
-            
-            const newPassword = await hashPassword(testPassword);
-            
+				const testPassword = 'freepasses4all';
 
-            await toll_operator.updateOne( {_id: 'admin'}, {passwordHash: newPassword});
-            
+				const newPassword = await hashPassword(testPassword);
 
-			res.status(200).json({ status: 'OK' });
-		} catch (error) {
-			console.error('Error in resetpasses:', error);
-			res.status(500).json({
-				status: 'failed',
-				info: error instanceof Error
-					? error.message
-					: 'Unknown error occurred',
-			});
-		}
-	});
+				await toll_operator.updateOne({ _id: 'admin' }, {
+					passwordHash: newPassword,
+				});
+
+				res.status(200).json({ status: 'OK' });
+			} catch (error) {
+				console.error('Error in resetpasses:', error);
+				res.status(500).json({
+					status: 'failed',
+					info: error instanceof Error
+						? error.message
+						: 'Unknown error occurred',
+				});
+			}
+		},
+	);
 
 	router.post(
 		'/addpasses',
-        oapi.path({
-            tags: ['Admin'],
-            summary: 'Add passes from CSV',
-            operationId: 'addPasses',
-            parameters: [
-                {
-                    in: 'formData',
-                    name: 'file',
-                    required: true,
-                    type: 'file',
-                    description: 'CSV file with passes data'
-                }
-            ],
-            responses: {
-                200: {
-                    description: 'Passes added successfully',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/definitions/AdminResponse'
-                            }
-                        }
-                    }
-                },
-                500: {
-                    description: 'Operation failed',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/definitions/AdminErrorResponse'
-                            }
-                        }
-                    }
-                }
-            }
-        }),
+		oapi.path({
+			tags: ['Admin'],
+			summary: 'Add passes from CSV',
+			operationId: 'addPasses',
+			parameters: [
+				{
+					in: 'formData',
+					name: 'file',
+					required: true,
+					type: 'file',
+					description: 'CSV file with passes data',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Passes added successfully',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminResponse',
+							},
+						},
+					},
+				},
+				500: {
+					description: 'Operation failed',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminErrorResponse',
+							},
+						},
+					},
+				},
+			},
+		}),
 		upload.single('file'),
 		async (req: Request, res: Response) => {
 			try {
@@ -398,15 +408,16 @@ router.post('/resetpasses',
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to   = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to);
 
-			if (false /* TODO: not logged in as admin && */)
+			if (false /* TODO: not logged in as admin && */) {
 				return die(res, ErrorType.BadRequest, 'only admin allowed');
+			}
 
 			try {
 				const response = await Pass.aggregate([
 					{ $match: { time: { $gte: date_from, $lte: date_to } } },
-					...groupByOperatorPair()
+					...groupByOperatorPair(),
 				]);
 
 				res.status(200).json(response);
@@ -414,8 +425,9 @@ router.post('/resetpasses',
 				console.error('error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
-		}
+		},
 	);
 
 	return router;
 }
+
