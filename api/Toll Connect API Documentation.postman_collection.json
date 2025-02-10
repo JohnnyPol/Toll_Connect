@@ -593,13 +593,77 @@
 								{
 									"key": "Content-Type",
 									"value": "application/json",
-									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								}
 							],
 							"cookie": [],
 							"body": "{\r\n    \"status\": \"OK\",\r\n    \"info\": \"Inserted {{n_of_passes}} passes\"\r\n}"
+						},
+						{
+							"name": "500 (No File Uploaded)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"contentType": "text/csv",
+											"type": "file",
+											"src": []
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/admin/addpasses"
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"2d-jsRs0N/kwZ9TyBZZ6WeS7+WMq9c\""
+								},
+								{
+									"key": "content-encoding",
+									"value": "br"
+								},
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 18:29:25 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"failed\",\n    \"info\": \"No file uploaded\"\n}"
 						}
 					]
 				}
@@ -610,7 +674,7 @@
 			"name": "Operations",
 			"item": [
 				{
-					"name": "Toll Passes",
+					"name": "Toll Station Passes",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -676,7 +740,6 @@
 								{
 									"key": "Content-Type",
 									"value": "application/json",
-									"name": "Content-Type",
 									"description": "",
 									"type": "text"
 								}
@@ -720,6 +783,335 @@
 							"body": "stationId,stationOperator,requestTimestamp,periodFrom,periodTo,nPasses,passIndex,passID,timestamp,tagID,tagProvider,passType,passCharge\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,1,129,2022-01-02 23:31,AMLJH75LX,AM,visitor,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,2,222,2022-01-04 07:49,EGYTJXEPQ,EG,visitor,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,3,398,2022-01-06 20:56,OO7PZE9VI,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,4,438,2022-01-07 10:29,NORCBPLJD,NO,visitor,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,5,608,2022-01-09 17:56,OO1B0Z3NX,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,6,747,2022-01-11 06:38,OOZSJ49IT,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,7,826,2022-01-12 12:10,OO7PZE9VI,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,8,830,2022-01-12 12:50,OOZSJ49IT,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,9,865,2022-01-13 01:44,OOZSJ49IT,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,10,892,2022-01-13 12:09,OO3KKV9RF,OO,home,2.3"
 						}
 					]
+				},
+				{
+					"name": "Pass Analysis",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{data_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"passAnalysis",
+								"{{stationOpID}}",
+								"{{tagOpID}}",
+								"{{data_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "Provides a list of passes from clients (tags) of tagOpID in stations of stationOpID"
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{data_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passAnalysis",
+										"{{stationOpID}}",
+										"{{tagOpID}}",
+										"{{data_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"stationOpID\": \"OO\",\r\n    \"tagOpID\": \"AM\",\r\n    \"requestTimestamp\": \"2025-02-09 01:40\",\r\n    \"periodFrom\": \"20220101\",\r\n    \"periodTo\": \"20220131\",\r\n    \"nPasses\": 6,\r\n    \"passList\": [\r\n        {\r\n            \"passIndex\": 1,\r\n            \"passID\": \"129\",\r\n            \"stationID\": \"OO01\",\r\n            \"timestamp\": \"2022-01-02 23:31\",\r\n            \"tagID\": \"AMLJH75LX\",\r\n            \"passCharge\": 2.3\r\n        },\r\n        {\r\n            \"passIndex\": 2,\r\n            \"passID\": \"134\",\r\n            \"stationID\": \"OO10\",\r\n            \"timestamp\": \"2022-01-03 01:29\",\r\n            \"tagID\": \"AMLJH75LX\",\r\n            \"passCharge\": 2.5\r\n        },\r\n        {\r\n            \"passIndex\": 3,\r\n            \"passID\": \"255\",\r\n            \"stationID\": \"OO03\",\r\n            \"timestamp\": \"2022-01-04 19:41\",\r\n            \"tagID\": \"AMXAJI0Y6\",\r\n            \"passCharge\": 2.4\r\n        },\r\n        {\r\n            \"passIndex\": 4,\r\n            \"passID\": \"348\",\r\n            \"stationID\": \"OO05\",\r\n            \"timestamp\": \"2022-01-06 05:34\",\r\n            \"tagID\": \"AMHJ7XVG0\",\r\n            \"passCharge\": 3.5\r\n        },\r\n        {\r\n            \"passIndex\": 5,\r\n            \"passID\": \"748\",\r\n            \"stationID\": \"OO08\",\r\n            \"timestamp\": \"2022-01-11 07:00\",\r\n            \"tagID\": \"AMNT3W5UZ\",\r\n            \"passCharge\": 1.9\r\n        },\r\n        {\r\n            \"passIndex\": 6,\r\n            \"passID\": \"775\",\r\n            \"stationID\": \"OO10\",\r\n            \"timestamp\": \"2022-01-11 17:30\",\r\n            \"tagID\": \"AMHJ7XVG0\",\r\n            \"passCharge\": 2.5\r\n        }\r\n    ]\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Passes Cost",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/passesCost/{{tollOpID}}/{{tagOpID}}/{{data_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"passesCost",
+								"{{tollOpID}}",
+								"{{tagOpID}}",
+								"{{data_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "### GET /passesCost/{{stationOpID}}/{{tagOpID}}/{{data_from}}/{{date_to}\n\nThis endpoint retrieves the passes cost data for a specific station operation ID, tag operation ID, and date range.\n\n#### Request Description\n\n- Parameters:\n    \n    - `stationOpID` (path): The station operation ID.\n        \n    - `tagOpID` (path): The tag operation ID.\n        \n    - `data_from` (path): The start date for the data range.\n        \n    - `date_to` (path): The end date for the data range.\n        \n    - `format` (query): The format of the response data.\n        \n\n#### Response\n\nThe response will be in JSON format with the following schema:\n\n``` json\n{\n  \"stationOpID\": \"\",\n  \"tagOpID\": \"\",\n  \"requestTimestamp\": \"\",\n  \"periodFrom\": \"\",\n  \"periodTo\": \"\",\n  \"nPasses\": 0,\n  \"passesCost\": 0\n}\n\n ```\n\n- `stationOpID` (string): The station operation ID.\n    \n- `tagOpID` (string): The tag operation ID.\n    \n- `requestTimestamp` (string): The timestamp of the request.\n    \n- `periodFrom` (string): The start date for the period.\n    \n- `periodTo` (string): The end date for the period.\n    \n- `nPasses` (integer): The number of passes.\n    \n- `passesCost` (integer): The total cost of passes."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passesCost/{{stationOpID}}/{{tagOpID}}/{{data_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passesCost",
+										"{{stationOpID}}",
+										"{{tagOpID}}",
+										"{{data_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"tollOpID\": \"OO\",\n    \"tagOpID\": \"AM\",\n    \"requestTimestamp\": \"2025-02-09 01:50\",\n    \"periodFrom\": \"20220101\",\n    \"periodTo\": \"20220131\",\n    \"nPasses\": 6,\n    \"passesCost\": 15.1\n}"
+						}
+					]
+				},
+				{
+					"name": "Charges By (Everyone)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/chargesBy/{{tollOpID}}/{{data_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"chargesBy",
+								"{{tollOpID}}",
+								"{{data_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "Provides aggregate charges for passes by clients of all other operators on stations of tollOpID for the time period"
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/chargesBy/{{tollOpID}}/{{data_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"chargesBy",
+										"{{tollOpID}}",
+										"{{data_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"tollOpID\": \"OO\",\r\n    \"requestTimestamp\": \"2025-02-09 02:56\",\r\n    \"periodFrom\": \"20220101\",\r\n    \"periodTo\": \"20220131\",\r\n    \"vOpList\": [\r\n        {\r\n            \"visitingOpID\": \"AM\",\r\n            \"nPasses\": 6,\r\n            \"passesCost\": 15.1 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"EG\",\r\n            \"nPasses\": 12,\r\n            \"passesCost\": 31.9 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"GE\",\r\n            \"nPasses\": 0,\r\n            \"passesCost\": 0\r\n        },\r\n        {\r\n            \"visitingOpID\": \"KO\",\r\n            \"nPasses\": 5,\r\n            \"passesCost\": 14.3 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"MO\",\r\n            \"nPasses\": 2,\r\n            \"passesCost\": 5.4 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"NAO\",\r\n            \"nPasses\": 13,\r\n            \"passesCost\": 30.6 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"NO\",\r\n            \"nPasses\": 6,\r\n            \"passesCost\": 16.3\r\n        }\r\n    ]\r\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Playground",
+			"item": [
+				{
+					"name": "DB",
+					"item": [
+						{
+							"name": "Toll Operators",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseURL}}/db/toll-operators"
+							},
+							"response": []
+						},
+						{
+							"name": "Tolls by Operator",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseURL}}/db/tolls/by_operator/OO"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Old Payments",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9115/api/payments?page=1&size=50&status=to be paid&startDate=2000-01-01T00:00:00.000Z&endDate=2025-02",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9115",
+							"path": [
+								"api",
+								"payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "50"
+								},
+								{
+									"key": "status",
+									"value": "to be paid"
+								},
+								{
+									"key": "startDate",
+									"value": "2000-01-01T00:00:00.000Z"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-02"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toll Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/statistics/OO01/{{data_from}}/{{date_to}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Heatmap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{baseURL}}/statistics/heatmap"
+					},
+					"response": []
 				}
 			]
 		}
@@ -782,6 +1174,21 @@
 		{
 			"key": "format",
 			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "stationOpID",
+			"value": "OO",
+			"type": "default"
+		},
+		{
+			"key": "tagOpID",
+			"value": "OO",
+			"type": "default"
+		},
+		{
+			"key": "tollOpID",
+			"value": "AM",
 			"type": "default"
 		}
 	]

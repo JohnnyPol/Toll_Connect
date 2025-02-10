@@ -26,7 +26,7 @@ function
 die (
 	res: Response, type: ErrorType, msg: string, extra: object = {}
 ): void {
-	return res.status(type).json({ error: msg, ...extra });
+	return res.status(type).json({ status: 'failed', info: msg, ...extra });
 };
 
 export { get_date, set_date, ErrorType, die };

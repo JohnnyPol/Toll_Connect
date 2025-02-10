@@ -38,8 +38,8 @@ export default function (oapi: Middleware): Router {
 
 				const passes = await Pass.find({
 					$and: [
-						{ toll: { $in: tollIds } },
-						{ tag: { $nin: tagIds } },
+						{ "toll._id": { $in: tollIds } },
+						{ "tag._id": { $nin: tagIds } },
 					],
 					time: {
 						$gte: date_from,

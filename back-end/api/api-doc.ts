@@ -34,9 +34,12 @@ const apiDoc = {
 		},
 		Error: {
 			type: 'object',
-            properties: {
-                error: { type: 'string' },
-            },
+			properties: {
+				status: { type: 'string' },
+				info: { type: 'string' },
+				dbconnection: { type: 'string' },
+			},
+			required: ['status'],
 			additionalProperties: true,
 		},
 		HealthcheckResponse: {
@@ -63,7 +66,7 @@ const apiDoc = {
             }
         }
     },
-    paths: {
+    /*paths: {
         '/admin/healthcheck': {
             get: {
                 tags: ['Admin'],
@@ -139,6 +142,7 @@ const apiDoc = {
             }
         }
     }
+        */
 };
 
 export default apiDoc;

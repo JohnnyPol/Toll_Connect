@@ -40,7 +40,7 @@ export default function (oapi: Middleware): Router {
 				const stationOperator = operator.name;
 
 				const passes = await Pass.find({
-					toll: stationID,
+					"toll._id": stationID,
 					time: {
 						$gte: date_from,
 						$lte: date_to,

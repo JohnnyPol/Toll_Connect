@@ -50,8 +50,8 @@ export default function (oapi: Middleware): Router {
 
 				const passes = await Pass.find({
 					$and: [
-						{ tag: { $in: tagIds } },
-						{ toll: { $in: tollIds } },
+						{ "tag._id": { $in: tagIds } },
+						{ "toll._id": { $in: tollIds } },
 					],
 					time: {
 						$gte: date_from,
@@ -69,9 +69,9 @@ export default function (oapi: Middleware): Router {
 					passList: passes.map((pass, index) => ({
 						passIndex: index + 1,
 						passID: pass._id,
-						stationID: pass.toll,
+						stationID: pass.toll._id,
 						timestamp: set_date(pass.time),
-						tagID: pass.tag,
+						tagID: pass.tag._id,
 						passCharge: pass.charge,
 					})),
 				});
