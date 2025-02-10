@@ -20,6 +20,7 @@
     "npm:mongoose@*": "8.9.1",
     "npm:mongoose@^8.9.1": "8.9.1",
     "npm:morgan@*": "1.10.0",
+    "npm:morgan@^1.10.0": "1.10.0",
     "npm:multer@*": "1.4.5-lts.1",
     "npm:multer@^1.4.5-lts.1": "1.4.5-lts.1",
     "npm:papaparse@*": "5.4.1",
@@ -1380,6 +1381,7 @@
       "npm:express@^4.21.2",
       "npm:mongodb@^6.12.0",
       "npm:mongoose@^8.9.1",
+      "npm:morgan@^1.10.0",
       "npm:multer@^1.4.5-lts.1"
     ]
   }

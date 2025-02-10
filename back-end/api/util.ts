@@ -1,6 +1,16 @@
 import { format, parse } from 'jsr:@std/datetime';
 import { Response } from 'npm:express';
 
+/**                       MONGOOSE CONNECTION ENUM                            */
+
+export enum ConnectionStates {
+	disconnected = 0,
+	connected = 1,
+	connecting = 2,
+	disconnecting = 3,
+	uninitialized = 99
+}
+
 /**                         DATE CONVERSIONS                                  */
 
 function set_date (date: Date) : string {
