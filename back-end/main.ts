@@ -11,8 +11,9 @@ import { clearBlacklist } from './authentication/jwt.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
 import cors from 'cors';
+import { ConnectionStates } from 'mongoose';
 
-async function check_connection(): void {
+async function check_connection(): Promise<void> {
 	if (mongoose.connection.readyState === 1) {
 		console.log('OK db already connected');
 		return;
@@ -24,7 +25,7 @@ async function check_connection(): void {
 		console.error('ERR connecting to db:', err);
 	}
 	// clear blacklists
-	if (mongoose.connection.readyState === 1) {
+	if (mongoose.connections[0].readyState === ConnectionStates.connected) {
 		console.log('OK connecting to DB');
 		try {
 			await clearBlacklist();
