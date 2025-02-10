@@ -42,6 +42,6 @@ export const chargesByCommand = (program: CommandOptions) => {
         .requiredOption("--from <from>", "Start date (YYYYMMDD)")
         .requiredOption("--to <to>", "End date (YYYYMMDD)")
         .action(async ({ opid, from, to, format }: { opid: string; from: string; to: string; format?: string }) => {
-            await fetchChargesBy(opid, from, to, format || "json");
+            await fetchChargesBy(opid, from, to, format || "csv");
         });
 };

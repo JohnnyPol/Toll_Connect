@@ -6,6 +6,9 @@ import { resetStationsCommand } from "@/src/commands/admin/resetstations.ts";
 import { healthCheckCommand } from "@/src/commands/admin/healthcheck.ts";
 import { adminCommands } from "@/src/commands/admin/admin.ts";
 import { chargesByCommand } from "@/src/commands/chargesby.ts";
+import { tollStationPassesCommand } from "@/src/commands/tollstationpasses.ts";
+import { passesCostCommand } from "@/src/commands/passsescost.ts";
+import { passAnalysisCommand } from "@/src/commands/passanalysis.ts";
 
 const program = new Denomander({
   app_name: "Toll Connect Adminstration CLI",
@@ -25,6 +28,9 @@ adminCommands(program);
 
 // Features
 chargesByCommand(program);
+tollStationPassesCommand(program);
+passesCostCommand(program);
+passAnalysisCommand(program);
 
 
 // Ensure `--help` is shown when an error occurs
@@ -41,3 +47,7 @@ program.errorMessages({
 });
 
 program.parse(Deno.args);
+
+function fetchPassAnalysis(program: Denomander) {
+  throw new Error("Function not implemented.");
+}

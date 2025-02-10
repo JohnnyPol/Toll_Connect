@@ -29,7 +29,7 @@ async function fetchTollStationPasses(station: string, from: string, to: string,
             method: "GET",
             headers,
         });
-
+        console.log("Response: ", response);
         // Handle errors based on response status code
         if (response.status === 204) {
             console.log("✅ No passes found for the given period.");
@@ -44,7 +44,7 @@ async function fetchTollStationPasses(station: string, from: string, to: string,
         // Parse the response body
         const data = await response.json();
 
-        // ✅ Check if data is valid
+        // Check if data is valid
         if (!data.passList || data.passList.length === 0) {
             console.log("✅ No pass records found.");
             return;
@@ -69,6 +69,6 @@ export const tollStationPassesCommand = (program: CommandOptions) => {
         .requiredOption("--to <to>", "End date (YYYYMMDD)")
         .option("--format <format>", "Response format (json/csv)")
         .action(async ({ station, from, to, format }: { station: string; from: string; to: string; format?: string }) => {
-            await fetchTollStationPasses(station, from, to, format || "json");
+            await fetchTollStationPasses(station, from, to, format || "csv");
         });
 };
