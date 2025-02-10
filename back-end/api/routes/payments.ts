@@ -112,7 +112,7 @@ export default function (oapi: Middleware): Router {
 				const payment = await Payments.findById(id);
 				if (payment == null)
 					return die(res, ErrorType.BadRequest, 'Invalid payment id');
-				if (payment.payee !== user)
+				if (payment.payer !== user)
 					return die(res, ErrorType.BadRequest, 'You cannot pay this payment');
 
 				payment.dateofPayment = new Date();
@@ -139,7 +139,7 @@ export default function (oapi: Middleware): Router {
 				const payment = await Payments.findById(id);
 				if (payment == null)
 					return die(res, ErrorType.BadRequest, 'Invalid payment id');
-				if (payment.payer !== user)
+				if (payment.payee !== user)
 					return die(res, ErrorType.BadRequest, 'You cannot validate this payment');
 
 				payment.dateofValidation = new Date();
