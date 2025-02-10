@@ -27,4 +27,17 @@ adminCommands(program);
 chargesByCommand(program);
 
 
+// Ensure `--help` is shown when an error occurs
+program.errorMessages({
+  COMMAND_NOT_FOUND: "Command not found! Use --help to see available commands.",
+  OPTION_NOT_FOUND: "Invalid option! Use --help to see correct usage.",
+  REQUIRED_OPTION_NOT_FOUND: "Missing required option! Check --help for required options.",
+  REQUIRED_VALUE_NOT_FOUND: "Missing required value for a command option! Use --help to see correct usage.",
+  TOO_MANY_PARAMS: "Error: Too many parameters provided! Double-check your input.",
+  INVALID_RULE: "Error: The provided input does not match the expected format.",
+  REQUIRED_COMMAND_VALUE_NOT_FOUND: "Error: A required value for a command is missing.",
+  OPTION_CHOICE: "Error: Invalid option choice! Use --help to view valid choices.",
+  ONLY_ONE_COMMAND_ALLOWED: "Error: Multiple commands detected! Only one command is allowed at a time.",
+});
+
 program.parse(Deno.args);
