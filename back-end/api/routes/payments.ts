@@ -241,6 +241,7 @@ export default function (oapi: Middleware): Router {
 				},
 			]);
 
+			if (results[0].total_pages == null) results[0].total_pages = 0;
 			res.status(200).json(results[0]);
 		},
 	);
