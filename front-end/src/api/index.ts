@@ -10,6 +10,15 @@ const instance = Axios.create({
 	},
 });
 
+// Add auth token to requests if it exists
+instance.interceptors.request.use((config) => {
+	const token = localStorage.getItem('authToken');
+	if (token) {
+		config.headers['X-OBSERVATORY-AUTH'] = token;
+	}
+	return config;
+});
+
 // Optional: Add request/response interceptors
 instance.interceptors.response.use(
 	(response) => response,

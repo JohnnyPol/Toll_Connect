@@ -57,6 +57,10 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 			),
 	});
 
+	useEffect(() => {
+		setPage(1);
+	}, [paymentFilterFormValues]);
+
 	const id = status + (isPayer ? 'payer' : '') + (isPayee ? 'payee' : '');
 
 	if (isLoading) {
@@ -132,7 +136,7 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 						))}
 				</div>
 			</ScrollArea>
-			{totalPages && (
+			{!!totalPages && (
 				<Pagination
 					currentPage={currentPage}
 					totalPages={totalPages}
