@@ -6,16 +6,12 @@ import { statisticsService } from '@/api/services/statistics.ts';
 interface UseCompanyStatisticsReturn {
 	timeseriesIncoming: TimeseriesPassData[] | undefined;
 	timeseriesOutgoing: TimeseriesPassData[] | undefined;
-	timeseriesIncomingLoading: boolean;
-	timeseriesOutgoingLoading: boolean;
-	timeseriesIncomingError: Error | null;
-	timeseriesOutgoingError: Error | null;
+	timeseriesLoading: boolean;
+	timeseriesError: Error | null;
 	aggregateIncoming: AggregatePassData[] | undefined;
 	aggregateOutgoing: AggregatePassData[] | undefined;
-	aggregateIncomingLoading: boolean;
-	aggregateOutgoingLoading: boolean;
-	aggregateIncomingError: Error | null;
-	aggregateOutgoingError: Error | null;
+	aggregateLoading: boolean;
+	aggregateError: Error | null;
 }
 
 export const useCompanyStatistics = (
@@ -57,20 +53,19 @@ export const useCompanyStatistics = (
 		queryFn: () => statisticsService.getAggregateOutgoing(filters, undefined),
 	});
 
-	
+	const timeseriesLoading = timeseriesIncomingLoading || timeseriesOutgoingLoading;
+	const timeseriesError = timeseriesIncomingError || timeseriesOutgoingError;
+	const aggregateLoading = aggregateIncomingLoading || aggregateOutgoingLoading;
+	const aggregateError = aggregateIncomingError || aggregateOutgoingError;
 
 	return {
 		timeseriesIncoming,
 		timeseriesOutgoing,
-		timeseriesIncomingLoading,
-		timeseriesIncomingError,
-		timeseriesOutgoingLoading,
-		timeseriesOutgoingError,
+		timeseriesLoading,
+		timeseriesError,
 		aggregateIncoming,
 		aggregateOutgoing,
-		aggregateIncomingLoading,
-		aggregateIncomingError,
-		aggregateOutgoingLoading,
-		aggregateOutgoingError
+		aggregateLoading,
+		aggregateError,
 	};
 };

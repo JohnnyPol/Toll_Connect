@@ -49,9 +49,19 @@ export const StatisticsTimeseriesChart: React.FC<
 
 	const { operators } = useOperators();
 
+	const filteredOperators = operators.filter((operator) => {
+		const incomingHasData = incomingData.some((item) =>
+			item.operators.some((op) => op.operator === operator._id && op.cost > 0)
+		);
+		const outgoingHasData = outgoingData.some((item) =>
+			item.operators.some((op) => op.operator === operator._id && op.cost > 0)
+		);
+		return incomingHasData || outgoingHasData;
+	});
+
 	const chartConfig = useMemo<ChartConfig>(() => {
 		const config: ChartConfig = {};
-		operators.forEach((operator, index) => {
+		filteredOperators.forEach((operator, index) => {
 			config[operator._id] = {
 				label: operator.name.toLocaleUpperCase(),
 				color: operator?.chartColor ||
@@ -59,7 +69,7 @@ export const StatisticsTimeseriesChart: React.FC<
 			};
 		});
 		return config;
-	}, [operators]);
+	}, [filteredOperators]);
 
 	const incomingChartData = incomingData.map((item) => {
 		const operatorData = item.operators.reduce(
@@ -70,7 +80,7 @@ export const StatisticsTimeseriesChart: React.FC<
 			{} as { [key: string]: number },
 		);
 
-		operators.forEach((operator) => {
+		filteredOperators.forEach((operator) => {
 			if (!operatorData[operator._id]) {
 				operatorData[operator._id] = 0;
 			}
@@ -91,7 +101,7 @@ export const StatisticsTimeseriesChart: React.FC<
 			{} as { [key: string]: number },
 		);
 
-		operators.forEach((operator) => {
+		filteredOperators.forEach((operator) => {
 			if (!operatorData[operator._id]) {
 				operatorData[operator._id] = 0;
 			}
@@ -142,11 +152,14 @@ export const StatisticsTimeseriesChart: React.FC<
 							Incoming
 						</span>
 						<span className='text-lg font-bold leading-none sm:text-3xl'>
-							{total.incoming.toLocaleString()}
+							{total.incoming.toLocaleString('el-GR', {
+								style: 'currency',
+								currency: 'EUR',
+							})}
 						</span>
 					</button>
 					<button
-						key='incoming'
+						key='outgoing'
 						data-active={direction === 'outgoing'}
 						className='relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6'
 						onClick={() => setDirection('outgoing')}
@@ -155,7 +168,10 @@ export const StatisticsTimeseriesChart: React.FC<
 							Outgoing
 						</span>
 						<span className='text-lg font-bold leading-none sm:text-3xl'>
-							{total.outgoing.toLocaleString()}
+						{total.outgoing.toLocaleString('el-GR', {
+								style: 'currency',
+								currency: 'EUR',
+							})}
 						</span>
 					</button>
 				</div>
@@ -192,6 +208,10 @@ export const StatisticsTimeseriesChart: React.FC<
 							content={
 								<ChartTooltipContent
 									className='w-[200px]'
+									localeConfig={{
+										style: 'currency',
+										currency: 'EUR',
+									}}
 									labelFormatter={(value) => {
 										return new Date(value).toLocaleDateString('en-US', {
 											month: 'short',

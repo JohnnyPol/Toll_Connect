@@ -86,9 +86,8 @@ ${prefix} [data-chart=${id}] {
 ${
 							colorConfig
 								.map(([key, itemConfig]) => {
-									const color =
-										itemConfig.theme
-											?.[theme as keyof typeof itemConfig.theme] ||
+									const color = itemConfig.theme
+										?.[theme as keyof typeof itemConfig.theme] ||
 										itemConfig.color;
 									return color ? `  --color-${key}: ${color};` : null;
 								})
@@ -115,6 +114,7 @@ const ChartTooltipContent = React.forwardRef<
 		indicator?: 'line' | 'dot' | 'dashed';
 		nameKey?: string;
 		labelKey?: string;
+		localeConfig?: Intl.NumberFormatOptions;
 	}
 >(
 	(
@@ -132,6 +132,7 @@ const ChartTooltipContent = React.forwardRef<
 			color,
 			nameKey,
 			labelKey,
+			localeConfig,
 		},
 		ref,
 	) => {
@@ -241,7 +242,7 @@ const ChartTooltipContent = React.forwardRef<
 												</div>
 												{item.value && (
 													<span className='font-mono font-medium tabular-nums text-foreground'>
-														{item.value.toLocaleString()}
+														{item.value.toLocaleString('el-GR', localeConfig)}
 													</span>
 												)}
 											</div>
