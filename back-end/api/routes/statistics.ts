@@ -184,7 +184,7 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
@@ -236,7 +236,7 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
@@ -286,7 +286,7 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
@@ -333,7 +333,7 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 

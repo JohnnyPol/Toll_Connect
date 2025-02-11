@@ -1,4 +1,4 @@
-import { format, parse } from '@std/datetime';
+import { DAY, format, parse } from '@std/datetime';
 import { Response } from 'express';
 
 /**                       MONGOOSE CONNECTION ENUM                            */
@@ -17,9 +17,13 @@ function set_date(date: Date): string {
 	return format(date, 'yyyy-MM-dd HH:mm');
 }
 
-function get_date(date: string): Date {
+function get_date(date: string, get_end: boolean = false): Date {
 	try {
-		return parse(date, 'yyyyMMdd');
+		const res = parse(date, 'yyyyMMdd');
+		if (get_end === true)
+			return new Date(res.getTime() + DAY - 1);
+		else
+			return res;
 	} catch (error) {
 		console.error('Error parsing date:', error);
 		return new Date(0);

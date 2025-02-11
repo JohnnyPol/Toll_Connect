@@ -59,7 +59,7 @@ export default function (oapi: Middleware): Router {
 		async (req: Request, res: Response) => {
 			const stationID: string = req.params.station_id;
 			const date_from: Date = get_date(req.params.date_from);
-			const date_to: Date = get_date(req.params.date_to);
+			const date_to: Date = get_date(req.params.date_to, true);
 
 			if (
 				req.user.id !== stationID && req.user.level !== UserLevel.Admin
