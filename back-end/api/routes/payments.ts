@@ -1,7 +1,10 @@
 import { Middleware, Request, Response, Router } from 'express';
 import Payments, { PaymentDocument, PaymentStatus } from '@/models/payment.ts';
 import { die, ErrorType, get_date } from '@/api/util.ts';
-import TollOperator, { TollOperatorDocument } from '@/models/toll_operator.ts';
+import TollOperator, {
+	TollOperatorDocument,
+	UserLevel,
+} from '@/models/toll_operator.ts';
 import { Token } from '@/authentication/jwt.ts';
 
 interface PaymentsQuery {
@@ -110,20 +113,18 @@ export default function (oapi: Middleware): Router {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to);
 			const user = (<Token> req.user).id;
+			const isAdmin = (<Token> req.user).level === UserLevel.Admin;
 			const { page_size, page_number, target_op_id, is_payer, is_payee } =
 				query;
 
 			if (PaymentStatus[req.params.status] === undefined) {
 				return die(res, ErrorType.BadRequest, 'Invalid status');
 			}
-			if (
-				is_payer === false && is_payee === false &&
-				status !== PaymentStatus.Validated
-			) {
+			if (is_payer === false && is_payee === false && isAdmin === false) {
 				return die(
 					res,
 					ErrorType.BadRequest,
-					'is_payer or is_payee should be defined',
+					'only admin allowed this request',
 				);
 			}
 

@@ -1,10 +1,11 @@
-import { Middleware, Request, Response, Router } from 'npm:express';
+import { Middleware, Request, Response, Router } from 'express';
 import { die, ErrorType, get_date, set_date } from '../util.ts';
+import { UserLevel } from '@/models/toll_operator.ts';
 
-import TollOperator from '../../models/toll_operator.ts';
-import Pass from '../../models/pass.ts';
-import Toll from '../../models/toll.ts';
-import Tag from '../../models/tag.ts';
+import TollOperator from '@/models/toll_operator.ts';
+import Pass from '@/models/pass.ts';
+import Toll from '@/models/toll.ts';
+import Tag from '@/models/tag.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
@@ -68,6 +69,9 @@ export default function (oapi: Middleware): Router {
 			const tollOpID: string = req.params.operator_id;
 			const date_from: Date = get_date(req.params.date_from);
 			const date_to: Date = get_date(req.params.date_to);
+
+			if (req.user.id !== tollOpID && req.user.level !== UserLevel.Admin)
+				die(res, ErrorType.BadRequest, 'No permission for requested operator');
 
 			try {
 				const operator = await TollOperator.findById(
