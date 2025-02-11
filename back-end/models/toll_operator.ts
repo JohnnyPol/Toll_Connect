@@ -37,37 +37,41 @@ export interface TollOperatorDocument extends Document {
 };
 
 const tollOperatorSchema = new Schema<TollOperatorDocument>({
+	/* Not default initializable */
 	_id: unique(trim(require(String))), // username
 	passwordHash: require(String),
-	name: {
-		...trim(require(String)),
-		default: '',
-	},
 	userLevel: {
 		type: Number,
 		enum: UserLevel
-	}, 
+	},
+	/* Default initializable */
+	name: {
+		type: String,
+		trim: true,
+		default: '',
+	},
 	email: {
-		...trim(require(String)),
+		type: String,
+		trim: true,
 		default: 'default@test.com',
 		validate: {
 			validator: (mail: string) => emailRegex.test(mail),
 			message: 'Email is of invalid format',
 		},
 	},
-	VAT: { ...trim(require(String)), default: '' },
-	addressStreet: { ...trim(require(String)), default: 'Default' },
+	VAT: { type: String, trim: true, default: '' },
+	addressStreet: { type: String, trim: true, default: 'Default' },
 	addressNumber: {
-		...require(Number),
+		type: Number,
 		default: 0,
 		validate: [
 			range('Address number', 0),
 			precision('Address number', 0),
 		],
 	},
-	addressArea: { ...trim(require(String)), default: '' },
+	addressArea: { type: String, trim: true, default: '' },
 	addressZip: {
-		...require(Number),
+		type: Number,
 		default: 99999,
 		validate: [
 			range('Address ZIP', 10_000, 99_999),
