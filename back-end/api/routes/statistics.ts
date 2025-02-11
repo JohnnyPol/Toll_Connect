@@ -13,7 +13,7 @@ const groupByOperator = (field: string) => ({
 		_id: '$' + field + '.tollOperator',
 		passes: { $sum: 1 },
 		cost: { $sum: '$charge' },
-	}
+	},
 });
 
 const groupByDateOperator = (field: string) => ({
@@ -22,14 +22,14 @@ const groupByDateOperator = (field: string) => ({
 			date: {
 				$dateToString: {
 					date: '$time',
-					format: '%Y-%m-%d'
-				}
+					format: '%Y-%m-%d',
+				},
 			},
 			operator: '$' + field + '.tollOperator',
 		},
 		passes: { $sum: 1 },
 		cost: { $sum: '$charge' },
-	}
+	},
 });
 
 const makeDateArray = {
@@ -40,9 +40,9 @@ const makeDateArray = {
 				operator: '$_id.operator',
 				passes: '$passes',
 				cost: '$cost',
-			}
-		}
-	}
+			},
+		},
+	},
 };
 
 export default function (oapi: Middleware): Router {
@@ -99,6 +99,8 @@ export default function (oapi: Middleware): Router {
 						'Toll station not found',
 					);
 				}
+
+				tollDocument.populate('road');
 
 				// Fetch passes and ensure 'tag' is fully populated
 				const passes = await Pass.find({
@@ -182,33 +184,36 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to   = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined = req.query.as_operator;
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined)
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
 
 			try {
 				const response = await Pass.aggregate([
 					{
 						$match: {
 							'toll.tollOperator': op_id,
+							'tag.tollOperator': { $ne: op_id },
 							time: { $gte: date_from, $lte: date_to },
-						}
+						},
 					},
 					groupByDateOperator('tag'),
 					makeDateArray,
-					{ $sort: { '_id': 1 } }
+					{ $sort: { '_id': 1 } },
 				]);
 
 				res.status(200).json(response.map(
-					({ _id, operators }) => ({ date: _id, operators })
+					({ _id, operators }) => ({ date: _id, operators }),
 				));
 			} catch (err) {
 				console.error('error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
-		}
+		},
 	);
 
 	router.get(
@@ -228,33 +233,36 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to   = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined = req.query.as_operator;
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined)
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
 
 			try {
 				const response = await Pass.aggregate([
 					{
 						$match: {
 							'tag.tollOperator': op_id,
+							'toll.tollOperator': { $ne: op_id },
 							time: { $gte: date_from, $lte: date_to },
-						}
+						},
 					},
 					groupByDateOperator('toll'),
 					makeDateArray,
-					{ $sort: { '_id': 1 } }
+					{ $sort: { '_id': 1 } },
 				]);
 
 				res.status(200).json(response.map(
-					({ _id, operators }) => ({ date: _id, operators })
+					({ _id, operators }) => ({ date: _id, operators }),
 				));
 			} catch (err) {
 				console.error('error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
-		}
+		},
 	);
 
 	router.get(
@@ -272,22 +280,25 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to   = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined = req.query.as_operator;
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined)
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
 
 			try {
 				const response = await Pass.aggregate([
 					{
 						$match: {
 							'toll.tollOperator': op_id,
+							'tag.tollOperator': { $ne: op_id },
 							time: { $gte: date_from, $lte: date_to },
-						}
+						},
 					},
 					groupByOperator('tag'),
-					{ $sort: { '_id': 1 } }
+					{ $sort: { '_id': 1 } },
 				]);
 
 				res.status(200).json(response);
@@ -295,7 +306,7 @@ export default function (oapi: Middleware): Router {
 				console.error('error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
-		}
+		},
 	);
 
 	router.get(
@@ -313,22 +324,25 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to   = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined = req.query.as_operator;
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined)
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
 
 			try {
 				const response = await Pass.aggregate([
 					{
 						$match: {
 							'tag.tollOperator': op_id,
+							'toll.tollOperator': { $ne: op_id },
 							time: { $gte: date_from, $lte: date_to },
-						}
+						},
 					},
 					groupByOperator('toll'),
-					{ $sort: { '_id': 1 } }
+					{ $sort: { '_id': 1 } },
 				]);
 
 				res.status(200).json(response);
@@ -336,7 +350,7 @@ export default function (oapi: Middleware): Router {
 				console.error('error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
-		}
+		},
 	);
 
 	return router;

@@ -7,7 +7,8 @@ interface PaymentsQuery {
 	page_size: number;
 	page_number: number;
 	target_op_id?: TollOperatorDocument['_id'];
-	is_payer?: boolean;
+	is_payer: boolean;
+	is_payee: boolean;
 }
 
 function parse_query(query: object): PaymentsQuery | string {
@@ -31,21 +32,28 @@ function parse_query(query: object): PaymentsQuery | string {
 		? <string> query.target_op_id
 		: undefined;
 	const is_payer = ('is_payer' in query)
-		? <boolean> query.is_payer
-		: undefined;
+		? true : false;
 
-	return { page_size, page_number, target_op_id, is_payer };
+	const is_payee = ('is_payee' in query)
+		? true : false;
+
+	return { page_size, page_number, target_op_id, is_payer, is_payee };
 }
 
 function operators_to_query (
-	is_payer: boolean | undefined,
+	is_payer: boolean,
+	is_payee: boolean,
 	user: TollOperatorDocument['_id'],
 	target: TollOperatorDocument['_id'] | undefined
 ) {
-	if (is_payer === undefined || is_payer === true) // admin case
+	if (is_payer && is_payee)
+		return target ? { $or: [{payer: user, payee: target}, {payee: user, payer: target}] } : { $or: [{payer: user}, {payee: user}] };
+	else if (is_payer)
 		return target ? { payer: user, payee: target } : { payer: user };
-	else
+	else if (is_payee)
 		return target ? { payee: user, payer: target } : { payee: user };
+	else //ADMIN
+		return target ? { $or: [{payer: target}, {payee: target}] } : {};
 }
 
 function status_to_query (status: PaymentStatus) {
@@ -91,19 +99,19 @@ export default function (oapi: Middleware): Router {
 			const date_from: Date = get_date(req.params.date_from);
 			const date_to: Date = get_date(req.params.date_to);
 			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
-			const { page_size, page_number, target_op_id, is_payer, } = query;
+			const { page_size, page_number, target_op_id, is_payer, is_payee, } = query;
 
 			if (PaymentStatus[req.params.status] === undefined) {
 				return die(res, ErrorType.BadRequest, 'Invalid status');
 			}
-			if (is_payer === undefined && status !== PaymentStatus.Validated) {
-				return die(res, ErrorType.BadRequest, 'is_payer required');
+			if (is_payer === false && is_payee === false && status !== PaymentStatus.Validated) {
+				return die(res, ErrorType.BadRequest, 'is_payer or is_payee should be defined');
 			}
 
 			const results = await Payments.aggregate([
 				{
 					$match: {
-						...operators_to_query(is_payer, user, target_op_id),
+						...operators_to_query(is_payer, is_payee, user, target_op_id),
 						...status_to_query(status),
 						dateofCharge: { $gte: date_from, $lte: date_to },
 					}
@@ -119,17 +127,19 @@ export default function (oapi: Middleware): Router {
 				}, {
 					$project: {
 						total_pages: {
-							$divide: [
-								{ $arrayElemAt: ['$total_pages.count', 0] },
-								page_size
-							]
+							$ceil: {
+								$divide: [
+									{ $arrayElemAt: ['$total_pages.count', 0] },
+									page_size
+								]
+							}
 						},
 						results: '$results',
 					}
 				}
 			]);
 
-			res.status(200).json(results);
+			res.status(200).json(results[0]);
 		},
 	);
 
@@ -137,7 +147,7 @@ export default function (oapi: Middleware): Router {
 		'/pay/:id',
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
-			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'OO';
 
 			try {
 				const payment = await Payments.findById(id);
