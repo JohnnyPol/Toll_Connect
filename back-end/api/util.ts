@@ -35,12 +35,14 @@ enum ErrorType {
 function die(
 	res: Response,
 	type: ErrorType,
-	msg: string | Error,
+	msg: string | Error | unknown,
 	extra: object = {},
 ): object {
 	const json = msg instanceof Error
 		? { status: 'failed', info: msg.message, ...extra }
-		: { status: 'failed', info: msg, ...extra };
+		: msg instanceof String
+		? { status: 'failet', info: msg, ...extra }
+		: { status: 'failed', info: 'internal error', ...extra };
 	res.status(type).json(json);
 	return json;
 }

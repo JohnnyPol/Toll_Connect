@@ -254,7 +254,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
 				console.error('ERR in resetstations:', error);
-				die(res, ErrorType.Internal, err);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);
