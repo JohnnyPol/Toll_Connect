@@ -3,7 +3,7 @@ import { die, ErrorType, get_date, set_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
 import Toll from '@/models/toll.ts';
-import { TollOperatorDocument } from '@/models/toll_operator.ts';
+import TollOperators, { TollOperatorDocument } from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
 import Tag from '@/models/tag.ts';
 import moment from 'npm:moment';
@@ -100,7 +100,8 @@ export default function (oapi: Middleware): Router {
 					);
 				}
 
-				tollDocument.populate('road');
+				// Populate the 'road' field in the tollDocument
+				await tollDocument.populate('road');
 
 				// Fetch passes and ensure 'tag' is fully populated
 				const passes = await Pass.find({
@@ -191,6 +192,9 @@ export default function (oapi: Middleware): Router {
 			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
+			if (await TollOperators.findById(op_id) === null) {
+				return die(res, ErrorType.BadRequest, 'Invalid as_operator');
+			}
 
 			try {
 				const response = await Pass.aggregate([
@@ -240,6 +244,9 @@ export default function (oapi: Middleware): Router {
 			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
+			if (await TollOperators.findById(op_id) === null) {
+				return die(res, ErrorType.BadRequest, 'Invalid as_operator');
+			}
 
 			try {
 				const response = await Pass.aggregate([
@@ -287,6 +294,9 @@ export default function (oapi: Middleware): Router {
 			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
+			if (await TollOperators.findById(op_id) === null) {
+				return die(res, ErrorType.BadRequest, 'Invalid as_operator');
+			}
 
 			try {
 				const response = await Pass.aggregate([
@@ -330,6 +340,9 @@ export default function (oapi: Middleware): Router {
 
 			if (/* TODO: logged in as admin && */ op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
+			if (await TollOperators.findById(op_id) === null) {
+				return die(res, ErrorType.BadRequest, 'Invalid as_operator');
 			}
 
 			try {

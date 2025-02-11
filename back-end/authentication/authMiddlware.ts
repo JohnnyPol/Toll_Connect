@@ -26,6 +26,14 @@ export async function authenticateUser(req: Request, res: Response, next: NextFu
     }
     req.user.level = level;
     req.user.id = decodedToken.id;
+
+    // If accessing `/api/admin/`, enforce admin privilege
+    if (req.path.startsWith("/api/admin/") && req.user.level !== UserLevel.Admin) {
+      console.warn("Unauthorized Access Attempt by Non-Admin:");
+      return res.status(401).json({ message: "Unauthorized: Admin access required." });
+    }
+
+
     next(); // Proceed to the next middleware or route handler
   } catch (error) {
     console.error("Authentication Error:", error);

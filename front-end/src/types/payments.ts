@@ -5,12 +5,11 @@ export enum PaymentStatus {
 }
 
 export interface Payment {
-	paymentId: string;
+	_id: string;
 	payer: string;
 	payee: string;
-	creationDate: string;
-	paymentDate: string | null;
-	validationDate: string | null;
+	dateofCharge: string;
+	dateofPayment: string | null;
+	dateofValidation: string | null;
 	amount: number;
-	status: PaymentStatus;
 }

@@ -114,6 +114,7 @@ export default function (oapi: Middleware): Router {
 						...operators_to_query(is_payer, is_payee, user, target_op_id),
 						...status_to_query(status),
 						dateofCharge: { $gte: date_from, $lte: date_to },
+						$expr: { $ne: ["$payer", "$payee"] }
 					}
 				}, {
 					$facet: {
@@ -147,18 +148,19 @@ export default function (oapi: Middleware): Router {
 		'/pay/:id',
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
-			const user: TollOperatorDocument['_id'] = /* TODO */ 'OO';
-
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
+			
 			try {
 				const payment = await Payments.findById(id);
 				if (payment == null)
 					return die(res, ErrorType.BadRequest, 'Invalid payment id');
 				if (payment.payer !== user)
 					return die(res, ErrorType.BadRequest, 'You cannot pay this payment');
-
+				
 				payment.dateofPayment = new Date();
 				const resp = await payment.save();
 
+				await new Promise(resolve => setTimeout(resolve, 2000));
 				if (resp !== payment)
 					die(res, ErrorType.Internal, 'Internal db error');
 				else

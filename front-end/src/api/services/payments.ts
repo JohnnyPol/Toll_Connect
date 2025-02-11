@@ -25,12 +25,19 @@ export const paymentService = {
 		const endDate = dateToURLParam(filters.endDate);
 
 		const response = await axios.get<
-			{ response: Payment[]; total_pages: number }
+			{ results: Payment[]; total_pages: number }
 		>(`/payments/${status}/${startDate}/${endDate}`, {
 			params,
 		});
-		console.log(response.data);
 
 		return response.data;
+	},
+
+	payPayment: async (paymentId: string) => {
+		await axios.put(`/payments/pay/${paymentId}`);
+	},
+
+	validatePayment: async (paymentId: string) => {
+		await axios.put(`/payments/validate/${paymentId}`);
 	},
 };

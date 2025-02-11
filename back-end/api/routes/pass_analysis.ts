@@ -12,6 +12,60 @@ export default function (oapi: Middleware): Router {
 
 	router.get(
 		'/:operator_id/:tag_id/:date_from/:date_to',
+		oapi.path({
+			tags: ['Operations'],
+			summary: 'Pass Analysis between Operators',
+			description: 'Returns an object containing a list of pass events made with tags from tagOpID at stations of stationOpID for the given period.',
+			operationId: 'getPassAnalysis',
+			parameters: [
+				{ in: 'path', name: 'stationOpID', schema: { type: 'string' }, required: true, description: 'The ID of the station operator' },
+				{ in: 'path', name: 'tagOpID', schema: { type: 'string' }, required: true, description: 'The ID of the tag operator/provider' },
+				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'The start date of the period (YYYYMMDD)' },
+				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'The end date of the period (YYYYMMDD)' }
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of pass information',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/PassAnalysisResponse'
+							}
+						}
+					}
+				},
+				400: {
+					description: 'Bad Request - Invalid input',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminErrorResponse'
+							}
+						}
+					}
+				},
+				500: {
+					description: 'Internal Server Error',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				}
+			}
+		}),
 		async (req: Request, res: Response) => {
 			const stationOpID: string = req.params.operator_id;
 			const tagOpID: string = req.params.tag_id;
