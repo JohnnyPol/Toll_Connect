@@ -68,7 +68,7 @@ export default function (oapi: Middleware): Router {
 			const stationOpID: string = req.params.operator_id;
 			const tagOpID: string = req.params.tag_id;
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 
 			if (
 				req.user.id !== stationOpID &&

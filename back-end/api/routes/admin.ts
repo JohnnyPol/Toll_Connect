@@ -401,7 +401,7 @@ export default function (oapi: Middleware): Router {
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 
 			try {
 				const response = await Pass.aggregate([

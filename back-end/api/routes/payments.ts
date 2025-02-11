@@ -185,7 +185,7 @@ export default function (oapi: Middleware): Router {
 
 			const status: PaymentStatus = parseInt(req.params.status);
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			const user = (<Token> req.user).id;
 			const isAdmin = (<Token> req.user).level === UserLevel.Admin;
 			const { page_size, page_number, target_op_id, is_payer, is_payee } =

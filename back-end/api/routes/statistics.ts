@@ -221,7 +221,7 @@ export default function (oapi: Middleware): Router {
 			}
 
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			let op_id: TollOperatorDocument['_id'] | undefined;
 
 			if (req.user.level === UserLevel.Admin) {
@@ -282,7 +282,7 @@ export default function (oapi: Middleware): Router {
 			}
 
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			let op_id: TollOperatorDocument['_id'] | undefined;
 
 			if (req.user.level === UserLevel.Admin) {
@@ -341,7 +341,7 @@ export default function (oapi: Middleware): Router {
 			}
 
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			let op_id: TollOperatorDocument['_id'] | undefined;
 
 			if (req.user.level === UserLevel.Admin) {
@@ -397,7 +397,7 @@ export default function (oapi: Middleware): Router {
 			}
 
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
+			const date_to = get_date(req.params.date_to, true);
 			let op_id: TollOperatorDocument['_id'] | undefined;
 
 			if (req.user.level === UserLevel.Admin) {
