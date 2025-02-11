@@ -3,4 +3,5 @@
 *.luarc.json
 *.nvim.lua
 back-end/.env
-.vscode
+documentation/.~lock.SRS softeng24-17.docx#
+.vscode/settings.json

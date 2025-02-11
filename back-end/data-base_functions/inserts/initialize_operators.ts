@@ -7,7 +7,7 @@ const list_of_operators = [
     {
         _id: 'AM',
         name: 'aegeanmotorway',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -19,7 +19,7 @@ const list_of_operators = [
     {
         _id: 'EG',
         name: 'egnatia',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -31,7 +31,7 @@ const list_of_operators = [
     {
         _id: 'GE',
         name: 'gefyra',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -43,7 +43,7 @@ const list_of_operators = [
     {
         _id: 'KO',
         name: 'kentrikiodos',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -55,7 +55,7 @@ const list_of_operators = [
     {
         _id: 'MO',
         name: 'moreas',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -67,7 +67,7 @@ const list_of_operators = [
     {
         _id: 'NAO',
         name: 'naodos',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -79,7 +79,7 @@ const list_of_operators = [
     {
         _id: 'NO',
         name: 'neaodos',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -91,7 +91,7 @@ const list_of_operators = [
     {
         _id: 'OO',
         name: 'olympiaodos',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Operator,
         email: 'operator@example.com',
         VAT: 'VAT12345',
@@ -103,7 +103,7 @@ const list_of_operators = [
     {
         _id: 'admin',
         name: 'admin',
-        passwordHash: "123456789",
+        passwordHash: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
         userLevel: UserLevel.Admin,
         email: 'operator@example.com',
         VAT: 'VAT12345',
