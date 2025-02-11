@@ -21,6 +21,15 @@ import toll_operators from './routes/db/toll_operators.ts';
 
 function csv_parser (req: Request, res: Response, next: Middleware) {
 		if (req.query.format === undefined || req.query.format === 'json') {
+			const original = res.json;
+			res.json = function (json: object | object[]) {
+				if (res.status >= 400)
+					return res;
+				if (json == null || Object.keys(json).length === 0)
+					return res.status(204).end();
+				else
+					return original.call(this, json);
+			}
 			return next && next();
 		}
 		if (req.query.format !== 'csv') {
