@@ -38,19 +38,39 @@ async function fetchPassesCost(stationop: string, tagop: string, from: string, t
             console.error(`❌ API Error: ${response.status} ${response.statusText}`);
             Deno.exit(1);
         }
+        if (format === "json") {
 
-        // Parse the response body
-        const data = await response.json();
-        //console.log("Response JSON:, ", data);
+            // Parse the response body
+            const data = await response.json();
+            //console.log("Response JSON:, ", data);
 
-        // Check if data is valid
-        if (!data) {
-            console.log("✅ No cost data available for the specified period.");
-            return;
+            // Check if data is valid
+            if (data.length === 0) {
+                console.log("✅ No cost data available for the specified period.");
+                return;
+            }
+
+            console.log("\n✅ Passes Cost Summary:");
+            console.table(data);
         }
+        else {
+            // Read response body as text
+            const csvText = await response.text();
+            // Extract the main fields from the CSV (excluding `passList` for now)
+            const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+            const headers = csvRows[0].split(",");
+            const values = csvRows[1].split(",");
 
-        console.log("\n✅ Passes Cost Summary:");
-        console.table(data);
+            // Convert CSV row into an object
+            const csvData: Record<string, string> = {};
+            headers.forEach((header, index) => {
+                if (header !== "passList") {
+                    csvData[header] = values[index];
+                }
+            });
+            console.log("\n✅ Passes Cost Summary:");
+            console.table([csvData]); 
+        }
 
     } catch (error) {
         console.error("❌ Fetch failed:", error);

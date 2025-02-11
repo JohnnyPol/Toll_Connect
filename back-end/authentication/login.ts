@@ -10,8 +10,8 @@ async function login(req: Request, res: Response): Promise<void> {
 	} = req.body;
 	// assume password is alreasy hashed
 	try {
-		console.log("Username of Request: ", username);
-		console.log("Password of request: ", password);
+		//console.log("Username of Request: ", username);
+		//console.log("Password of request: ", password);
 		const user = await TollOperator.findById(username).exec();
 		if (user === null) {
 			throw new Error(`User ${username} not found`);

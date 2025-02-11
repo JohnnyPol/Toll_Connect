@@ -38,17 +38,17 @@ async function executeAdminCommand(
             const passwordHash = await hashPassword(passw);
 
             // Make a POST request to the /login API
-			const response = await fetch('http://localhost:9115/api/admin/addadmin', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'X-OBSERVATORY-AUTH': token,
-				},
-				body: new URLSearchParams({
-					id: username,
-					password: passwordHash,
-				}).toString(),
-			});
+            const response = await fetch('http://localhost:9115/api/admin/addadmin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-OBSERVATORY-AUTH': token,
+                },
+                body: new URLSearchParams({
+                    id: username,
+                    password: passwordHash,
+                }).toString(),
+            });
 
             // Handle errors based on response status code
             if (!response.ok) {
@@ -61,7 +61,7 @@ async function executeAdminCommand(
             // Check if operation was successful
             if (data.status === "OK") {
                 console.log("✅ Success.\n");
-                console.log("Response JSON: ",data)
+                console.log("Response JSON: ", data)
             } else if (data.status === "failed") {
                 console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
                 Deno.exit(1);
@@ -74,12 +74,39 @@ async function executeAdminCommand(
 
         // List all users
         else if (users) {
-            endpoint = `/admin/users`;
+
+            // Make a POST request to the /login API
+            const response = await fetch('http://localhost:9115/api/admin/', {
+                method: 'POST',
+                headers: {
+                    'X-OBSERVATORY-AUTH': token,
+                },
+            });
+
+            // Handle errors based on response status code
+            if (!response.ok) {
+                console.error(`❌ API Error: ${response.status} ${response.statusText}`);
+                Deno.exit(1);
+            }
+
+            // Parse the response body
+            const data = await response.json();
+
+            // Check if operation was successful
+            if (data.status === "OK") {
+                console.log("✅ Success.\n", data);
+            } else if (data.status === "failed") {
+                console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
+                Deno.exit(1);
+            } else {
+                console.error("❌ Error");
+                Deno.exit(1);
+            }
         }
 
         // Add passes from CSV file
         else if (addpasses) {
-            
+
             if (!source) {
                 console.error("❌ Error: --source (CSV file path) is required for adding passes.");
                 return;
@@ -113,7 +140,7 @@ async function executeAdminCommand(
                 // Check if operation was successful
                 if (data.status === "OK") {
                     console.log("✅ Success.\n");
-                    console.log("Response JSON: ",data)
+                    console.log("Response JSON: ", data)
                 } else if (data.status === "failed") {
                     console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
                     Deno.exit(1);
@@ -133,33 +160,6 @@ async function executeAdminCommand(
         else {
             console.error("❌ Error: No valid admin option provided.");
             return;
-        }
-
-        // Perform the API request
-        const response = await fetch(`${CONFIG.API_URL}${endpoint}`, {
-            method: "POST",
-            headers,
-            body: requestBody ? JSON.stringify(requestBody) : undefined,
-        });
-
-        // Handle errors based on response status code
-        if (!response.ok) {
-            console.error(`❌ API Error: ${response.status} ${response.statusText}`);
-            Deno.exit(1);
-        }
-
-        // Parse the response body
-        const data = await response.json();
-
-        // Check if operation was successful
-        if (data.status === "OK") {
-            console.log("✅ Success.\n", data);
-        } else if (data.status === "failed") {
-            console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
-            Deno.exit(1);
-        } else {
-            console.error("❌ Error");
-            Deno.exit(1);
         }
 
     } catch (error) {
