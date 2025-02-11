@@ -43,14 +43,14 @@ function App() {
 						{/* </Route> */}
 
 						{/* Protected Routes for Admin Users */}
-						<Route element={<ProtectedRoute requiredLevel={UserLevel.Admin} />}>
+						{/* <Route element={<ProtectedRoute requiredLevel={UserLevel.Admin} />}> */}
 							<Route path='/admin' element={<AdminLayout />}>
 								<Route path='dashboard' element={<AdminDashboard />} />
 								<Route path='map' element={<AdminMapPage />} />
 								<Route path='statistics' element={<AdminStatisticsPage />} />
 								<Route path='payments' element={<AdminPaymentsPage />} />
 							</Route>
-						</Route>
+						{/* </Route> */}
 						{/* Default Route */}
 						<Route path='anonymous' element={<AnonymousLayout />}>
 							<Route path='map' element={<AnonymousMapPage />} />

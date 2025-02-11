@@ -125,6 +125,7 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 									<PaymentPopup
 										payment={payment}
 										isPayer={isPayer}
+										isPayee={isPayee}
 									/>
 								</DialogContent>
 							</Dialog>

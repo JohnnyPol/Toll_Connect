@@ -98,13 +98,13 @@ export default function (oapi: Middleware): Router {
 			const status: PaymentStatus = parseInt(req.params.status);
 			const date_from: Date = get_date(req.params.date_from);
 			const date_to: Date = get_date(req.params.date_to);
-			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'admin';
 			const { page_size, page_number, target_op_id, is_payer, is_payee, } = query;
 
 			if (PaymentStatus[req.params.status] === undefined) {
 				return die(res, ErrorType.BadRequest, 'Invalid status');
 			}
-			if (is_payer === false && is_payee === false && status !== PaymentStatus.Validated) {
+			if (is_payer === false && is_payee === false && user !== 'admin') {
 				return die(res, ErrorType.BadRequest, 'is_payer or is_payee should be defined');
 			}
 
@@ -176,7 +176,7 @@ export default function (oapi: Middleware): Router {
 		'/validate/:id',
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
-			const user: TollOperatorDocument['_id'] = /* TODO */ 'AM';
+			const user: TollOperatorDocument['_id'] = /* TODO */ 'NO';
 
 			try {
 				const payment = await Payments.findById(id);
