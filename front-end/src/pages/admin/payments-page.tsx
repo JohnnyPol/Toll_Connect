@@ -45,10 +45,6 @@ export default function AdminPaymentsPage() {
 		},
 	);
 
-	useEffect(() => {
-		console.log(filterFormValues);
-	}, [filterFormValues]);
-
 	return (
 		<>
 			<Toaster position='bottom-center' richColors closeButton />

@@ -1,19 +1,20 @@
 import { axios } from '@/api/index.ts';
-import { StatisticsFilterFormValues } from '@/components/statistics-company-filter-form.tsx';
+import { StatisticsCompanyFilterFormValues } from '@/components/statistics-company-filter-form.tsx';
 import { dateToURLParam } from '@/lib/date-transformer.ts';
 import { Operator } from '@/types/operators.ts';
 import { AggregatePassData, TimeseriesPassData } from '@/types/statistics.ts';
+import { StatisticsAdminFilterFormValues } from '@/components/statistics-admin-filter-form.tsx';
 
 export const statisticsService = {
 	getTimeseriesIncoming: async (
-		filters: StatisticsFilterFormValues,
+		filters: StatisticsCompanyFilterFormValues | StatisticsAdminFilterFormValues,
 		asOperator: Operator['_id'] | undefined,
 	) => {
 		const startDate = dateToURLParam(filters.startDate || new Date(0));
 		const endDate = dateToURLParam(filters.endDate);
 
 		const params = {
-			as_operator: asOperator || 'OO',
+			as_operator: asOperator || undefined,
 		};
 
 		const response = await axios.get<TimeseriesPassData[]>(
@@ -24,14 +25,14 @@ export const statisticsService = {
 		return response.data;
 	},
 	getTimeseriesOutgoing: async (
-		filters: StatisticsFilterFormValues,
+		filters: StatisticsCompanyFilterFormValues | StatisticsAdminFilterFormValues,
 		asOperator: Operator['_id'] | undefined,
 	) => {
 		const startDate = dateToURLParam(filters.startDate || new Date(0));
 		const endDate = dateToURLParam(filters.endDate);
 
 		const params = {
-			as_operator: asOperator || 'OO',
+			as_operator: asOperator || undefined,
 		};
 
 		const response = await axios.get<TimeseriesPassData[]>(
@@ -43,14 +44,14 @@ export const statisticsService = {
 	},
 
 	getAggregateIncoming: async (
-		filters: StatisticsFilterFormValues,
+		filters: StatisticsCompanyFilterFormValues | StatisticsAdminFilterFormValues,
 		asOperator: Operator['_id'] | undefined,
 	) => {
 		const startDate = dateToURLParam(filters.startDate || new Date(0));
 		const endDate = dateToURLParam(filters.endDate);
 
 		const params = {
-			as_operator: asOperator || 'OO',
+			as_operator: asOperator || undefined,
 		};
 
 		const response = await axios.get<AggregatePassData[]>(
@@ -61,14 +62,14 @@ export const statisticsService = {
 		return response.data;
 	},
 	getAggregateOutgoing: async (
-		filters: StatisticsFilterFormValues,
+		filters: StatisticsCompanyFilterFormValues | StatisticsAdminFilterFormValues,
 		asOperator: Operator['_id'] | undefined,
 	) => {
 		const startDate = dateToURLParam(filters.startDate || new Date(0));
 		const endDate = dateToURLParam(filters.endDate);
 
 		const params = {
-			as_operator: asOperator || 'OO',
+			as_operator: asOperator || undefined,
 		};
 
 		const response = await axios.get<AggregatePassData[]>(

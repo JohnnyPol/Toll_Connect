@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isAfter } from 'date-fns/isAfter';
 import {
 	Form,
 	FormControl,
@@ -11,15 +10,6 @@ import {
 } from '@/components/ui/form.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import DateInput from '@/components/date-input.tsx';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select.tsx';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
-import { useOperators } from '@/hooks/use-operators.ts';
 import { toast } from 'sonner';
 import { CheckIcon } from 'lucide-react';
 
@@ -47,11 +37,11 @@ const formSchema = z.object({
 	}
 );
 
-export type StatisticsFilterFormValues = z.infer<typeof formSchema>;
+export type StatisticsCompanyFilterFormValues = z.infer<typeof formSchema>;
 
 interface StatisticsCompanyFilterFormProps {
-	defaultValues: StatisticsFilterFormValues;
-	onSubmit: (values: StatisticsFilterFormValues) => void;
+	defaultValues: StatisticsCompanyFilterFormValues;
+	onSubmit: (values: StatisticsCompanyFilterFormValues) => void;
 }
 
 export const StatisticsCompanyFilterForm: React.FC<StatisticsCompanyFilterFormProps> = ({
@@ -86,11 +76,6 @@ export const StatisticsCompanyFilterForm: React.FC<StatisticsCompanyFilterFormPr
 		if (errors.endDate) {
 			toast.error(errors.endDate.message, {
 				id: 'end-date-error',
-			});
-		}
-		if (errors.specificOperator) {
-			toast.error(errors.specificOperator.message, {
-				id: 'operator-error',
 			});
 		}
 	}, [form.formState.errors]);

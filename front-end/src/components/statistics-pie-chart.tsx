@@ -60,6 +60,8 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 			?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
 	}));
 
+	const totalPasses = data.reduce((acc, item) => acc + item.passes, 0);
+
 	return (
 		<Card className='flex flex-col'>
 			<CardHeader className='items-center pb-0'>
@@ -94,7 +96,7 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 													y={viewBox.cy}
 													className='fill-foreground text-3xl font-bold'
 												>
-													{100}
+													{totalPasses}
 												</tspan>
 												<tspan
 													x={viewBox.cx}

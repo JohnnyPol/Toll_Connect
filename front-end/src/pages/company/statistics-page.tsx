@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Toaster } from '@/components/ui/toast.tsx';
 import {
 	StatisticsCompanyFilterForm,
-	StatisticsFilterFormValues,
+	StatisticsCompanyFilterFormValues,
 } from '@/components/statistics-company-filter-form.tsx';
 import { StatisticsTimeseriesChart } from '@/components/statistics-timeseries-chart.tsx';
 import { StatisticsPieChart } from '../../components/statistics-pie-chart.tsx';
@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 
 export default function StatisticsPage() {
 	const [filterFormValues, setFilterFormValues] = useState<
-		StatisticsFilterFormValues
+		StatisticsCompanyFilterFormValues
 	>({
 		endDate: new Date(),
 	});
@@ -43,7 +43,7 @@ export default function StatisticsPage() {
 	return (
 		<>
 			<Toaster position='bottom-center' richColors closeButton />
-			<div className=''>
+			<div>
 				<div className='p-4 pb-0'>
 					<StatisticsCompanyFilterForm
 						defaultValues={filterFormValues}

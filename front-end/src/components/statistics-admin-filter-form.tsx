@@ -17,15 +17,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select.tsx';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
 import { useOperators } from '@/hooks/use-operators.ts';
 import { toast } from 'sonner';
 import { CheckIcon } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 
 const formSchema = z.object({
 	startDate: z.date().optional(),
 	endDate: z.date(),
-	targets: z.enum(['all', 'specific']),
+	asOperator: z.boolean(),
 	specificOperator: z.string().optional(),
 }).refine(
 	(data) => {
@@ -48,11 +48,11 @@ const formSchema = z.object({
 	},
 ).refine(
 	(data) => {
-		// When targets is 'all', specificOperator must be undefined/null
-		if (data.targets === 'all') {
+		// specificOperator must be undefined/null
+		if (data.asOperator !== true) {
 			return !data.specificOperator;
 		}
-		// When targets is 'specific', specificOperator must be defined
+		// specificOperator must be defined
 		return !!data.specificOperator;
 	},
 	{
@@ -61,14 +61,16 @@ const formSchema = z.object({
 	},
 );
 
-export type PaymentFilterFormValues = z.infer<typeof formSchema>;
+export type StatisticsAdminFilterFormValues = z.infer<typeof formSchema>;
 
-interface PaymentFilterFormProps {
-	defaultValues: PaymentFilterFormValues;
-	onSubmit: (values: PaymentFilterFormValues) => void;
+interface StatisticsAdminFilterFormProps {
+	defaultValues: StatisticsAdminFilterFormValues;
+	onSubmit: (values: StatisticsAdminFilterFormValues) => void;
 }
 
-export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
+export const StatisticsAdminFilterForm: React.FC<
+	StatisticsAdminFilterFormProps
+> = ({
 	defaultValues,
 	onSubmit,
 }) => {
@@ -131,7 +133,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className='flex items-center space-x-4 p-4'
+				className='flex items-center space-x-4'
 			>
 				<FormField
 					control={form.control}
@@ -167,37 +169,27 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 
 				<FormField
 					control={form.control}
-					name='targets'
+					name='asOperator'
 					render={({ field }) => (
 						<FormItem className='space-y-3'>
 							<FormControl>
-								<RadioGroup
-									value={field.value}
-									onValueChange={(value) => {
-										field.onChange(value);
-										if (value === 'all') {
-											form.setValue('specificOperator', '');
-										}
-									}}
-									className='flex flex-row space-x-4'
-								>
-									<FormItem className='flex items-center space-x-2 space-y-0'>
-										<FormControl>
-											<RadioGroupItem value='all' />
-										</FormControl>
-										<span className='text-sm font-medium'>All Targets</span>
-									</FormItem>
-									<FormItem className='flex items-center space-x-2 space-y-0'>
-										<FormControl>
-											<RadioGroupItem value='specific' />
-										</FormControl>
-										<span className='text-sm font-medium'>Specific Target</span>
-									</FormItem>
-								</RadioGroup>
+								<div className="flex items-center space-x-2">
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={(value) => {
+											field.onChange(value);
+											if (value === false) {
+												form.setValue('specificOperator', '');
+											}
+										}}
+									/>
+									<label className="text-sm font-medium">View as Operator</label>
+								</div>
 							</FormControl>
 						</FormItem>
 					)}
 				/>
+
 				<FormField
 					control={form.control}
 					name='specificOperator'
@@ -207,7 +199,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 								<Select
 									onValueChange={field.onChange}
 									value={field.value}
-									disabled={form.watch('targets') === 'all'}
+									disabled={form.watch('asOperator') === false}
 								>
 									<SelectTrigger>
 										<SelectValue placeholder='Select an operator' />

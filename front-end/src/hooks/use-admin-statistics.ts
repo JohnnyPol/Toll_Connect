@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { StatisticsCompanyFilterFormValues } from '@/components/statistics-company-filter-form.tsx';
+import { StatisticsAdminFilterFormValues } from '@/components/statistics-admin-filter-form.tsx';
 import { AggregatePassData, TimeseriesPassData } from '@/types/statistics.ts';
 import { statisticsService } from '@/api/services/statistics.ts';
 
-interface UseCompanyStatisticsReturn {
+interface UseAdminStatisticsReturn {
 	timeseriesIncoming: TimeseriesPassData[] | undefined;
 	timeseriesOutgoing: TimeseriesPassData[] | undefined;
 	timeseriesLoading: boolean;
@@ -14,16 +14,16 @@ interface UseCompanyStatisticsReturn {
 	aggregateError: Error | null;
 }
 
-export const useCompanyStatistics = (
-	filters: StatisticsCompanyFilterFormValues,
-): UseCompanyStatisticsReturn => {
+export const useAdminStatistics = (
+	filters: StatisticsAdminFilterFormValues,
+): UseAdminStatisticsReturn => {
 	const {
 		data: timeseriesIncoming,
 		isLoading: timeseriesIncomingLoading,
 		error: timeseriesIncomingError,
 	} = useQuery({
 		queryKey: ['timeseriesIncoming', filters],
-		queryFn: () => statisticsService.getTimeseriesIncoming(filters, undefined),
+		queryFn: () => statisticsService.getTimeseriesIncoming(filters, filters?.specificOperator),
 	});
 
 	const {
@@ -32,7 +32,7 @@ export const useCompanyStatistics = (
 		error: timeseriesOutgoingError,
 	} = useQuery({
 		queryKey: ['timeseriesOutgoing', filters],
-		queryFn: () => statisticsService.getTimeseriesOutgoing(filters, undefined),
+		queryFn: () => statisticsService.getTimeseriesOutgoing(filters, filters?.specificOperator),
 	});
 
 	const {
@@ -41,7 +41,7 @@ export const useCompanyStatistics = (
 		error: aggregateIncomingError,
 	} = useQuery({
 		queryKey: ['aggregateIncoming', filters],
-		queryFn: () => statisticsService.getAggregateIncoming(filters, undefined),
+		queryFn: () => statisticsService.getAggregateIncoming(filters, filters?.specificOperator),
 	});
 
 	const {
@@ -50,7 +50,7 @@ export const useCompanyStatistics = (
 		error: aggregateOutgoingError,
 	} = useQuery({
 		queryKey: ['aggregateOutgoing', filters],
-		queryFn: () => statisticsService.getAggregateOutgoing(filters, undefined),
+		queryFn: () => statisticsService.getAggregateOutgoing(filters, filters?.specificOperator),
 	});
 
 	const timeseriesLoading = timeseriesIncomingLoading || timeseriesOutgoingLoading;
