@@ -1,5 +1,5 @@
-import jwtDecode from "https://esm.sh/jwt-decode@3.1.2";
-import { Token, UserLevel } from "@/components/login-form.tsx";
+import { jwtDecode } from "jwt-decode";
+import { Token, UserLevel } from "@/types/auth.ts";
 
 export function isAuthenticated(userLevel: UserLevel): boolean {
   const token = localStorage.getItem("authToken");

@@ -1,7 +1,7 @@
-import { Middleware, Request, Response, Router, urlencoded } from 'npm:express';
+import { Middleware, Request, Response, Router, urlencoded } from 'express';
 
-import TollOperator, { UserLevel } from '../models/toll_operator.ts';
-import { create, verify } from './jwt.ts';
+import TollOperator from '@/models/toll_operator.ts';
+import { create, verify } from '@/authentication/jwt.ts';
 
 async function login(req: Request, res: Response): Promise<void> {
 	const { username, password }: {

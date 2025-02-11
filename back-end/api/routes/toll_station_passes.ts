@@ -1,9 +1,9 @@
-import { Middleware, Request, Response, Router } from 'npm:express';
+import { Middleware, Request, Response, Router } from 'express';
+import { die, ErrorType, get_date, set_date } from '@/api/util.ts';
 
-import Toll from '../../models/toll.ts';
-import TollOperator from '../../models/toll_operator.ts';
-import Pass from '../../models/pass.ts';
-import { die, ErrorType, get_date, set_date } from '../util.ts';
+import Toll from '@/models/toll.ts';
+import TollOperator, { UserLevel } from '@/models/toll_operator.ts';
+import Pass from '@/models/pass.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
@@ -13,12 +13,32 @@ export default function (oapi: Middleware): Router {
 		oapi.path({
 			tags: ['Operations'], // Replace with the appropriate tag
 			summary: 'Toll Station Passes',
-			description: 'Returns an object containing a list of pass details for the given toll station and period.',
+			description:
+				'Returns an object containing a list of pass details for the given toll station and period.',
 			operationId: 'getTollStationPasses',
 			parameters: [
-				{ in: 'path', name: 'tollStationID', schema: { type: 'string' }, required: true, description: 'The unique ID of the toll station' },
-				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'The start date of the period (YYYYMMDD)' },
-				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'The end date of the period (YYYYMMDD)' }
+				{ $ref: '#definitions/TokenHeader' },
+				{
+					in: 'path',
+					name: 'station_id',
+					schema: { type: 'string' },
+					required: true,
+					description: 'The unique ID of the toll station',
+				},
+				{
+					in: 'path',
+					name: 'date_from',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'The start date of the period (YYYYMMDD)',
+				},
+				{
+					in: 'path',
+					name: 'date_to',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'The end date of the period (YYYYMMDD)',
+				},
 			],
 			responses: {
 				200: {
@@ -26,52 +46,29 @@ export default function (oapi: Middleware): Router {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/TollStationPassesResponse'
-							}
-						}
-					}
+								$ref: '#/definitions/TollStationPassesResponse',
+							},
+						},
+					},
 				},
-				400: {
-					description: 'Bad Request - Invalid input',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Internal Server Error',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				}
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },					
 			}
 		}),
 		async (req: Request, res: Response) => {
 			const stationID: string = req.params.station_id;
 			const date_from: Date = get_date(req.params.date_from);
-			const date_to: Date = get_date(req.params.date_to);
+			const date_to: Date = get_date(req.params.date_to, true);
+
+			if (
+				req.user.id !== stationID && req.user.level !== UserLevel.Admin
+			) {
+				die(res, ErrorType.BadRequest, 'permission denied');
+			}
 
 			try {
-				const tollStation = await Toll.findById(
-					stationID,
-				);
+				const tollStation = await Toll.findById(stationID);
 				if (!tollStation) {
 					return die(
 						res,
@@ -93,11 +90,8 @@ export default function (oapi: Middleware): Router {
 				const stationOperator = operator.name;
 
 				const passes = await Pass.find({
-					"toll._id": stationID,
-					time: {
-						$gte: date_from,
-						$lte: date_to,
-					},
+					'toll._id': stationID,
+					time: { $gte: date_from, $lte: date_to },
 				}).populate('tag').sort('time');
 
 				// Construct response object
@@ -113,33 +107,24 @@ export default function (oapi: Middleware): Router {
 						index: number,
 					) => {
 						return {
-							passIndex: index + 1, // Starts from 1
+							passIndex: index + 1,
 							passID: pass._id,
 							timestamp: set_date(
 								pass.time,
 							),
 							tagID: pass.tag._id,
-							tagProvider:
-								pass.tag.tollOperator,
-							passType:
-								pass.tag.tollOperator ===
-										operator._id
-									? 'home'
-									: 'visitor',
-							passCharge: pass.charge, // Assuming a field for charge
+							tagProvider: pass.tag.tollOperator,
+							passType: pass.tag.tollOperator ===
+									operator._id
+								? 'home'
+								: 'visitor',
+							passCharge: pass.charge,
 						};
 					}),
 				});
 			} catch (error) {
-				console.error(
-					'Error fetching toll station passes:',
-					error,
-				);
-				die(
-					res,
-					ErrorType.Internal,
-					'Internal Server Error',
-				);
+				console.error('Error fetching toll station passes:', error);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);

@@ -1,12 +1,14 @@
 import { Middleware, Request, Response, Router } from 'npm:express';
-import { die, ErrorType, get_date, set_date } from '../util.ts';
+import { die, ErrorType, get_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
 import Toll from '@/models/toll.ts';
-import TollOperators, { TollOperatorDocument, UserLevel } from '@/models/toll_operator.ts';
+import TollOperators, {
+	TollOperatorDocument,
+	UserLevel,
+} from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
 import Tag from '@/models/tag.ts';
-import moment from 'npm:moment';
 
 const groupByOperator = (field: string) => ({
 	$group: {
@@ -51,9 +53,20 @@ export default function (oapi: Middleware): Router {
 	router.get(
 		'/heatmap',
 		async (req: Request, res: Response) => {
+			if (req.user.level !== UserLevel.Operator) {
+				return die(res, ErrorType.Unauthorized, 'Unauthorized');
+			}
+
+			const op_id: TollOperatorDocument['_id'] = req.user.id;
+			if (await TollOperators.findById(op_id) === null) {
+				return die(res, ErrorType.BadRequest, 'Invalid operator');
+			}
+
 			try {
 				const tolls = await Toll.find({}).sort('_id');
-				const passes = await Pass.find({}).sort('toll');
+				const passes = await Pass.find({
+					'tag.tollOperator': op_id,
+				}).sort('toll');
 
 				const resp: {
 					latitude: number;
@@ -64,7 +77,7 @@ export default function (oapi: Middleware): Router {
 				let i = 0;
 				tolls.forEach((toll) => {
 					const { _id, latitude, longitude } = toll;
-					let len = resp.push({ latitude, longitude, count: 0 });
+					const len = resp.push({ latitude, longitude, count: 0 });
 					for (
 						;
 						i < passes.length && passes[i].toll._id == _id;
@@ -77,7 +90,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(resp);
 			} catch (err) {
 				console.error('Error in heatmap:', err);
-				die(res, ErrorType.Internal, 'Error in heatmap');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -129,6 +142,14 @@ export default function (oapi: Middleware): Router {
 				const totalPasses = passes.length;
 				const avgPasses = totalPasses / <number> days;
 
+				if (req.user.level === UserLevel.Anonymous) {
+					res.status(200).json({
+						toll: tollDocument,
+						avg_passes: avgPasses,
+					});
+					return;
+				}
+
 				// Aggregate passes per operator
 				const operatorData = new Map<string, number>();
 
@@ -155,6 +176,17 @@ export default function (oapi: Middleware): Router {
 						passes,
 					}));
 
+				if (req.user.level === UserLevel.Operator) {
+					if (req.user.id !== tollDocument.tollOperator) {
+						res.status(200).json({
+							toll: tollDocument,
+							avg_passes: avgPasses,
+							my_passes: operatorsPassesList.find( (op) => op.operator === req.user.id)?.passes || 0,
+						});
+						return;
+					}
+				}
+
 				// Construct and send response
 				res.status(200).json({
 					toll: tollDocument,
@@ -163,7 +195,7 @@ export default function (oapi: Middleware): Router {
 				});
 			} catch (err) {
 				console.error('Error fetching toll data:', err);
-				die(res, ErrorType.Internal, 'Error fetching toll data');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -184,10 +216,19 @@ export default function (oapi: Middleware): Router {
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
 		async (req: Request, res: Response) => {
+			if (req.user.level === UserLevel.Anonymous) {
+				return die(res, ErrorType.Unauthorized, 'Unauthorized');
+			}
+
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined =
-				req.query.as_operator;
+			const date_to = get_date(req.params.date_to, true);
+			let op_id: TollOperatorDocument['_id'] | undefined;
+
+			if (req.user.level === UserLevel.Admin) {
+				op_id = req.query.as_operator;
+			} else {
+				op_id = req.user.id;
+			}
 
 			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
@@ -215,7 +256,7 @@ export default function (oapi: Middleware): Router {
 				));
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -236,10 +277,19 @@ export default function (oapi: Middleware): Router {
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
 		async (req: Request, res: Response) => {
+			if (req.user.level === UserLevel.Anonymous) {
+				return die(res, ErrorType.Unauthorized, 'Unauthorized');
+			}
+
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined =
-				req.query.as_operator;
+			const date_to = get_date(req.params.date_to, true);
+			let op_id: TollOperatorDocument['_id'] | undefined;
+
+			if (req.user.level === UserLevel.Admin) {
+				op_id = req.query.as_operator;
+			} else {
+				op_id = req.user.id;
+			}
 
 			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
@@ -267,7 +317,7 @@ export default function (oapi: Middleware): Router {
 				));
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -286,10 +336,19 @@ export default function (oapi: Middleware): Router {
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
 		async (req: Request, res: Response) => {
+			if (req.user.level === UserLevel.Anonymous) {
+				return die(res, ErrorType.Unauthorized, 'Unauthorized');
+			}
+
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined =
-				req.query.as_operator;
+			const date_to = get_date(req.params.date_to, true);
+			let op_id: TollOperatorDocument['_id'] | undefined;
+
+			if (req.user.level === UserLevel.Admin) {
+				op_id = req.query.as_operator;
+			} else {
+				op_id = req.user.id;
+			}
 
 			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
@@ -314,7 +373,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -333,10 +392,19 @@ export default function (oapi: Middleware): Router {
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
 		async (req: Request, res: Response) => {
+			if (req.user.level === UserLevel.Anonymous) {
+				return die(res, ErrorType.Unauthorized, 'Unauthorized');
+			}
+
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
-			const op_id: TollOperatorDocument['_id'] | undefined =
-				req.query.as_operator;
+			const date_to = get_date(req.params.date_to, true);
+			let op_id: TollOperatorDocument['_id'] | undefined;
+
+			if (req.user.level === UserLevel.Admin) {
+				op_id = req.query.as_operator;
+			} else {
+				op_id = req.user.id;
+			}
 
 			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
@@ -361,7 +429,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

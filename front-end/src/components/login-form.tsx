@@ -3,21 +3,10 @@ import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import incognitoLogo from '@/assets/incognito.svg';
-import jwtDecode from 'https://esm.sh/jwt-decode@3.1.2';
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
-
-export enum UserLevel {
-	Anonymous = 0,
-	Operator = 1,
-	Admin = 2,
-}
-
-export type Token = {
-	level: UserLevel;
-	name: string;
-	exp: number;
-};
+import { Token, UserLevel } from '@/types/auth.ts';
 
 export function LoginForm({
 	className,

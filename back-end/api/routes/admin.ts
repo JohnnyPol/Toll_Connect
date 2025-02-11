@@ -1,5 +1,12 @@
 // api/routes/admin.ts
-import { Middleware, Request, Response, Router, urlencoded } from 'express';
+import {
+	Middleware,
+	NextFunction,
+	Request,
+	Response,
+	Router,
+	urlencoded,
+} from 'express';
 import mongoose from 'mongoose';
 import multer, { FileFilterCallback } from 'multer';
 import { dirname, fromFileUrl, join } from '@std/path';
@@ -123,11 +130,11 @@ function validateCSVFile(csvContent: string): boolean {
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
-	router.use((req: Request, res: Response, next: Middleware) => {
+	router.use((req: Request, res: Response, next: NextFunction) => {
 		if (req.user.level !== UserLevel.Admin) {
 			return die(res, ErrorType.BadRequest, 'Admin level required');
 		}
-		next();
+		return next();
 	});
 
 	// Healthcheck endpoint
@@ -137,6 +144,9 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Check system health',
 			operationId: 'getHealthcheck',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+			],
 			responses: {
 				200: {
 					description: 'System healthy',
@@ -185,7 +195,7 @@ export default function (oapi: Middleware): Router {
 					n_passes: passes,
 				});
 			} catch (error) {
-				console.error(error);
+				console.error('ERR /api/admin/healthcheck', error);
 				res.status(401).json({
 					status: 'failed',
 					dbconnection: 'mongodb://localhost:27017/',
@@ -201,6 +211,9 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Reset stations data',
 			operationId: 'resetStations',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+			],
 			responses: {
 				200: {
 					description: 'Reset successful',
@@ -212,26 +225,8 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Reset failed',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error',
-							},
-						},
-					},
-				},
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			},
 		}),
 		async (_req: Request, res: Response) => {
@@ -258,13 +253,8 @@ export default function (oapi: Middleware): Router {
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error('Error in resetstations:', error);
-				res.status(500).json({
-					status: 'failed',
-					info: error instanceof Error
-						? error.message
-						: 'Unknown error occurred',
-				});
+				console.error('ERR in resetstations:', error);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);
@@ -275,6 +265,9 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Reset passes data',
 			operationId: 'resetPasses',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+			],
 			responses: {
 				200: {
 					description: 'Reset successful',
@@ -286,26 +279,8 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Reset failed',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error',
-							},
-						},
-					},
-				},
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			},
 		}),
 		async (_req: Request, res: Response) => {
@@ -333,13 +308,8 @@ export default function (oapi: Middleware): Router {
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error('Error in resetpasses:', error);
-				res.status(500).json({
-					status: 'failed',
-					info: error instanceof Error
-						? error.message
-						: 'Unknown error occurred',
-				});
+				console.error('ERR in resetpasses:', error);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);
@@ -351,6 +321,7 @@ export default function (oapi: Middleware): Router {
 			summary: 'Add passes from CSV',
 			operationId: 'addPasses',
 			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
 				{
 					in: 'formData',
 					name: 'file',
@@ -370,39 +341,21 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Operation failed',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error',
-							},
-						},
-					},
-				},
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			},
 		}),
 		upload.single('file'),
 		async (req: Request, res: Response) => {
 			try {
 				console.log(
-					' Received request to upload passes',
+					'Received request to upload passes',
 				);
-				console.log(' req.body:', req.body);
-				console.log(' req.file:', req.file);
+				console.log('req.body:', req.body);
+				console.log('req.file:', req.file);
 
 				if (!req.file) {
-					console.error(' No file uploaded');
+					console.error('No file uploaded');
 					throw new Error('No file uploaded');
 				}
 
@@ -422,18 +375,13 @@ export default function (oapi: Middleware): Router {
 
 				await insertPassesFromCSV(csvContent, false);
 				console.log(
-					' Successfully inserted passes from CSV.',
+					'Successfully inserted passes from CSV.',
 				);
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error(' Error in /addpasses:', error);
-				res.status(500).json({
-					status: 'failed',
-					info: error instanceof Error
-						? error.message
-						: 'Unknown error occurred',
-				});
+				console.error('ERR in /addpasses:', error);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);
@@ -450,17 +398,10 @@ export default function (oapi: Middleware): Router {
 		 * 		passes: number,
 		 * 		cost: number
 		 * }[]
-		 *
-		 * Notes:
-		 *  - Only allowed on admin
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
-			const date_to = get_date(req.params.date_to);
-
-			if (req.user.level !== UserLevel.Admin) {
-				return die(res, ErrorType.BadRequest, 'only admin allowed');
-			}
+			const date_to = get_date(req.params.date_to, true);
 
 			try {
 				const response = await Pass.aggregate([
@@ -471,7 +412,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -508,7 +449,7 @@ export default function (oapi: Middleware): Router {
 				return res.status(200).json({ status: 'OK', info });
 			} catch (err) {
 				console.error('Internal error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

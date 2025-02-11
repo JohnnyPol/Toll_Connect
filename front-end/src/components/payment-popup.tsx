@@ -9,6 +9,7 @@ import { paymentService } from '@/api/services/payments.ts';
 interface PaymentPopupProps {
 	payment: Payment;
 	isPayer: boolean;
+	isPayee: boolean;
 }
 
 function convertStatus(status: PaymentStatus) {
@@ -23,7 +24,7 @@ function convertStatus(status: PaymentStatus) {
 }
 
 export const PaymentPopup: React.FC<PaymentPopupProps> = (
-	{ payment, isPayer },
+	{ payment, isPayer, isPayee },
 ) => {
 	const status = payment.dateofValidation
 		? PaymentStatus.Validated
@@ -135,7 +136,7 @@ export const PaymentPopup: React.FC<PaymentPopupProps> = (
 					</p>
 				</div>
 			</div>
-			{((isPayer && status === PaymentStatus.Created) ||
+			{(isPayer || isPayee) && ((isPayer && status === PaymentStatus.Created) ||
 				(!isPayer && status === PaymentStatus.Paid)) && (
 				<div className='flex justify-center mt-6'>
 					{isPayer && status === PaymentStatus.Created && (

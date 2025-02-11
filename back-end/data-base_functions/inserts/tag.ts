@@ -1,4 +1,4 @@
-import { connect, disconnect, ClientSession } from 'npm:mongoose';
+import { ClientSession, connect, disconnect } from 'npm:mongoose';
 import Tag from '../../models/tag.ts';
 
 /**
@@ -7,8 +7,8 @@ import Tag from '../../models/tag.ts';
  * @param {string} tollOperator - The ID of the toll operator
  */
 async function insertTagConnect({
-    _id,
-    tollOperator
+	_id,
+	tollOperator,
 }: {
 	_id: string;
 	tollOperator: string;
@@ -26,36 +26,23 @@ async function insertTagConnect({
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
 			if (dbError.message.includes('ECONNREFUSED')) {
-				console.error(
-					'Database connection failed:',
-					dbError.message,
-				);
+				console.error('Database connection failed:', dbError);
 			} else {
-				console.error(
-					'Failed to insert Tag:',
-					dbError.message,
-				);
+				console.error('Failed to insert Tag:', dbError);
 			}
 		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
+			console.error('Unknown error occurred during database operation.');
 		}
 		throw dbError;
 	} finally {
 		try {
 			await disconnect();
 			console.log('Disconnected from MongoDB');
-		} catch (disconnectError: unknown) {
-			if (disconnectError instanceof Error) {
-				console.error(
-					'Error disconnecting from MongoDB:',
-					disconnectError.message,
-				);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				console.error('Error disconnecting from MongoDB:', err);
 			} else {
-				console.error(
-					'Unknown error occurred during disconnection.',
-				);
+				console.error('Unknown error occurred during disconnection.');
 			}
 		}
 	}
@@ -67,32 +54,30 @@ async function insertTagConnect({
  * @param {string} tollOperator - The ID of the toll operator
  */
 async function insertTag({
-    _id,
-    tollOperator
+	_id,
+	tollOperator,
 }: {
-    _id: string;
-    tollOperator: string;
-}, session?:ClientSession) {
-    try {
-        const tagData = { _id, tollOperator };
-        const tag = new Tag(tagData);
-        if(session) {
-            const newTag = await tag.save({session});
-            console.log('Inserted Tag:', newTag);
-        } else {
-            const newTag = await tag.save();
-            console.log('Inserted Tag:', newTag);
-        }        
-        
-    } catch (dbError: unknown) {
-        if (dbError instanceof Error) {
-            console.error('Failed to insert Tag:', dbError.message);
-        } else {
-            console.error('Unknown error occurred during database operation.');
-        }
-        throw(dbError);
-    }
+	_id: string;
+	tollOperator: string;
+}, session?: ClientSession) {
+	try {
+		const tagData = { _id, tollOperator };
+		const tag = new Tag(tagData);
+		if (session) {
+			const newTag = await tag.save({ session });
+			console.log('Inserted Tag:', newTag);
+		} else {
+			const newTag = await tag.save();
+			console.log('Inserted Tag:', newTag);
+		}
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			console.error('Failed to insert Tag:', dbError);
+		} else {
+			console.error('Unknown error occurred during database operation.');
+		}
+		throw dbError;
+	}
 }
-
 
 export { insertTag, insertTagConnect };

@@ -5,6 +5,7 @@
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/csv@^1.0.5": "1.0.5",
     "jsr:@std/datetime@*": "0.225.3",
+    "jsr:@std/datetime@~0.225.3": "0.225.3",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/streams@^1.0.8": "1.0.9",
@@ -1395,6 +1396,7 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "jsr:@std/csv@^1.0.5",
+      "jsr:@std/datetime@~0.225.3",
       "jsr:@std/path@^1.0.8",
       "npm:@wesleytodd/openapi@^1.1.0",
       "npm:cors@*",

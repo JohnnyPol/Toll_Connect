@@ -65,7 +65,7 @@ async function insertPassConnect({
 		} catch (error) {
 			if (error instanceof MongoError && error.code === 11000) {
 				// This means the unique index violation occurred
-				console.log('Error: Duplicate pass entry detected');
+				console.error('Error: Duplicate pass entry detected');
 				// Handle the error as needed, e.g., sending a specific message to the user
 			} else {
 				// Other errors
@@ -77,9 +77,9 @@ async function insertPassConnect({
 		if (dbError instanceof Error) {
 			// Type narrowing to handle 'unknown' error type
 			if (dbError.message.includes('ECONNREFUSED')) {
-				console.error('Database connection failed:', dbError.message);
+				console.error('Database connection failed:', dbError);
 			} else {
-				console.error('Failed to insert Pass:', dbError.message);
+				console.error('Failed to insert Pass:', dbError);
 			}
 		} else {
 			console.error('Unknown error occurred during database operation.');
@@ -94,7 +94,7 @@ async function insertPassConnect({
 			if (disconnectError instanceof Error) {
 				console.error(
 					'Error disconnecting from MongoDB:',
-					disconnectError.message,
+					disconnectError,
 				);
 			} else {
 				console.error('Unknown error occurred during disconnection.');
@@ -150,13 +150,13 @@ async function insertPass({
 		let tollOperator;
 
 		try {
-			let test_toll; 
+			let test_toll;
 
-      if(session) {
-        test_toll= await Toll.findById(toll).session(session);
-      } else {
-        test_toll = await Toll.findById(toll);
-      }
+			if (session) {
+				test_toll = await Toll.findById(toll).session(session);
+			} else {
+				test_toll = await Toll.findById(toll);
+			}
 
 			if (!test_toll) {
 				console.log('Toll not found');
@@ -190,7 +190,7 @@ async function insertPass({
 		} catch (error) {
 			if (error instanceof MongoError && error.code === 11000) {
 				// This means the unique index violation occurred
-				console.log('Error: Duplicate pass entry detected');
+				console.error('Error: Duplicate pass entry detected');
 				// Handle the error as needed, e.g., sending a specific message to the user
 			} else {
 				// Other errors
@@ -200,7 +200,7 @@ async function insertPass({
 		}
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
-			console.error('Failed to insert Pass:', dbError.message);
+			console.error('Failed to insert Pass:', dbError);
 		} else {
 			console.error('Unknown error occurred during database operation.');
 		}

@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import jwtDecode from 'https://esm.sh/jwt-decode@3.1.2';
+import { jwtDecode } from 'jwt-decode';
 import { GalleryVerticalEnd } from 'lucide-react';
 
 import { LoginForm } from '@/components/login-form.tsx';
 import tollImage from '@/assets/tolls.jpeg';
-import { Token, UserLevel } from '@/components/login-form.tsx';
+import { Token, UserLevel } from '@/types/auth.ts';
 
 export default function LoginPage() {
 	// Redirection of login if valid token

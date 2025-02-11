@@ -24,15 +24,9 @@ async function insertRoadConnect({
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
 			if (dbError.message.includes('ECONNREFUSED')) {
-				console.error(
-					'Database connection failed:',
-					dbError.message,
-				);
+				console.error('Database connection failed:', dbError);
 			} else {
-				console.error(
-					'Failed to insert Road:',
-					dbError.message,
-				);
+				console.error('Failed to insert Road:', dbError);
 			}
 		} else {
 			console.error(
@@ -44,16 +38,11 @@ async function insertRoadConnect({
 		try {
 			await disconnect();
 			console.log('Disconnected from MongoDB');
-		} catch (disconnectError: unknown) {
-			if (disconnectError instanceof Error) {
-				console.error(
-					'Error disconnecting from MongoDB:',
-					disconnectError.message,
-				);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				console.error('Error disconnecting from MongoDB:', err);
 			} else {
-				console.error(
-					'Unknown error occurred during disconnection.',
-				);
+				console.error( 'Unknown error occurred during disconnection.');
 			}
 		}
 	}
@@ -75,14 +64,9 @@ async function insertRoad({
 		console.log('Inserted Road:', newRoad);
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
-			console.error(
-				'Failed to insert Road:',
-				dbError.message,
-			);
+			console.error('Failed to insert Road:', dbError);
 		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
+			console.error('Unknown error occurred during database operation.');
 		}
 		throw dbError;
 	}

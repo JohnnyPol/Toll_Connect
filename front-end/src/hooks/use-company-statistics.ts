@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { StatisticsFilterFormValues } from '@/components/statistics-company-filter-form.tsx';
+import { StatisticsCompanyFilterFormValues } from '@/components/statistics-company-filter-form.tsx';
 import { AggregatePassData, TimeseriesPassData } from '@/types/statistics.ts';
 import { statisticsService } from '@/api/services/statistics.ts';
 
@@ -15,7 +15,7 @@ interface UseCompanyStatisticsReturn {
 }
 
 export const useCompanyStatistics = (
-	filters: StatisticsFilterFormValues,
+	filters: StatisticsCompanyFilterFormValues,
 ): UseCompanyStatisticsReturn => {
 	const {
 		data: timeseriesIncoming,

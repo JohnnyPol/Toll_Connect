@@ -2,7 +2,7 @@ import { Middleware, Request, Response, Router } from 'express';
 import { die, ErrorType } from '@/api/util.ts';
 import TollOperator, { UserLevel } from '@/models/toll_operator.ts';
 
-export default function (oapi: Middleware): Router {
+export default function (_oapi: Middleware): Router {
 	const router = new Router();
 
 	/**
@@ -17,7 +17,7 @@ export default function (oapi: Middleware): Router {
 			res.status(200).json(tollOperators);
 		} catch (error) {
 			console.error('Error fetching toll operators:', error);
-			die(res, ErrorType.Internal, 'Error fetching toll operators');
+			die(res, ErrorType.Internal, error);
 		}
 	});
 
@@ -41,7 +41,21 @@ export default function (oapi: Middleware): Router {
 			res.status(200).json(tollOperator);
 		} catch (error) {
 			console.error('Error fetching toll operator:', error);
-			die(res, ErrorType.Internal, 'Error fetching toll operator');
+			die(res, ErrorType.Internal, error);
+		}
+	});
+
+	/**
+	 * GET /toll-operators/all
+	 * Retrieves all toll operators
+	 */
+	router.get('/admin/all', async (_req: Request, res: Response) => {
+		try {
+			const tollOperators = await TollOperator.find().lean();
+			res.status(200).json(tollOperators.map(op => op._id));
+		} catch (error) {
+			console.error('Error fetching toll operators:', error);
+			die(res, ErrorType.Internal, error);
 		}
 	});
 
