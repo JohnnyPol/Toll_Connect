@@ -21,7 +21,7 @@ export default function (oapi: Middleware): Router {
 				{ $ref: '#definitions/TokenHeader' },
 				{
 					in: 'path',
-					name: 'tollOpID',
+					name: 'operator_id',
 					schema: { type: 'string' },
 					required: true,
 					description: 'The ID of the operator',

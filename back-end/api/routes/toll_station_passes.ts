@@ -20,7 +20,7 @@ export default function (oapi: Middleware): Router {
 				{ $ref: '#definitions/TokenHeader' },
 				{
 					in: 'path',
-					name: 'tollStationID',
+					name: 'station_id',
 					schema: { type: 'string' },
 					required: true,
 					description: 'The unique ID of the toll station',

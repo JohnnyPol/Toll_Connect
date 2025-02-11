@@ -21,14 +21,14 @@ export default function (oapi: Middleware): Router {
 				{ $ref: '#definitions/TokenHeader' },
 				{
 					in: 'path',
-					name: 'stationOpID',
+					name: 'operator_id',
 					schema: { type: 'string' },
 					required: true,
 					description: 'The ID of the station operator',
 				},
 				{
 					in: 'path',
-					name: 'tagOpID',
+					name: 'tag_id',
 					schema: { type: 'string' },
 					required: true,
 					description: 'The ID of the tag operator/provider',
