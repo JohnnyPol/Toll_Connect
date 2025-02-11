@@ -291,7 +291,7 @@ export default function (oapi: Middleware): Router {
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined) {
+			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
 			if (await TollOperators.findById(op_id) === null) {
