@@ -114,6 +114,7 @@ export default function (oapi: Middleware): Router {
 						...operators_to_query(is_payer, is_payee, user, target_op_id),
 						...status_to_query(status),
 						dateofCharge: { $gte: date_from, $lte: date_to },
+						$expr: { $ne: ["$payer", "$payee"] }
 					}
 				}, {
 					$facet: {
