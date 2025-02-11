@@ -3,7 +3,7 @@ import { die, ErrorType, get_date, set_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
 import Toll from '@/models/toll.ts';
-import TollOperators, { TollOperatorDocument } from '@/models/toll_operator.ts';
+import TollOperators, { TollOperatorDocument, UserLevel } from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
 import Tag from '@/models/tag.ts';
 import moment from 'npm:moment';
@@ -189,7 +189,7 @@ export default function (oapi: Middleware): Router {
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined) {
+			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
 			if (await TollOperators.findById(op_id) === null) {
@@ -241,7 +241,7 @@ export default function (oapi: Middleware): Router {
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined) {
+			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
 			if (await TollOperators.findById(op_id) === null) {
@@ -338,7 +338,7 @@ export default function (oapi: Middleware): Router {
 			const op_id: TollOperatorDocument['_id'] | undefined =
 				req.query.as_operator;
 
-			if (/* TODO: logged in as admin && */ op_id === undefined) {
+			if (req.user.level === UserLevel.Admin && op_id === undefined) {
 				return die(res, ErrorType.BadRequest, 'as_operator required');
 			}
 			if (await TollOperators.findById(op_id) === null) {
