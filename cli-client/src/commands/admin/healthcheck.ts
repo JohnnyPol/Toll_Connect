@@ -1,5 +1,6 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken } from "../../utils.ts";
 
 /**
  * Fetches and displays the system health status.
@@ -9,14 +10,8 @@ async function fetchHealthCheck() {
     console.log("🔍 Checking system health...");
 
     // Read authentication token if available
-    let token: string | null = null;
-    try {
-      token = await Deno.readTextFile(CONFIG.TOKEN_FILE);
-      token = token.trim();
-    } catch (_error) {
-      console.warn("⚠️ No authentication token found. Login first.");
-    }
-
+    const token = await getAuthToken();
+    if (!token) return;
     // Define headers
     const headers: Record<string, string> = {
       "Content-Type": "application/json",

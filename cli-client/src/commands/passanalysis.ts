@@ -1,22 +1,20 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken, isValidFormat } from "@/src/utils.ts";
 
 /**
  * Fetches pass analysis data between two operators for a specific date range.
  */
-async function fetchPassAnalysis(stationop: string, tagop: string, from: string, to: string) {
+async function fetchPassAnalysis(stationop: string, tagop: string, from: string, to: string, format: string) {
     try {
+        // Check if the --format option is valid
+        if (!isValidFormat(format)) return;
+
         console.log(`🔍 Fetching pass analysis between operators ${stationop} and ${tagop} from ${from} to ${to}...`);
 
         // Read authentication token
-        let token: string | null = null;
-        try {
-            token = await Deno.readTextFile(CONFIG.TOKEN_FILE);
-            token = token.trim();
-        } catch (_error) {
-            console.warn("⚠️ No authentication token found. Login first.");
-            return;
-        }
+        const token = await getAuthToken();
+        if (!token) return;
 
         // Define headers
         const headers: Record<string, string> = {
@@ -25,7 +23,7 @@ async function fetchPassAnalysis(stationop: string, tagop: string, from: string,
         };
 
         // Perform the API request
-        const response = await fetch(`${CONFIG.API_URL}/passAnalysis/${stationop}/${tagop}/${from}/${to}`, {
+        const response = await fetch(`${CONFIG.API_URL}/passAnalysis/${stationop}/${tagop}/${from}/${to}/?format=${format}`, {
             method: "GET",
             headers,
         });
@@ -43,21 +41,15 @@ async function fetchPassAnalysis(stationop: string, tagop: string, from: string,
 
         // Parse the response body
         const data = await response.json();
-
+        // TODO: See if you need to output all the parameters including the passList.
         // Check if data is valid
-        if (!data.totalPasses || !data.totalCost) {
+        if (!data) {
             console.log("✅ No pass analysis data available for the specified period.");
             return;
         }
 
         console.log("\n✅ Pass Analysis Summary:");
-        console.table({
-            "Operator 1": stationop,
-            "Operator 2": tagop,
-            "Date Range": `${from} to ${to}`,
-            "Total Passes": data.totalPasses,
-            "Total Cost (€)": data.totalCost,
-        });
+        console.table(data.passList);
 
     } catch (error) {
         console.error("❌ Fetch failed:", error);
@@ -74,7 +66,8 @@ export const passAnalysisCommand = (program: CommandOptions) => {
         .requiredOption("--tagop <tagop>", "Operator 2 ID")
         .requiredOption("--from <from>", "Start date (YYYYMMDD)")
         .requiredOption("--to <to>", "End date (YYYYMMDD)")
-        .action(async ({ stationop, tagop, from, to }: { stationop: string; tagop: string; from: string; to: string }) => {
-            await fetchPassAnalysis(stationop, tagop, from, to);
+        .option("--format <format>", "Response format (json/csv)")
+        .action(async ({ stationop, tagop, from, to, format }: { stationop: string; tagop: string; from: string; to: string, format: string }) => {
+            await fetchPassAnalysis(stationop, tagop, from, to, format || "csv");
         });
 };

@@ -1,22 +1,20 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken, isValidFormat } from "@/src/utils.ts";
 
 /**
  * Fetches toll station pass records.
  */
 async function fetchTollStationPasses(station: string, from: string, to: string, format: string = "csv") {
     try {
+        // Check if the --format option is valid
+        if (!isValidFormat(format)) return;
+
         console.log(`🔍 Fetching pass records for station ${station} from ${from} to ${to}...`);
 
         // Read authentication token
-        let token: string | null = null;
-        try {
-            token = await Deno.readTextFile(CONFIG.TOKEN_FILE);
-            token = token.trim();
-        } catch (_error) {
-            console.warn("⚠️ No authentication token found. Login first.");
-            return;
-        }
+        const token = await getAuthToken();
+        if (!token) return;
 
         // Define headers
         const headers: Record<string, string> = {
@@ -29,7 +27,7 @@ async function fetchTollStationPasses(station: string, from: string, to: string,
             method: "GET",
             headers,
         });
-        console.log("Response: ", response);
+
         // Handle errors based on response status code
         if (response.status === 204) {
             console.log("✅ No passes found for the given period.");
@@ -43,12 +41,13 @@ async function fetchTollStationPasses(station: string, from: string, to: string,
 
         // Parse the response body
         const data = await response.json();
-
+        //console.log("Json data response: ", data);
         // Check if data is valid
         if (!data.passList || data.passList.length === 0) {
             console.log("✅ No pass records found.");
             return;
         }
+        // TODO: Do we want to output more parameters of the json response?
 
         console.log("\n✅ Toll Station Passes:");
         console.table(data.passList);

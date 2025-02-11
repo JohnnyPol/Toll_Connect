@@ -1,22 +1,20 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken, isValidFormat } from "@/src/utils.ts";
 
 /**
  * Fetches total cost of passes for a specific tag operator within a date range.
  */
-async function fetchPassesCost(tagOp: string, from: string, to: string) {
+async function fetchPassesCost(stationop: string, tagop: string, from: string, to: string, format: string) {
     try {
-        console.log(`🔍 Fetching pass cost for tag operator ${tagOp} from ${from} to ${to}...`);
+        // Check if the --format option is valid
+        if (!isValidFormat(format)) return;
+
+        console.log(`🔍 Fetching passes cost for station operator ${stationop} with tag operator ${tagop} from ${from} to ${to}...`);
 
         // Read authentication token
-        let token: string | null = null;
-        try {
-            token = await Deno.readTextFile(CONFIG.TOKEN_FILE);
-            token = token.trim();
-        } catch (_error) {
-            console.warn("⚠️ No authentication token found. Login first.");
-            return;
-        }
+        const token = await getAuthToken();
+        if (!token) return;
 
         // Define headers
         const headers: Record<string, string> = {
@@ -25,7 +23,7 @@ async function fetchPassesCost(tagOp: string, from: string, to: string) {
         };
 
         // Perform the API request
-        const response = await fetch(`${CONFIG.API_URL}/passesCost/${tagOp}/${from}/${to}`, {
+        const response = await fetch(`${CONFIG.API_URL}/passesCost/${stationop}/${tagop}/${from}/${to}/?format=${format}`, {
             method: "GET",
             headers,
         });
@@ -43,19 +41,16 @@ async function fetchPassesCost(tagOp: string, from: string, to: string) {
 
         // Parse the response body
         const data = await response.json();
+        //console.log("Response JSON:, ", data);
 
         // Check if data is valid
-        if (!data.totalCost) {
+        if (!data) {
             console.log("✅ No cost data available for the specified period.");
             return;
         }
 
         console.log("\n✅ Passes Cost Summary:");
-        console.table({
-            "Tag Operator": tagOp,
-            "Date Range": `${from} to ${to}`,
-            "Total Cost (€)": data.totalCost,
-        });
+        console.table(data);
 
     } catch (error) {
         console.error("❌ Fetch failed:", error);
@@ -68,10 +63,12 @@ async function fetchPassesCost(tagOp: string, from: string, to: string) {
 export const passesCostCommand = (program: CommandOptions) => {
     program
         .command("passescost", "Retrieve total cost of passes for a tag operator")
-        .requiredOption("--tagOp <tagOp>", "Tag Operator ID")
+        .requiredOption("--stationop <stationop>", "Station Operator ID")
+        .requiredOption("--tagop <tagOp>", "Tag Operator ID")
         .requiredOption("--from <from>", "Start date (YYYYMMDD)")
         .requiredOption("--to <to>", "End date (YYYYMMDD)")
-        .action(async ({ tagOp, from, to }: { tagOp: string; from: string; to: string }) => {
-            await fetchPassesCost(tagOp, from, to);
+        .option("--format <format>", "Response format (json/csv)")
+        .action(async ({ stationop, tagop, from, to, format }: { stationop: string, tagop: string; from: string; to: string, format: string }) => {
+            await fetchPassesCost(stationop, tagop, from, to, format || "csv");
         });
 };

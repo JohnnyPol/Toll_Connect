@@ -1,5 +1,6 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken } from "../../utils.ts";
 
 /**
  * Handles different admin operations.
@@ -16,14 +17,8 @@ async function executeAdminCommand(
         console.log("🛠 Executing admin operation...");
 
         // Read authentication token
-        let token: string | null = null;
-        try {
-            token = await Deno.readTextFile(CONFIG.TOKEN_FILE);
-            token = token.trim();
-        } catch (_error) {
-            console.warn("⚠️ No authentication token found. Login first.");
-            return;
-        }
+        const token = await getAuthToken();
+        if (!token) return;
 
         // Define headers
         const headers: Record<string, string> = {

@@ -1,5 +1,5 @@
 import type { CommandOptions } from "@/types.ts";
-import { apiLoginRequest } from "@/src/apiClient.ts"
+import { apiLoginRequest } from "../../utils.ts"
 import { CONFIG } from "@/src/config.ts";
 
 

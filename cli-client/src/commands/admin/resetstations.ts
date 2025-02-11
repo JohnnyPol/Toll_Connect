@@ -1,5 +1,6 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken } from "../../utils.ts";
 
 /**
  * Sends a request to reset toll stations.
@@ -9,14 +10,8 @@ async function resetStations() {
         console.log("🛠 Resetting toll stations...");
 
         // Read authentication token
-        let token: string | null = null;
-        try {
-            token = await Deno.readTextFile(CONFIG.TOKEN_FILE);
-            token = token.trim();
-        } catch (_error) {
-            console.warn("⚠️ No authentication token found. Login first.");
-            return;
-        }
+        const token = await getAuthToken();
+        if (!token) return;
 
         // Define headers
         const headers: Record<string, string> = {
@@ -41,7 +36,7 @@ async function resetStations() {
 
         // Check if reset was successful
         if (data.status === "OK") {
-            console.log("✅ Toll stations have been reset successfully.");
+            console.log("✅ Toll stations have been reset successfully: \n", data);
         } else if (data.status === "failed") {
             console.error(`❌ Reset failed: ${data.info || "Unknown error occurred."}`);
             Deno.exit(1);
@@ -60,7 +55,7 @@ async function resetStations() {
  */
 export const resetStationsCommand = (program: CommandOptions) => {
     program
-        .command("resetstations", "Resets all toll station records from the predefined CSV")
+        .command("resetstations", "Resets all toll station records")
         .action(async () => {
             await resetStations();
         });

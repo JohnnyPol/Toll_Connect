@@ -1,5 +1,6 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
+import { getAuthToken } from "../../utils.ts";
 
 /**
  * Logs out the user by sending a request to `/logout` and removing the stored token.
@@ -7,11 +8,10 @@ import { CONFIG } from "@/src/config.ts";
 async function logout() {
     try {
         // Read stored token
-        const token = await Deno.readTextFile(CONFIG.TOKEN_FILE).catch(() => null);
-        if (!token) {
-            console.warn("No authentication token found. Already logged out.");
+        const token = await getAuthToken();
+        if (!token)
             return;
-        }
+
 
         // Make API request to logout
         const response = await fetch(`${CONFIG.API_URL}/logout`, {
