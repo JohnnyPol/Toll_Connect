@@ -1,45 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { tollService } from '@/api/services/tolls.ts';
 import { Operator } from '@/types/operators.ts';
 import { TollMarkerData } from '@/types/tolls.ts';
-import { AxiosError } from 'axios';
 
 interface UseOperatorTollsReturn {
-	operatorTolls: TollMarkerData[];
-	loading: boolean;
-	error: string | null;
+	operatorTolls: TollMarkerData[] | undefined;
+	isLoading: boolean;
+	error: Error | null;
 }
 
 export const useOperatorTolls = (
 	operatorId: Operator['_id'],
 ): UseOperatorTollsReturn => {
-	const [tollMarkers, setTollMarkers] = useState<TollMarkerData[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
-	useEffect(() => {
-		const fetchTolls = async (): Promise<void> => {
-			try {
-				setLoading(true);
-				const data = await tollService.getByOperator(operatorId);
-				setTollMarkers(data);
-				setError(null);
-			} catch (err) {
-				const errorMessage = err instanceof AxiosError
-					? err.response?.data?.message || err.message
-					: 'An unexpected error occurred';
-				setError(errorMessage);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchTolls();
-	}, []);
+	const {
+		data,
+		isLoading,
+		error,
+	} = useQuery({
+		queryKey: ['operatorTolls', operatorId],
+		queryFn: () => tollService.getByOperator(operatorId),
+	});
 
 	return {
-		operatorTolls: tollMarkers,
-		loading,
+		operatorTolls: data,
+		isLoading,
 		error,
 	};
 };

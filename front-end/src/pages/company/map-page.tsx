@@ -26,7 +26,7 @@ export default function CompanyMapPage() {
 	);
 
 	return (
-		<OperatorProvider>
+		<>
 			<Toaster position='bottom-center' richColors closeButton />
 			<APIProvider
 				apiKey={'AIzaSyDAMNPvIOhRWOsnVi-xRUMTHW3RD8uFJcw'}
@@ -78,6 +78,6 @@ export default function CompanyMapPage() {
 					)}
 				</Map>
 			</APIProvider>
-		</OperatorProvider>
+		</>
 	);
 }

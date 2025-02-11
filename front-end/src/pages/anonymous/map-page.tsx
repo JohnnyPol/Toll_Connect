@@ -25,7 +25,7 @@ export default function AnonymousMapPage() {
 	);
 
 	return (
-		<OperatorProvider>
+		<>
 			<Toaster position='bottom-center' richColors closeButton />
 			<APIProvider
 				apiKey={'AIzaSyDAMNPvIOhRWOsnVi-xRUMTHW3RD8uFJcw'}
@@ -73,6 +73,6 @@ export default function AnonymousMapPage() {
 					)}
 				</Map>
 			</APIProvider>
-		</OperatorProvider>
+		</>
 	);
 }

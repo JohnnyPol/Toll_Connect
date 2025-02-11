@@ -20,4 +20,5 @@ instance.interceptors.response.use(
 	},
 );
 
-export const axios = setupCache(instance);
+// export const axios = setupCache(instance);
+export const axios = instance;

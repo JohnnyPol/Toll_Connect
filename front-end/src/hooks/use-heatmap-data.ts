@@ -1,42 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { operatorService } from '@/api/services/operators.ts';
-import { HeatmapData, Operator } from '@/types/operators.ts';
-import { AxiosError } from 'axios';
+import { HeatmapData } from '@/types/operators.ts';
 
 interface UseHeatmapDataReturn {
-	data: HeatmapData[];
-	loading: boolean;
-	error: string | null;
+	data: HeatmapData[] | undefined;
+	isLoading: boolean;
+	error: Error | null;
 }
 
 export const useHeatmapData = (): UseHeatmapDataReturn => {
-	const [data, setData] = useState<HeatmapData[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
-	const fetchData = async (): Promise<void> => {
-		try {
-			setLoading(true);
-			const data = await operatorService.getHeatmapData();
-			setData(data);
-			setError(null);
-		} catch (err) {
-			const errorMessage = err instanceof AxiosError
-				? err.response?.data?.message || err.message
-				: 'An unexpected error occurred';
-			setError(errorMessage);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchData();
-	}, []);
+	const { data, isLoading, error } = useQuery({
+		queryKey: ['heatmapData'],
+		queryFn: () => operatorService.getHeatmapData(),
+	});
 
 	return {
 		data,
-		loading,
+		isLoading,
 		error,
 	};
 };

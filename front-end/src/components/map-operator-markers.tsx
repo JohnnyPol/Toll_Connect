@@ -15,12 +15,12 @@ export const MapOperatorMarkers: React.FC<MapOperatorMarkersProps> = (
 	{ id, startDate, endDate },
 ) => {
 	const { operators } = useOperators();
-	const { operatorTolls, loading, error } = useOperatorTolls(id);
+	const { operatorTolls, isLoading, error } = useOperatorTolls(id);
 
 	const markerIcon = operators.find((operator) => operator._id === id)
 		?.markerIcon;
 
-	if (loading) {
+	if (isLoading) {
 		toast.loading('Loading toll markers...', {
 			id: `loading-${id}`,
 		});
@@ -31,16 +31,16 @@ export const MapOperatorMarkers: React.FC<MapOperatorMarkersProps> = (
 	}
 
 	if (error) {
-		toast.error(error, {
+		toast.error(error.message, {
 			id: `error-${id}`,
 		});
 	}
 
 	return (
 		<div key={id}>
-			{!loading && !error && (
+			{!isLoading && !error && (
 				<>
-					{operatorTolls.map((toll) => (
+					{operatorTolls?.map((toll) => (
 						<MapTollMarker
 							key={toll._id}
 							tollMarkerData={toll}

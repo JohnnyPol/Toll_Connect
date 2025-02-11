@@ -26,8 +26,6 @@ import { CheckIcon } from 'lucide-react';
 const formSchema = z.object({
 	startDate: z.date().optional(),
 	endDate: z.date(),
-	targets: z.enum(['all', 'specific']),
-	specificOperator: z.string().optional()
 }).refine(
 	(data) => {
 		// Validate dates aren't in the future
@@ -47,50 +45,19 @@ const formSchema = z.object({
 		message: "Start date must be before or equal to end date",
 		path: ["startDate"]
 	}
-).refine(
-	(data) => {
-		// When targets is 'all', specificOperator must be undefined/null
-		if (data.targets === 'all') {
-			return !data.specificOperator;
-		}
-		// When targets is 'specific', specificOperator must be defined
-		return !!data.specificOperator;
-	},
-	{
-		message: "Bad Operator Selection",
-		path: ["specificOperator"]
-	}
 );
 
-export type PaymentFilterFormValues = z.infer<typeof formSchema>;
+export type StatisticsFilterFormValues = z.infer<typeof formSchema>;
 
-interface PaymentFilterFormProps {
-	defaultValues: PaymentFilterFormValues;
-	onSubmit: (values: PaymentFilterFormValues) => void;
+interface StatisticsCompanyFilterFormProps {
+	defaultValues: StatisticsFilterFormValues;
+	onSubmit: (values: StatisticsFilterFormValues) => void;
 }
 
-export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
+export const StatisticsCompanyFilterForm: React.FC<StatisticsCompanyFilterFormProps> = ({
 	defaultValues,
 	onSubmit,
 }) => {
-	const { operators, isLoading, error } = useOperators();
-
-	if (isLoading) {
-		toast.loading('Loading operators...', {
-			id: 'loading-operators',
-		});
-	} else {
-		setTimeout(() => {
-			toast.dismiss('loading-operators');
-		}, 10);
-	}
-
-	if (error) {
-		toast.error(error.message, {
-			id: 'error-operators',
-		});
-	}
-
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues,
@@ -132,7 +99,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className='flex items-center space-x-4 p-4'
+				className='flex items-center space-x-4'
 			>
 				<FormField
 					control={form.control}
@@ -166,66 +133,6 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 					)}
 				/>
 
-				<FormField
-					control={form.control}
-					name='targets'
-					render={({ field }) => (
-						<FormItem className='space-y-3'>
-							<FormControl>
-								<RadioGroup
-									value={field.value}
-									onValueChange={(value) => {
-										field.onChange(value);
-										if (value === 'all') {
-											form.setValue('specificOperator', '');
-										}
-									}}
-									className='flex flex-row space-x-4'
-								>
-									<FormItem className='flex items-center space-x-2 space-y-0'>
-										<FormControl>
-											<RadioGroupItem value='all' />
-										</FormControl>
-										<span className='text-sm font-medium'>All Targets</span>
-									</FormItem>
-									<FormItem className='flex items-center space-x-2 space-y-0'>
-										<FormControl>
-											<RadioGroupItem value='specific' />
-										</FormControl>
-										<span className='text-sm font-medium'>Specific Target</span>
-									</FormItem>
-								</RadioGroup>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-					<FormField
-						control={form.control}
-						name='specificOperator'
-						render={({ field }) => (
-							<FormItem className='flex-grow'>
-								<FormControl>
-									<Select
-										onValueChange={field.onChange}
-										value={field.value}
-										disabled={form.watch('targets') === 'all'}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder='Select an operator' />
-										</SelectTrigger>
-										<SelectContent>
-											{!isLoading && !error &&
-												operators.map((operator) => (
-													<SelectItem key={operator._id} value={operator._id}>
-														{operator.name.toUpperCase()}
-													</SelectItem>
-												))}
-										</SelectContent>
-									</Select>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
 				<Button type='submit' className='flex-shrink-0'>
 					<CheckIcon className='h-4 w-4' />
 					<span className='sr-only'>Submit</span>

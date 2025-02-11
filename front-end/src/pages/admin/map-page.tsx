@@ -26,7 +26,7 @@ export default function AdminMapPage() {
 	);
 
 	return (
-		<OperatorProvider>
+		<>
 			<Toaster position='bottom-center' richColors closeButton />
 			<APIProvider
 				apiKey={'AIzaSyDAMNPvIOhRWOsnVi-xRUMTHW3RD8uFJcw'}
@@ -74,6 +74,6 @@ export default function AdminMapPage() {
 					)}
 				</Map>
 			</APIProvider>
-		</OperatorProvider>
+		</>
 	);
 }

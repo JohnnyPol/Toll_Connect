@@ -1,20 +1,20 @@
 // @ts-types='npm:@types/express'
-import express from 'npm:express';
-import morgan from 'npm:morgan';
+import express from 'express';
+import morgan from 'morgan';
 // import cors from 'npm:cors';
-import openapi from 'npm:@wesleytodd/openapi';
+import openapi from '@wesleytodd/openapi';
 // SEE: https://docs.deno.com/examples/express_tutorial/
 import mongoose, { connect } from 'npm:mongoose';
 // SEE: https://docs.deno.com/examples/mongo/
 
 import { clearBlacklist } from './authentication/jwt.ts';
+import { ConnectionStates } from '@/api/util.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
-import cors from "cors";
+import cors from 'cors';
 
-
-async function check_connection () : void {
-	if (mongoose.connection.readyState === 1) {
+async function check_connection(): Promise<void> {
+	if (mongoose.connection.readyState === ConnectionStates.connected) {
 		console.log('OK db already connected');
 		return;
 	}
@@ -25,7 +25,10 @@ async function check_connection () : void {
 		console.error('ERR connecting to db:', err);
 	}
 	// clear blacklists
-	if (mongoose.connection.readyState === 1) {
+	if (
+		<ConnectionStates> mongoose.connection.readyState ===
+			ConnectionStates.connected
+	) {
 		console.log('OK connecting to DB');
 		try {
 			await clearBlacklist();
@@ -35,7 +38,7 @@ async function check_connection () : void {
 	} else {
 		console.error(
 			'ERR connecting to db: status:',
-			mongoose.connection.readyState
+			mongoose.connection.readyState,
 		);
 	}
 }
@@ -53,7 +56,6 @@ app.use(morgan('dev'));
 app.use(oapi);
 app.use('/docs', oapi.swaggerui());
 app.use('/api', api(oapi));
-
 
 app.get(
 	'/',

@@ -8,24 +8,19 @@ async function login(req: Request, res: Response): Promise<void> {
 		username: string;
 		password: string;
 	} = req.body;
-	// assume password is already hashed
+	// assume password is alreasy hashed
 	try {
 		const user = await TollOperator.findById(username).exec();
 		if (user === null) {
 			throw new Error(`User ${username} not found`);
 		}
-		if (user.passwordHash != password) {
-			throw new Error(
-				`Incorrect password ${password} ${user.passwordHash}`,
-			);
+		if (user.passwordHash !== password) {
+			throw new Error(`Incorrect password`);
 		}
 		res.status(200).json({
 			token: await create({
-				// Test just so that dummy@mail user can pass this conditional
-				level: username === 'dummy@mail' // TODO: Maybe a change in the schema is needed
-					? UserLevel.Admin
-					: UserLevel.Operator,
-				name: username,
+				level: user.userLevel,
+				id: username,
 			}),
 		});
 	} catch (err) {
@@ -43,14 +38,14 @@ async function logout(req: Request, res: Response): Promise<void> {
 	}
 
 	try {
-		const { name, exp } = await verify(token);
+		const { id, exp } = await verify(token);
 		await TollOperator.findByIdAndUpdate(
-			name,
+			id,
 			{ $push: { blacklist: token } },
 		);
 		setTimeout(async () => {
 			await TollOperator.findByIdAndUpdate(
-				name,
+				id,
 				{ $pull: { blacklist: token } },
 			);
 		}, (exp - new Date().getTime()) * 1000);

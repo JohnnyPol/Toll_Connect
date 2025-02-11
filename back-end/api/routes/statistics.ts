@@ -2,10 +2,48 @@ import { Middleware, Request, Response, Router } from 'npm:express';
 import { die, ErrorType, get_date, set_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
-import Toll from '../../models/toll.ts';
-import Pass from '../../models/pass.ts';
-import Tag from '../../models/tag.ts';
+import Toll from '@/models/toll.ts';
+import { TollOperatorDocument } from '@/models/toll_operator.ts';
+import Pass from '@/models/pass.ts';
+import Tag from '@/models/tag.ts';
 import moment from 'npm:moment';
+
+const groupByOperator = (field: string) => ({
+	$group: {
+		_id: '$' + field + '.tollOperator',
+		passes: { $sum: 1 },
+		cost: { $sum: '$charge' },
+	},
+});
+
+const groupByDateOperator = (field: string) => ({
+	$group: {
+		_id: {
+			date: {
+				$dateToString: {
+					date: '$time',
+					format: '%Y-%m-%d',
+				},
+			},
+			operator: '$' + field + '.tollOperator',
+		},
+		passes: { $sum: 1 },
+		cost: { $sum: '$charge' },
+	},
+});
+
+const makeDateArray = {
+	$group: {
+		_id: '$_id.date',
+		operators: {
+			$push: {
+				operator: '$_id.operator',
+				passes: '$passes',
+				cost: '$cost',
+			},
+		},
+	},
+};
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
@@ -89,7 +127,7 @@ export default function (oapi: Middleware): Router {
 				//const daysInPeriod = moment(endDate).diff(moment(startDate), 'days') || 1;
 				const { days } = difference(startDate, endDate);
 				const totalPasses = passes.length;
-				const avgPasses = totalPasses / days;
+				const avgPasses = totalPasses / <number> days;
 
 				// Aggregate passes per operator
 				const operatorData = new Map<string, number>();
@@ -145,6 +183,38 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
+
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
+				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
+
+			try {
+				const response = await Pass.aggregate([
+					{
+						$match: {
+							'toll.tollOperator': op_id,
+							'tag.tollOperator': { $ne: op_id },
+							time: { $gte: date_from, $lte: date_to },
+						},
+					},
+					groupByDateOperator('tag'),
+					makeDateArray,
+					{ $sort: { '_id': 1 } },
+				]);
+
+				res.status(200).json(response.map(
+					({ _id, operators }) => ({ date: _id, operators }),
+				));
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
 	);
 
 	router.get(
@@ -162,6 +232,38 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
+
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
+				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
+
+			try {
+				const response = await Pass.aggregate([
+					{
+						$match: {
+							'tag.tollOperator': op_id,
+							'toll.tollOperator': { $ne: op_id },
+							time: { $gte: date_from, $lte: date_to },
+						},
+					},
+					groupByDateOperator('toll'),
+					makeDateArray,
+					{ $sort: { '_id': 1 } },
+				]);
+
+				res.status(200).json(response.map(
+					({ _id, operators }) => ({ date: _id, operators }),
+				));
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
 	);
 
 	router.get(
@@ -177,6 +279,35 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
+
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
+				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
+
+			try {
+				const response = await Pass.aggregate([
+					{
+						$match: {
+							'toll.tollOperator': op_id,
+							'tag.tollOperator': { $ne: op_id },
+							time: { $gte: date_from, $lte: date_to },
+						},
+					},
+					groupByOperator('tag'),
+					{ $sort: { '_id': 1 } },
+				]);
+
+				res.status(200).json(response);
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
 	);
 
 	router.get(
@@ -192,24 +323,35 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
-	);
+		async (req: Request, res: Response) => {
+			const date_from = get_date(req.params.date_from);
+			const date_to = get_date(req.params.date_to);
+			const op_id: TollOperatorDocument['_id'] | undefined =
+				req.query.as_operator;
 
-	router.get(
-		'/allPasses/:date_from/:date_to',
-		/**
-		 * Returns all aggregated pass data in range between all pair of operators
-		 * in both directions.
-		 *
-		 * Return: {
-		 * 		stationOperatorId: string,
-		 * 		tagOperatorId: string,
-		 * 		passes: number,
-		 * 		cost: number
-		 * }[]
-		 *
-		 * Notes:
-		 *  - Only allowed on admin
-		 */
+			if (/* TODO: logged in as admin && */ op_id === undefined) {
+				return die(res, ErrorType.BadRequest, 'as_operator required');
+			}
+
+			try {
+				const response = await Pass.aggregate([
+					{
+						$match: {
+							'tag.tollOperator': op_id,
+							'toll.tollOperator': { $ne: op_id },
+							time: { $gte: date_from, $lte: date_to },
+						},
+					},
+					groupByOperator('toll'),
+					{ $sort: { '_id': 1 } },
+				]);
+
+				res.status(200).json(response);
+			} catch (err) {
+				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
 	);
 
 	return router;
