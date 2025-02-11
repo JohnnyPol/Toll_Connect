@@ -23,7 +23,12 @@ export const useAdminStatistics = (
 		error: timeseriesIncomingError,
 	} = useQuery({
 		queryKey: ['timeseriesIncoming', filters],
-		queryFn: () => statisticsService.getTimeseriesIncoming(filters, filters?.specificOperator),
+		queryFn: () =>
+			statisticsService.getTimeseriesIncoming(
+				filters,
+				filters?.specificOperator,
+			),
+		enabled: filters.asOperator,
 	});
 
 	const {
@@ -32,7 +37,12 @@ export const useAdminStatistics = (
 		error: timeseriesOutgoingError,
 	} = useQuery({
 		queryKey: ['timeseriesOutgoing', filters],
-		queryFn: () => statisticsService.getTimeseriesOutgoing(filters, filters?.specificOperator),
+		queryFn: () =>
+			statisticsService.getTimeseriesOutgoing(
+				filters,
+				filters?.specificOperator,
+			),
+		enabled: filters.asOperator,
 	});
 
 	const {
@@ -41,7 +51,12 @@ export const useAdminStatistics = (
 		error: aggregateIncomingError,
 	} = useQuery({
 		queryKey: ['aggregateIncoming', filters],
-		queryFn: () => statisticsService.getAggregateIncoming(filters, filters?.specificOperator),
+		queryFn: () =>
+			statisticsService.getAggregateIncoming(
+				filters,
+				filters?.specificOperator,
+			),
+		enabled: filters.asOperator,
 	});
 
 	const {
@@ -50,10 +65,16 @@ export const useAdminStatistics = (
 		error: aggregateOutgoingError,
 	} = useQuery({
 		queryKey: ['aggregateOutgoing', filters],
-		queryFn: () => statisticsService.getAggregateOutgoing(filters, filters?.specificOperator),
+		queryFn: () =>
+			statisticsService.getAggregateOutgoing(
+				filters,
+				filters?.specificOperator,
+			),
+		enabled: filters.asOperator,
 	});
 
-	const timeseriesLoading = timeseriesIncomingLoading || timeseriesOutgoingLoading;
+	const timeseriesLoading = timeseriesIncomingLoading ||
+		timeseriesOutgoingLoading;
 	const timeseriesError = timeseriesIncomingError || timeseriesOutgoingError;
 	const aggregateLoading = aggregateIncomingLoading || aggregateOutgoingLoading;
 	const aggregateError = aggregateIncomingError || aggregateOutgoingError;
