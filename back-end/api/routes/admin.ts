@@ -205,12 +205,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Reset failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -269,12 +279,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Reset failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -343,12 +363,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Operation failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},

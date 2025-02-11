@@ -37,7 +37,6 @@ const apiDoc = {
 			properties: {
 				status: { type: 'string' },
 				info: { type: 'string' },
-				dbconnection: { type: 'string' },
 			},
 			required: ['status'],
 			additionalProperties: true,
@@ -62,7 +61,7 @@ const apiDoc = {
             type: 'object',
             properties: {
                 status: { type: 'string' },
-                info: { type: 'string' }
+                dbconnection: { type: 'string' }
             }
         },
         TollStationPassesResponse: {
@@ -70,7 +69,6 @@ const apiDoc = {
             properties: {
                 stationID: { type: 'string', description: 'The unique ID of the toll station' },
                 stationOperator: { type: 'string', description: 'The operator of the toll station' },
-                tollStationID: { type: 'string', description: 'The ID of the toll station' },
                 requestTimestamp: { type: 'string', format: 'date-time', description: 'Timestamp of the request' },
                 periodFrom: { type: 'string', format: 'date', description: 'The requested period (from)' },
                 periodTo: { type: 'string', format: 'date', description: 'The requested period (to)' },
