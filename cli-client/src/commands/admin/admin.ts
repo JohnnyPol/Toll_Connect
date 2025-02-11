@@ -45,7 +45,7 @@ async function executeAdminCommand(
 					'X-OBSERVATORY-AUTH': token,
 				},
 				body: new URLSearchParams({
-					username: username,
+					id: username,
 					password: passwordHash,
 				}).toString(),
 			});
