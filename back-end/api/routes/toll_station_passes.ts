@@ -10,6 +10,59 @@ export default function (oapi: Middleware): Router {
 
 	router.get(
 		'/:station_id/:date_from/:date_to',
+		oapi.path({
+			tags: ['Operations'], // Replace with the appropriate tag
+			summary: 'Toll Station Passes',
+			description: 'Returns an object containing a list of pass details for the given toll station and period.',
+			operationId: 'getTollStationPasses',
+			parameters: [
+				{ in: 'path', name: 'tollStationID', schema: { type: 'string' }, required: true, description: 'The unique ID of the toll station' },
+				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'The start date of the period (YYYYMMDD)' },
+				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'The end date of the period (YYYYMMDD)' }
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of pass information',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/TollStationPassesResponse'
+							}
+						}
+					}
+				},
+				400: {
+					description: 'Bad Request - Invalid input',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AdminErrorResponse'
+							}
+						}
+					}
+				},
+				500: {
+					description: 'Internal Server Error',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				}
+			}
+		}),
 		async (req: Request, res: Response) => {
 			const stationID: string = req.params.station_id;
 			const date_from: Date = get_date(req.params.date_from);
