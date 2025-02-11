@@ -9,9 +9,7 @@ interface UseHeatmapDataReturn {
 	error: string | null;
 }
 
-export const useHeatmapData = (
-	operatorId: Operator['_id'],
-): UseHeatmapDataReturn => {
+export const useHeatmapData = (): UseHeatmapDataReturn => {
 	const [data, setData] = useState<HeatmapData[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -19,7 +17,7 @@ export const useHeatmapData = (
 	const fetchData = async (): Promise<void> => {
 		try {
 			setLoading(true);
-			const data = await operatorService.getHeatmapData(operatorId);
+			const data = await operatorService.getHeatmapData();
 			setData(data);
 			setError(null);
 		} catch (err) {

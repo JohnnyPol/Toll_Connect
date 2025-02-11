@@ -123,7 +123,7 @@ async function insertPass({
 	time: Date;
 	charge: number;
 	tagOperator: string;
-}, session?: ClientSession) {
+}) {
 	try {
 		try {
 			// Find the Tag by its custom string ID (tagId)

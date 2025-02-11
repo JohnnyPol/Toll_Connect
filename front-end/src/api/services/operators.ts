@@ -3,12 +3,12 @@ import { HeatmapData, Operator } from '@/types/operators.ts';
 
 export const operatorService = {
 	getAll: async () => {
-		const response = await axios.get<Operator[]>('/operators');
+		const response = await axios.get<Operator[]>('/db/toll-operators');
 		return response.data;
 	},
-	getHeatmapData: async (operatorId: Operator['_id']) => {
+	getHeatmapData: async () => {
 		const response = await axios.get<HeatmapData[]>(
-			`/operators/${operatorId}/passes/heatmap`,
+			`/statistics/heatmap`,
 		);
 		return response.data;
 	},

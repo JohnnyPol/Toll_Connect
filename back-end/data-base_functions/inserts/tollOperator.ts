@@ -113,18 +113,17 @@ async function insertTollOperatorConnect({
  * @param {string} addressArea - The area of the toll operator's address.
  * @param {number} addressZip - The postal code (ZIP) of the toll operator.
  */
-async function insertTollOperator({
-  _id,
-  name,
-  passwordHash,
+async function insert_toll_operator({
+	_id,
+	name,
+	passwordHash,
 	userLevel,
-  email,
-  VAT,
-  addressStreet,
-  addressNumber,
-  addressArea,
-  addressZip,
-  markerIcon,
+	email,
+	VAT,
+	addressStreet,
+	addressNumber,
+	addressArea,
+	addressZip,
 }: {
 	_id: string;
 	name: string;

@@ -6,7 +6,7 @@ export interface Operator {
 }
 
 export interface HeatmapData {
-	lat: number;
-	lng: number;
-	mag: number;
+	latitude: number;
+	longitude: number;
+	count: number;
 }

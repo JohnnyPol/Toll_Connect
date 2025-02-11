@@ -148,19 +148,19 @@ roadName,
 	tollOperator: string;
 	roadName: string;
 }) {
-  try {
-    // If road does not exist insert it
-    const roadId = await findRoadIdByName(roadName);
-    let road_for_use : string = 'Invalid';
-    
-    if (!roadId) {
-      console.log('Road not found, inserting new Road...');
-      await insertRoad({name: roadName});
-      const temp = await findRoadIdByName(roadName);
-      if(temp) road_for_use = temp;
-    } else {
-      road_for_use = roadId;
-    }
+	try {
+		// If road does not exist insert it
+		const roadId = await findRoadIdByName(roadName);
+		let road_for_use: string = 'Invalid';
+
+		if (!roadId) {
+			console.log('Road not found, inserting new Road...');
+			await insert_road({ name: roadName });
+			const temp = await findRoadIdByName(roadName);
+			if (temp) road_for_use = temp;
+		} else {
+			road_for_use = roadId;
+		}
 
 		// Get toll data
 		const tollData = {

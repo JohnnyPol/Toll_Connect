@@ -58,6 +58,8 @@ export default function CompanyMapPage() {
 						<MapOperatorMarkers
 							key={id}
 							id={id}
+							startDate={filterFormValues.startDate}
+							endDate={filterFormValues.endDate}
 						/>
 					))}
 

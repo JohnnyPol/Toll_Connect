@@ -1,3 +1,5 @@
+import { Operator } from '@/types/operators.ts';
+
 export interface TollMarkerData {
 	_id: string;
 	name: string;
@@ -9,13 +11,19 @@ export interface TollMarkerData {
 export interface Toll {
 	_id: string;
 	name: string;
-	price: number;
-	road: string;
-	operator_name: string;
+	price: number[];
+	road: {
+		name: string;
+	};
+	tollOperator: Operator['_id'];
+}
+
+export interface TollStatistics {
+	toll: Toll;
 	avg_passes: number;
 	my_passes?: number;
-	other_passes?: {
-		operatorId: string;
+	operators?: {
+		operator: Operator['_id'];	
 		passes: number;
 	}[];
 }

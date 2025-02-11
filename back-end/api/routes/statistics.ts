@@ -89,15 +89,43 @@ export default function (oapi: Middleware): Router {
 			const startDate: Date = get_date(req.params.start_date);
 			const endDate: Date = get_date(req.params.end_date);
 
-			try {
-				// Fetch the toll document
-				const tollDocument = await Toll.findById(tollID);
-				if (!tollDocument) {
-					return die(
-						res,
-						ErrorType.BadRequest,
-						'Toll station not found',
-					);
+		try {
+			// Fetch the toll document
+			const tollDocument = await Toll.findById(tollID);
+			if (!tollDocument) return die(res, ErrorType.BadRequest, 'Toll station not found');
+			
+			// Populate the 'road' field in the tollDocument
+			await tollDocument.populate('road');
+
+			// Fetch passes and ensure 'tag' is fully populated
+			const passes = await Pass.find({
+				"toll._id": tollID,
+				time: { $gte: startDate, $lte: endDate }
+			})
+			.populate({
+				path: 'tag',
+				model: Tag, // Ensure we populate using the correct model
+				select: 'tollOperator'
+			});
+
+			// Ensure all passes have their tag.tollOperator populated
+			if (!passes.every(pass => pass.tag && pass.tag.tollOperator)) {
+				console.warn('Warning: Some passes are missing tag.tollOperator');
+			}
+
+			// Calculate the number of days in the period
+			//const daysInPeriod = moment(endDate).diff(moment(startDate), 'days') || 1;
+			const { days }=difference(startDate,endDate);
+			const totalPasses = passes.length;
+			const avgPasses = totalPasses / days;
+
+			// Aggregate passes per operator
+			const operatorData = new Map<string, number>();
+
+			passes.forEach(pass => {
+				if (!pass.tag || !pass.tag.tollOperator) {
+					console.warn('Skipping pass with missing tag.tollOperator:', pass);
+					return;
 				}
 
 				// Fetch passes and ensure 'tag' is fully populated
