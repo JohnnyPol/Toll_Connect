@@ -25,13 +25,14 @@ function csv_parser (req: Request, res: Response, next: Middleware) {
 			res.json = function (json: object | object[]) {
 				if (res.status >= 400)
 					return res;
-				if (json == null || Object.keys(json).length === 0)
+				if (!(json instanceof Array) && Object.keys(json).length === 0)
 					return res.status(204).end();
 				else
 					return original.call(this, json);
 			}
 			return next && next();
 		}
+
 		if (req.query.format !== 'csv') {
 			return die(res, ErrorType.BadRequest, 'Invalid format requested');
 		}
