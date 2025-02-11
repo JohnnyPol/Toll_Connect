@@ -28,9 +28,9 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 	endDate,
 }) => {
 	const { operators } = useOperators();
-	const { toll, loading, error } = useToll(tollId, startDate, endDate);
+	const { toll, isLoading, error } = useToll(tollId, startDate, endDate);
 
-	if (loading) {
+	if (isLoading) {
 		toast.loading('Loading toll information...', {
 			id: 'toll-loading',
 		});
@@ -41,7 +41,7 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 	}
 
 	if (error) {
-		toast.error('Error loading toll information: ' + error, {
+		toast.error('Error loading toll information: ' + error.message, {
 			id: 'toll-error',
 		});
 	}
@@ -53,7 +53,7 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 		};
 	}, []);
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<div className='grid gap-4 py-4 flex-1'>
 				<Label htmlFor='name'>Name</Label>
@@ -76,36 +76,36 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 		);
 	}
 
-	const popupType = toll.my_passes
+	const popupType = toll?.my_passes
 		? PopupType.OPERATOR_MINE
-		: toll.operators
+		: toll?.operators
 		? PopupType.OPERATOR_OTHER
 		: PopupType.BASIC;
 
 	const basicComponent = (
 		<div className='grid gap-4 py-4 flex-1'>
 			<Label htmlFor='name'>Name</Label>
-			<Input id='name' value={toll.toll.name} disabled />
+			<Input id='name' value={toll?.toll.name} disabled />
 			<Label htmlFor='price'>Price</Label>
-			<Input id='price' value={toll.toll.price[1]} disabled />
+			<Input id='price' value={toll?.toll.price[1]} disabled />
 			<Label htmlFor='road'>Road</Label>
-			<Input id='road' value={toll.toll.road.name} disabled />
+			<Input id='road' value={toll?.toll.road.name} disabled />
 			<Label htmlFor='operator'>Operator</Label>
 			<Input
 				id='operator'
 				value={
 					operators.find(
-						(operator) => operator._id === toll.toll.tollOperator
+						(operator) => operator._id === toll?.toll.tollOperator
 					)?.name || 'Unknown'
 				}
 				disabled
 			/>
 			<Label htmlFor='avg-passes'>Average Passes per Day</Label>
-			<Input id='avg-passes' value={toll.avg_passes} disabled />
+			<Input id='avg-passes' value={toll?.avg_passes} disabled />
 			{popupType === PopupType.OPERATOR_MINE && (
 				<>
 					<Label htmlFor='avg-passes'>My Passes</Label>
-					<Input id='avg-passes' value={toll.my_passes} disabled />
+					<Input id='avg-passes' value={toll?.my_passes} disabled />
 				</>
 			)}
 		</div>
@@ -119,7 +119,7 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 			operator?.chartColor || 'rgba(159, 75, 255, 0.81)'
 		);
 		const operatorPasses = operators.map((operator) =>
-			toll.operators?.find((pass) => pass.operator === operator._id)
+			toll?.operators?.find((pass) => pass.operator === operator._id)
 				?.passes || 0
 		);
 

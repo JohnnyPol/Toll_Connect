@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { tollService } from '@/api/services/tolls.ts';
 import { Toll, TollStatistics } from '@/types/tolls.ts';
-import { AxiosError } from 'axios';
 
 interface UseTollReturn {
-	toll: TollStatistics;
-	loading: boolean;
-	error: string | null;
+	toll: TollStatistics | undefined;
+	isLoading: boolean;
+	error: Error | null;
 }
 
 export const useToll = (
@@ -14,29 +13,10 @@ export const useToll = (
 	startDate: Date,
 	endDate: Date,
 ): UseTollReturn => {
-	const [toll, setToll] = useState<TollStatistics | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const { data: toll, isLoading, error } = useQuery({
+		queryKey: ['toll', tollId, startDate, endDate],
+		queryFn: () => tollService.getById(tollId, startDate, endDate),
+	});
 
-	const fetchToll = async (): Promise<void> => {
-		try {
-			setLoading(true);
-			const data = await tollService.getById(tollId, startDate, endDate);
-			setToll(data);
-			setError(null);
-		} catch (err) {
-			const errorMessage = err instanceof AxiosError
-				? err.response?.data?.message || err.message
-				: 'An unexpected error occurred';
-			setError(errorMessage);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchToll();
-	}, []);
-
-	return { toll, loading, error };
+	return { toll, isLoading, error };
 };

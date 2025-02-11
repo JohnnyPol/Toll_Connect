@@ -21,9 +21,9 @@ const Heatmap: React.FC<HeatmapProps> = ({ radius, opacity }) => {
 		});
 	}, [visualization, radius, opacity]);
 
-	const { data, loading, error } = useHeatmapData();
+	const { data, isLoading, error } = useHeatmapData();
 
-	if (loading) {
+	if (isLoading) {
 		toast.loading('Loading heatmap data...', {
 			id: 'heatmap-loading',
 		});
@@ -34,14 +34,14 @@ const Heatmap: React.FC<HeatmapProps> = ({ radius, opacity }) => {
 	}
 
 	if (error) {
-		toast.error('Error loading heatmap data: ' + error, {
+		toast.error('Error loading heatmap data: ' + error.message, {
 			id: 'heatmap-error'
 		});
 	}
 
 	useEffect(() => {
 		if (!heatmap) return;
-		if (loading || error) return;
+		if (isLoading || error) return;
 
 		heatmap.setData(
 			data.map((point) => {

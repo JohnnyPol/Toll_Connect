@@ -58,24 +58,6 @@ export const StatisticsCompanyFilterForm: React.FC<StatisticsCompanyFilterFormPr
 	defaultValues,
 	onSubmit,
 }) => {
-	const { operators, loading, error } = useOperators();
-
-	if (loading) {
-		toast.loading('Loading operators...', {
-			id: 'loading-operators',
-		});
-	} else {
-		setTimeout(() => {
-			toast.dismiss('loading-operators');
-		}, 10);
-	}
-
-	if (error) {
-		toast.error(error, {
-			id: 'error-operators',
-		});
-	}
-
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues,

@@ -2,12 +2,13 @@ import React, { createContext, useEffect, useState } from 'react';
 import { Operator } from '@/types/operators.ts';
 import { operatorService } from '@/api/services/operators.ts';
 import { AxiosError } from 'axios';
+import { useQuery } from '@tanstack/react-query';
 
 // Define the context type
 export interface OperatorContextType {
 	operators: Operator[];
-	loading: boolean;
-	error: string | null;
+	isLoading: boolean;
+	error: Error | null;
 }
 
 // Create the context
@@ -41,38 +42,24 @@ const AVAILABLE_COLORS = [
 export const OperatorProvider: React.FC<{ children: React.ReactNode }> = (
 	{ children },
 ) => {
-	const [operators, setOperators] = useState<Operator[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
-	useEffect(() => {
-		const fetchOperators = async (): Promise<void> => {
-			try {
-				setLoading(true);
-				const data = await operatorService.getAll();
-				data.forEach((operator, index) => {
-					operator.markerIcon =
-						AVAILABLE_MARKERS[index % AVAILABLE_MARKERS.length];
-					operator.chartColor =
-						AVAILABLE_COLORS[index % AVAILABLE_COLORS.length];
-				});
-				setOperators(data);
-				setError(null);
-			} catch (err) {
-				const errorMessage = err instanceof AxiosError
-					? err.response?.data?.message || err.message
-					: 'An unexpected error occurred';
-				setError(errorMessage);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchOperators();
-	}, []);
+	const {
+		data: operators,
+		isLoading,
+		error,
+	} = useQuery({
+		queryKey: ['operators'],
+		queryFn: async () => {
+			const data = await operatorService.getAll();
+			return data.map((operator, index) => ({
+				...operator,
+				markerIcon: AVAILABLE_MARKERS[index % AVAILABLE_MARKERS.length],
+				chartColor: AVAILABLE_COLORS[index % AVAILABLE_COLORS.length],
+			}));
+		},
+	});
 
 	return (
-		<OperatorContext.Provider value={{ operators, loading, error }}>
+		<OperatorContext.Provider value={{ operators, isLoading, error }}>
 			{children}
 		</OperatorContext.Provider>
 	);

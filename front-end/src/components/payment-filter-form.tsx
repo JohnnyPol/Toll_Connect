@@ -73,9 +73,9 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 	defaultValues,
 	onSubmit,
 }) => {
-	const { operators, loading, error } = useOperators();
+	const { operators, isLoading, error } = useOperators();
 
-	if (loading) {
+	if (isLoading) {
 		toast.loading('Loading operators...', {
 			id: 'loading-operators',
 		});
@@ -86,7 +86,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 	}
 
 	if (error) {
-		toast.error(error, {
+		toast.error(error.message, {
 			id: 'error-operators',
 		});
 	}
@@ -214,7 +214,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 											<SelectValue placeholder='Select an operator' />
 										</SelectTrigger>
 										<SelectContent>
-											{!loading && !error &&
+											{!isLoading && !error &&
 												operators.map((operator) => (
 													<SelectItem key={operator._id} value={operator._id}>
 														{operator.name.toUpperCase()}

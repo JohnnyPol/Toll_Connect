@@ -23,7 +23,7 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 	selected,
 	onSelectionChange,
 }) => {
-	const { operators, loading, error } = useOperators();
+	const { operators, isLoading, error } = useOperators();
 
 	const [searchQuery, setSearchQuery] = useState('');
 
@@ -40,7 +40,7 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 		onSelectionChange(newSelection);
 	};
 
-	if (error) return <Alert variant='destructive'>{error}</Alert>;
+	if (error) return <Alert variant='destructive'>{error.message}</Alert>;
 
 	return (
 		<div className='w-full space-y-2'>
@@ -83,7 +83,7 @@ export const OperatorList: React.FC<OperatorSelectorProps> = ({
 					Select All
 				</Label>
 			</div>
-			{loading ? <Skeleton className='h-72' /> : (
+			{isLoading ? <Skeleton className='h-72' /> : (
 				<>
 					<ScrollArea
 						className={cn(

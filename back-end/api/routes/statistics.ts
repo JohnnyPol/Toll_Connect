@@ -100,6 +100,8 @@ export default function (oapi: Middleware): Router {
 					);
 				}
 
+				tollDocument.populate('road');
+
 				// Fetch passes and ensure 'tag' is fully populated
 				const passes = await Pass.find({
 					'toll._id': tollID,
