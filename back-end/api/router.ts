@@ -17,7 +17,7 @@ import pass from './routes/db/pass.ts';
 import payment from './routes/db/payment.ts';
 import road from './routes/db/road.ts';
 import tag from './routes/db/tag.ts';
-import toll_operator from './routes/db/toll_operator.ts';
+import toll_operators from './routes/db/toll_operators.ts';
 
 function csv_parser (req: Request, res: Response, next: Middleware) {
 		if (req.query.format === undefined || req.query.format === 'json') {
@@ -65,7 +65,7 @@ export default function (oapi: Middleware): Router {
 	router.use('/db/payment', payment(oapi));
 	router.use('/db/road', road(oapi));
 	router.use('/db/tag', tag(oapi));
-	router.use('/db/toll-operator', toll_operator(oapi));
+	router.use('/db/toll-operators', toll_operators(oapi));
 
 	return router;
 }
