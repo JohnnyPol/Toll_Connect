@@ -1,4 +1,4 @@
-import { DAY, format, parse } from '@std/datetime';
+import { DAY, format, MINUTE, parse } from '@std/datetime';
 import { Response } from 'express';
 
 /**                       MONGOOSE CONNECTION ENUM                            */
@@ -19,7 +19,8 @@ function set_date(date: Date): string {
 
 function get_date(date: string, get_end: boolean = false): Date {
 	try {
-		const res = parse(date, 'yyyyMMdd');
+		let res = parse(date, 'yyyyMMdd');
+		res = new Date(res.getTime() - res.getTimezoneOffset() * MINUTE);
 		if (get_end === true)
 			return new Date(res.getTime() + DAY - 1);
 		else
@@ -46,7 +47,7 @@ function die(
 		? { status: 'failed', info: msg.message, ...extra }
 		: msg instanceof String
 		? { status: 'failet', info: msg, ...extra }
-		: { status: 'failed', info: 'internal error', ...extra };
+		: { status: 'failed', info: 'unknown error', ...extra };
 	res.status(type).json(json);
 	return json;
 }
