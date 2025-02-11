@@ -51,21 +51,49 @@ async function executeAdminCommand(
                 return;
             }
 
-            // Read file contents
-            let file: Uint8Array;
             try {
-                file = await Deno.readFile(source);
-            } catch (_error) {
-                console.error("❌ Error: File not found or cannot be read.");
+                console.log(`📂 Reading CSV file: ${source}`);
+                // Read the CSV file
+                const fileData = await Deno.readFile(source);
+
+                // Create a FormData object
+                const formData = new FormData();
+                formData.append("file", new Blob([fileData], { type: "text/csv" }), source);
+
+                console.log("📤 Sending file to API...");
+                // Perform the API request
+                const response = await fetch(`${CONFIG.API_URL}/admin/addpasses`, {
+                    method: "POST",
+                    headers: { "X-OBSERVATORY-AUTH": token },
+                    body: formData,
+                });
+
+                // Handle errors based on response status code
+                if (!response.ok) {
+                    console.error(`❌ API Error: ${response.status} ${response.statusText}`);
+                    Deno.exit(1);
+                }
+
+                // Parse the response body
+                const data = await response.json();
+                // Check if operation was successful
+                if (data.status === "OK") {
+                    console.log("✅ Success.\n");
+                    console.log("Response JSON: ",data)
+                } else if (data.status === "failed") {
+                    console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
+                    Deno.exit(1);
+                } else {
+                    console.error("❌ Error");
+                    Deno.exit(1);
+                }
+                return;
+            } catch (error) {
+                console.error("❌ Error: Failed to read file:", error);
                 return;
             }
-
-            const formData = new FormData();
-            formData.append("file", new Blob([file], { type: "text/csv" }), source);
-
-            endpoint = `/admin/addpasses`;
-            requestBody = formData;
         }
+
 
         // If no valid option was selected
         else {
@@ -91,9 +119,9 @@ async function executeAdminCommand(
 
         // Check if operation was successful
         if (data.status === "OK") {
-            console.log("✅ Success.");
+            console.log("✅ Success.\n", data);
         } else if (data.status === "failed") {
-            console.error(`❌ Operation failed: ${data.info || "Unknown error occurred."}`);
+            console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
             Deno.exit(1);
         } else {
             console.error("❌ Error");
