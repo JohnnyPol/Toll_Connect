@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppSidebar } from '../../components/admin-sidebar.tsx';
+import { AppSidebar } from "@/components/admin-sidebar.tsx";
 import {
 	Breadcrumb,
 	BreadcrumbItem,

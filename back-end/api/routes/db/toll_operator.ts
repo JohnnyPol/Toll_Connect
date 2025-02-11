@@ -6,7 +6,7 @@ export default function (oapi: Middleware): Router {
     const router = new Router();
 
     /**
-     * GET /toll-operator
+     * GET /toll-operators
      * Retrieves all toll operator documents
      */
     router.get('/', async (req: Request, res: Response) => {
@@ -20,7 +20,7 @@ export default function (oapi: Middleware): Router {
     });
 
     /**
-     * GET /toll-operator/:id
+     * GET /toll-operators/:id
      * Retrieves a specific toll operator document by its ID
      */
     router.get('/:id', async (req: Request, res: Response) => {
