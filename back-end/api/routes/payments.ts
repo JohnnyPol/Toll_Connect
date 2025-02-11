@@ -279,13 +279,14 @@ export default function (oapi: Middleware): Router {
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
 			const user = (<Token> req.user).id;
+			const level = (<Token> req.user).level;
 
 			try {
 				const payment = await Payments.findById(id);
 				if (payment == null) {
 					return die(res, ErrorType.BadRequest, 'Invalid payment id');
 				}
-				if (payment.payer !== user) {
+				if (payment.payer !== user && level !== UserLevel.Admin) {
 					return die(
 						res,
 						ErrorType.BadRequest,
@@ -342,13 +343,14 @@ export default function (oapi: Middleware): Router {
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
 			const user: TollOperatorDocument['_id'] = (<Token> req.user).id;
+			const level = (<Token> req.user).level;
 
 			try {
 				const payment = await Payments.findById(id);
 				if (payment == null) {
 					return die(res, ErrorType.BadRequest, 'Invalid payment id');
 				}
-				if (payment.payee !== user) {
+				if (payment.payee !== user && level !== UserLevel.Admin) {
 					return die(
 						res,
 						ErrorType.BadRequest,
