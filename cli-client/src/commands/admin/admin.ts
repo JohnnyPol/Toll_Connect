@@ -1,6 +1,6 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
-import { getAuthToken } from "../../utils.ts";
+import { getAuthToken, hashPassword } from "@/src/utils.ts";
 
 /**
  * Handles different admin operations.
@@ -35,8 +35,41 @@ async function executeAdminCommand(
                 console.error("❌ Error: --username and --passw are required for user modification.");
                 return;
             }
-            endpoint = `/admin/usermod`;
-            requestBody = { username, password: passw };
+            const passwordHash = await hashPassword(passw);
+
+            // Make a POST request to the /login API
+			const response = await fetch('http://localhost:9115/api/admin/addadmin', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'X-OBSERVATORY-AUTH': token,
+				},
+				body: new URLSearchParams({
+					username: username,
+					password: passwordHash,
+				}).toString(),
+			});
+
+            // Handle errors based on response status code
+            if (!response.ok) {
+                console.error(`❌ API Error: ${response.status} ${response.statusText}`);
+                Deno.exit(1);
+            }
+
+            // Parse the response body
+            const data = await response.json();
+            // Check if operation was successful
+            if (data.status === "OK") {
+                console.log("✅ Success.\n");
+                console.log("Response JSON: ",data)
+            } else if (data.status === "failed") {
+                console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
+                Deno.exit(1);
+            } else {
+                console.error("❌ Error");
+                Deno.exit(1);
+            }
+            return;
         }
 
         // List all users
@@ -46,6 +79,7 @@ async function executeAdminCommand(
 
         // Add passes from CSV file
         else if (addpasses) {
+            
             if (!source) {
                 console.error("❌ Error: --source (CSV file path) is required for adding passes.");
                 return;

@@ -1,17 +1,7 @@
 import type { CommandOptions } from "@/types.ts";
-import { apiLoginRequest } from "../../utils.ts"
+import { apiLoginRequest, hashPassword } from "@/src/utils.ts"
 import { CONFIG } from "@/src/config.ts";
 
-
-// Function to hash the password with SHA-512
-const hashPassword = async (password: string): Promise<string> => {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-512', data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('');
-};
 
 // Logs in the user and saves the authentication token.
 async function login(username: string, password: string) {
