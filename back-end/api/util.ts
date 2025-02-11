@@ -41,7 +41,7 @@ function die(
 	const json = msg instanceof Error
 		? { status: 'failed', info: msg.message, ...extra }
 		: msg instanceof String
-		? { status: 'failet', info: msg, ...extra }
+		? { status: 'failed', info: msg, ...extra }
 		: { status: 'failed', info: 'internal error', ...extra };
 	res.status(type).json(json);
 	return json;
