@@ -17,29 +17,35 @@ const columns = [
 		color: 'orange',
 		status: PaymentStatus.Created,
 		isPayer: false,
+		isPayee: true,
 	},
 	{
 		title: 'Owed to Others',
 		color: 'red',
 		status: PaymentStatus.Created,
 		isPayer: true,
+		isPayee: false,
 	},
 	{
 		title: 'To Validate',
 		color: 'blue',
 		status: PaymentStatus.Paid,
 		isPayer: false,
+		isPayee: true,
 	},
 	{
 		title: 'To Be Validated',
 		color: 'purple',
 		status: PaymentStatus.Paid,
 		isPayer: true,
+		isPayee: false,
 	},
 	{
 		title: 'Completed',
 		color: 'green',
 		status: PaymentStatus.Validated,
+		isPayer: true,
+		isPayee: true,
 	}
 ];
 
@@ -74,6 +80,7 @@ export default function CompanyPaymentsPage() {
 							title={column.title}
 							status={column.status}
 							isPayer={column.isPayer}
+							isPayee={column.isPayee}
 						/>
 					</PaymentColorsProvider>
 				))}

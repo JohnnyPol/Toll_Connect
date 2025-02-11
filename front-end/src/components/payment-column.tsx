@@ -21,7 +21,8 @@ interface PaymentColumnProps {
 	paymentFilterFormValues: PaymentFilterFormValues;
 	title: string;
 	status: PaymentStatus;
-	isPayer?: boolean;
+	isPayer: boolean;
+	isPayee: boolean;
 }
 
 export const PaymentColumn: React.FC<PaymentColumnProps> = ({
@@ -29,6 +30,7 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 	title,
 	status,
 	isPayer,
+	isPayee,
 }) => {
 	const { colorScheme } = usePaymentColors();
 
@@ -43,13 +45,14 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 				paymentFilterFormValues,
 				status,
 				isPayer,
+				isPayee,
 				currentPage
 			).then((data) => {
-				setTotalPages(data.pagination.totalPages);
-				if (currentPage > data.pagination.totalPages) {
+				setTotalPages(data.total_pages);
+				if (currentPage > data.total_pages) {
 					setPage(1);
 				}
-				setPayments(data.data);
+				setPayments(data.results);
 			});
 		}
 	}, [currentPage, paymentFilterFormValues]);
