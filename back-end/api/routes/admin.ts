@@ -127,6 +127,7 @@ export default function (oapi: Middleware): Router {
 		if (req.user.level !== UserLevel.Admin) {
 			return die(res, ErrorType.BadRequest, 'Admin level required');
 		}
+		next();
 	});
 
 	// Healthcheck endpoint
@@ -211,12 +212,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Reset failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -275,12 +286,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Reset failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -349,12 +370,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Operation failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -427,7 +458,6 @@ export default function (oapi: Middleware): Router {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to);
 
-			// deno-lint-ignore no-constant-condition
 			if (req.user.level !== UserLevel.Admin) {
 				return die(res, ErrorType.BadRequest, 'only admin allowed');
 			}

@@ -48,7 +48,7 @@ export default function (oapi: Middleware): Router {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse'
+								$ref: '#/definitions/Error'
 							}
 						}
 					}
