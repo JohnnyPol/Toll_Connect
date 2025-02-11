@@ -38,19 +38,81 @@ async function fetchPassAnalysis(stationop: string, tagop: string, from: string,
             console.error(`❌ API Error: ${response.status} ${response.statusText}`);
             Deno.exit(1);
         }
+        if (format === "json") {
+            // Parse the response body
+            const data = await response.json();
 
-        // Parse the response body
-        const data = await response.json();
-        // TODO: See if you need to output all the parameters including the passList.
-        // Check if data is valid
-        if (!data) {
-            console.log("✅ No pass analysis data available for the specified period.");
-            return;
+            //console.log("Json data response: ", data);
+
+            // deno-lint-ignore no-unused-vars
+            const { passList, ...passInfo } = data;
+            console.log("\n🚏 Passes Info:");
+            console.table([passInfo]); // Put it inside an array for correct table formatting
+
+            // Check if data is valid
+            if (!data.passList || data.passList.length === 0) {
+                console.log("✅ No pass records found.");
+                return;
+            }
+
+            console.log("\n✅ Toll Station Passes:");
+            console.table(data.passList);
         }
+        else {
+            // Read response body as text
+            const csvText = await response.text();
 
-        console.log("\n✅ Pass Analysis Summary:");
-        console.table(data.passList);
+            // Extract the main fields from the CSV (excluding `passList` for now)
+            const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+            const headers = csvRows[0].split(",");
+            const values: string[] = [];
+            let insidePassList = false;
+            let passListRaw = "";
 
+            csvRows[1].split(",").forEach((part, index) => {
+                if (headers[index] === "passList" || insidePassList) {
+                    // Keep appending to passListRaw until the entire JSON is captured
+                    insidePassList = true;
+                    passListRaw += part + ",";
+
+                    // Detect end of JSON array
+                    if (part.endsWith("}]\"")) {
+                        insidePassList = false;
+                        values.push(passListRaw.slice(0, -1)); // ✅ Remove trailing comma
+                    }
+                } else {
+                    values.push(part);
+                }
+            });
+
+            // Convert CSV row into an object
+            const csvData: Record<string, string> = {};
+            headers.forEach((header, index) => {
+                if (header !== "passList") {
+                    csvData[header] = values[index];
+                }
+            });
+            console.log("\n🚏 Toll Station Info:");
+            console.table([csvData]);
+
+            // Extract and parse `passList` field (which is a JSON string inside the CSV)
+            try {
+                const passListRaw = values[headers.indexOf("passList")];
+                if (!passListRaw) {
+                    console.log("⚠️ No pass records found in the CSV response.");
+                    return;
+                }
+
+                // Convert JSON string into an arrayheaders.indexOf("passList")
+                const formattedPassListRaw = passListRaw.replace(/""/g, '"').replace(/^"|"$/g, ""); // Remove surrounding quotes                
+
+                const passList = JSON.parse(formattedPassListRaw);
+                console.log("\n✅ Toll Station Passes:");
+                console.table(passList);
+            } catch (error) {
+                console.error("❌ Error parsing `passList` JSON:", error);
+            }
+        }
     } catch (error) {
         console.error("❌ Fetch failed:", error);
     }

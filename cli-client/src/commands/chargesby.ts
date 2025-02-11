@@ -39,17 +39,79 @@ async function fetchChargesBy(opid: string, from: string, to: string, format: st
             console.error(`❌ API Error: ${response.status} ${response.statusText}`);
             Deno.exit(1);
         }
-        // Parse the response body
-        const data = await response.json();
-        //console.log("Json data response: ", data);
+        if (format === "json") {
 
-        if (!data.vOpList || data.vOpList.length === 0) {
-            console.log("⚠️ No transactions found for the given period.");
-            return;
+            // Parse the response body
+            const data = await response.json();
+            //console.log("Json data response: ", data);
+            // deno-lint-ignore no-unused-vars
+            const { vOpList, ...chargesByInfo } = data;
+            console.log("\n🚏 Charges Info:");
+            console.table([chargesByInfo]);
+
+            if (!data.vOpList || data.vOpList.length === 0) {
+                console.log("⚠️ No transactions found for the given period.");
+                return;
+            }
+
+            console.log("✅ Charges retrieved successfully.");
+            console.table(data.vOpList);
         }
+        else {
+            // Read response body as text
+            const csvText = await response.text();
 
-        console.log("✅ Charges retrieved successfully.");
-        console.table(data.vOpList);
+            // Extract the main fields from the CSV (excluding `vOpList` for now)
+            const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+            const headers = csvRows[0].split(",");
+            const values: string[] = [];
+            let insidevOpList = false;
+            let vOpListRaw = "";
+
+            csvRows[1].split(",").forEach((part, index) => {
+                if (headers[index] === "vOpList" || insidevOpList) {
+                    // Keep appending to vOpListRaw until the entire JSON is captured
+                    insidevOpList = true;
+                    vOpListRaw += part + ",";
+
+                    // Detect end of JSON array
+                    if (part.endsWith("}]\"")) {
+                        insidevOpList = false;
+                        values.push(vOpListRaw.slice(0, -1)); // ✅ Remove trailing comma
+                    }
+                } else {
+                    values.push(part);
+                }
+            });
+
+            // Convert CSV row into an object
+            const csvData: Record<string, string> = {};
+            headers.forEach((header, index) => {
+                if (header !== "vOpList") {
+                    csvData[header] = values[index];
+                }
+            });
+            console.log("\n🚏 Toll Station Info:");
+            console.table([csvData]);
+
+            // Extract and parse `vOpList` field (which is a JSON string inside the CSV)
+            try {
+                const vOpListRaw = values[headers.indexOf("vOpList")];
+                if (!vOpListRaw) {
+                    console.log("⚠️ No pass records found in the CSV response.");
+                    return;
+                }
+
+                // Convert JSON string into an arrayheaders.indexOf("vOpList")
+                const formattedvOpListRaw = vOpListRaw.replace(/""/g, '"').replace(/^"|"$/g, ""); // Remove surrounding quotes                
+
+                const vOpList = JSON.parse(formattedvOpListRaw);
+                console.log("\n✅ Toll Station Passes:");
+                console.table(vOpList);
+            } catch (error) {
+                console.error("❌ Error parsing `vOpList` JSON:", error);
+            }
+        }
     } catch (error) {
         console.error("❌ Error fetching charges:", error);
     }
