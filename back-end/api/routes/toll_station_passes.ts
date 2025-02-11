@@ -124,7 +124,7 @@ export default function (oapi: Middleware): Router {
 				});
 			} catch (error) {
 				console.error('Error fetching toll station passes:', error);
-				die(res, ErrorType.Internal, 'Internal Server Error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

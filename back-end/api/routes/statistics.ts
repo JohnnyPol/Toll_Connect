@@ -76,7 +76,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(resp);
 			} catch (err) {
 				console.error('Error in heatmap:', err);
-				die(res, ErrorType.Internal, 'Error in heatmap');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -162,7 +162,7 @@ export default function (oapi: Middleware): Router {
 				});
 			} catch (err) {
 				console.error('Error fetching toll data:', err);
-				die(res, ErrorType.Internal, 'Error fetching toll data');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -214,7 +214,7 @@ export default function (oapi: Middleware): Router {
 				));
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -266,7 +266,7 @@ export default function (oapi: Middleware): Router {
 				));
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -313,7 +313,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -360,7 +360,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

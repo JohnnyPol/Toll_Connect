@@ -1,4 +1,4 @@
-import { connect, disconnect} from 'npm:mongoose';
+import { connect, disconnect } from 'npm:mongoose';
 import Payment from '../../models/payment.ts';
 import { ClientSession } from 'mongodb';
 
@@ -12,12 +12,12 @@ import { ClientSession } from 'mongodb';
  * @param {Date} [dateofValidation] - The date of validation (optional)
  */
 async function insertPaymentConnect({
-    payer,
-    payee,
-    dateofCharge,
-    amount,
-    dateofPayment,
-    dateofValidation
+	payer,
+	payee,
+	dateofCharge,
+	amount,
+	dateofPayment,
+	dateofValidation,
 }: {
 	payer: string;
 	payee: string;
@@ -74,16 +74,11 @@ async function insertPaymentConnect({
 		try {
 			await disconnect();
 			console.log('Disconnected from MongoDB');
-		} catch (disconnectError: unknown) {
-			if (disconnectError instanceof Error) {
-				console.error(
-					'Error disconnecting from MongoDB:',
-					disconnectError.message,
-				);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				console.error('ERR disconnecting from MongoDB:', err);
 			} else {
-				console.error(
-					'Unknown error occurred during disconnection.',
-				);
+				console.error('Unknown error occurred during disconnection.');
 			}
 		}
 	}
@@ -99,56 +94,55 @@ async function insertPaymentConnect({
  * @param {Date} [dateofValidation] - The date of validation Optional
  */
 async function insertPayment({
-    payer,
-    payee,
-    dateofCharge,
-    amount,
-    dateofPayment,
-    dateofValidation
+	payer,
+	payee,
+	dateofCharge,
+	amount,
+	dateofPayment,
+	dateofValidation,
 }: {
-    payer: string;
-    payee: string;
-    dateofCharge: Date;
-    amount: number;
-    dateofPayment?: Date; // Optional
-    dateofValidation?: Date; // Optional
-}, session?:ClientSession) {
-    try {
-        // Prepare and insert payment data
-        const paymentData: { 
-            payer: string; 
-            payee: string; 
-            dateofCharge: Date; 
-            amount: number; 
-            dateofPayment?: Date; 
-            dateofValidation?: Date; 
-        } = {
-            payer,
-            payee,
-            dateofCharge,
-            amount,
-            dateofPayment,
-            dateofValidation
-        };
-        const payment = new Payment(paymentData);
-        if(session) {
-            const newPayment = await payment.save({session});
-            console.log('Inserted Payment:', newPayment);
-            return newPayment._id;
-        } else {
-            const newPayment = await payment.save();
-            console.log('Inserted Payment:', newPayment);
-            return newPayment._id;
-        }
-        
-    } catch (dbError: unknown) {
-        if (dbError instanceof Error) {
-            console.error('Failed to insert Payment:', dbError.message);
-        } else {
-            console.error('Unknown error occurred during database operation.');
-        }
-        throw(dbError);
-    }
+	payer: string;
+	payee: string;
+	dateofCharge: Date;
+	amount: number;
+	dateofPayment?: Date; // Optional
+	dateofValidation?: Date; // Optional
+}, session?: ClientSession) {
+	try {
+		// Prepare and insert payment data
+		const paymentData: {
+			payer: string;
+			payee: string;
+			dateofCharge: Date;
+			amount: number;
+			dateofPayment?: Date;
+			dateofValidation?: Date;
+		} = {
+			payer,
+			payee,
+			dateofCharge,
+			amount,
+			dateofPayment,
+			dateofValidation,
+		};
+		const payment = new Payment(paymentData);
+		if (session) {
+			const newPayment = await payment.save({ session });
+			console.log('Inserted Payment:', newPayment);
+			return newPayment._id;
+		} else {
+			const newPayment = await payment.save();
+			console.log('Inserted Payment:', newPayment);
+			return newPayment._id;
+		}
+	} catch (dbError: unknown) {
+		if (dbError instanceof Error) {
+			console.error('ERR inserting payment:', dbError);
+		} else {
+			console.error('Unknown error occurred during database operation.');
+		}
+		throw dbError;
+	}
 }
 
 export { insertPayment, insertPaymentConnect };

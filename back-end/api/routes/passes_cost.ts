@@ -118,7 +118,7 @@ export default function (oapi: Middleware): Router {
 				});
 			} catch (err) {
 				console.error('Error fetching passes cost:', err);
-				die(res, ErrorType.Internal, 'Error fetching passes cost');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

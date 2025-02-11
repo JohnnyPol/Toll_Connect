@@ -121,7 +121,7 @@ export default function (oapi: Middleware): Router {
 				});
 			} catch (err) {
 				console.error('Error fetching pass analysis:', err);
-				die(res, ErrorType.Internal, 'Internal Server Error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

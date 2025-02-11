@@ -195,7 +195,7 @@ export default function (oapi: Middleware): Router {
 					n_passes: passes,
 				});
 			} catch (error) {
-				console.error(error);
+				console.error('ERR /api/admin/healthcheck', error);
 				res.status(401).json({
 					status: 'failed',
 					dbconnection: 'mongodb://localhost:27017/',
@@ -253,13 +253,8 @@ export default function (oapi: Middleware): Router {
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error('Error in resetstations:', error);
-				res.status(500).json({
-					status: 'failed',
-					info: error instanceof Error
-						? error.message
-						: 'Unknown error occurred',
-				});
+				console.error('ERR in resetstations:', error);
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -313,13 +308,8 @@ export default function (oapi: Middleware): Router {
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error('Error in resetpasses:', error);
-				res.status(500).json({
-					status: 'failed',
-					info: error instanceof Error
-						? error.message
-						: 'Unknown error occurred',
-				});
+				console.error('ERR in resetpasses:', error);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);
@@ -359,13 +349,13 @@ export default function (oapi: Middleware): Router {
 		async (req: Request, res: Response) => {
 			try {
 				console.log(
-					' Received request to upload passes',
+					'Received request to upload passes',
 				);
-				console.log(' req.body:', req.body);
-				console.log(' req.file:', req.file);
+				console.log('req.body:', req.body);
+				console.log('req.file:', req.file);
 
 				if (!req.file) {
-					console.error(' No file uploaded');
+					console.error('No file uploaded');
 					throw new Error('No file uploaded');
 				}
 
@@ -385,18 +375,13 @@ export default function (oapi: Middleware): Router {
 
 				await insertPassesFromCSV(csvContent, false);
 				console.log(
-					' Successfully inserted passes from CSV.',
+					'Successfully inserted passes from CSV.',
 				);
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
-				console.error(' Error in /addpasses:', error);
-				res.status(500).json({
-					status: 'failed',
-					info: error instanceof Error
-						? error.message
-						: 'Unknown error occurred',
-				});
+				console.error('ERR in /addpasses:', error);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);
@@ -427,7 +412,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -464,7 +449,7 @@ export default function (oapi: Middleware): Router {
 				return res.status(200).json({ status: 'OK', info });
 			} catch (err) {
 				console.error('Internal error:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

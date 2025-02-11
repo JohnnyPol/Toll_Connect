@@ -17,7 +17,7 @@ export default function (oapi: Middleware): Router {
 			res.status(200).json(tollOperators);
 		} catch (error) {
 			console.error('Error fetching toll operators:', error);
-			die(res, ErrorType.Internal, 'Error fetching toll operators');
+			die(res, ErrorType.Internal, error);
 		}
 	});
 
@@ -41,7 +41,7 @@ export default function (oapi: Middleware): Router {
 			res.status(200).json(tollOperator);
 		} catch (error) {
 			console.error('Error fetching toll operator:', error);
-			die(res, ErrorType.Internal, 'Error fetching toll operator');
+			die(res, ErrorType.Internal, error);
 		}
 	});
 

@@ -303,7 +303,7 @@ export default function (oapi: Middleware): Router {
 				}
 			} catch (err) {
 				console.error('Error at /pay:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -365,7 +365,7 @@ export default function (oapi: Middleware): Router {
 				}
 			} catch (err) {
 				console.error('Error at /pay:', err);
-				die(res, ErrorType.Internal, 'Internal server error');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);

@@ -77,6 +77,7 @@ export default function (oapi: Middleware): Router {
 				const tollIds = await Toll.find({
 					tollOperator: tollOpID,
 				}, '_id');
+				console.log('DBG /charges_by:', tollIds);
 
 				const tagIds = await Tag.find({
 					tollOperator: tollOpID,
@@ -151,7 +152,7 @@ export default function (oapi: Middleware): Router {
 				});
 			} catch (err) {
 				console.error('Error fetching passes cost:', err);
-				die(res, ErrorType.Internal, 'Error fetching passes cost');
+				die(res, ErrorType.Internal, err);
 			}
 		},
 	);
@@ -159,3 +160,94 @@ export default function (oapi: Middleware): Router {
 	return router;
 }
 
+{
+	// const tollOpID: string = req.params.operator_id;
+	// const date_from: Date = get_date(req.params.date_from);
+	// const date_to: Date = get_date(req.params.date_to);
+// 
+	// if (
+		// req.user.id !== tollOpID && req.user.level !== UserLevel.Admin
+	// ) {
+		// die(res, ErrorType.BadRequest, 'permission denied');
+	// }
+// 
+	// try {
+		// const operator = await TollOperator.findById(tollOpID);
+		// if (!operator) {
+			// return die(res, ErrorType.BadRequest, 'Operator not found');
+		// }
+// 
+		// const tollIds = await Toll.find({
+			// tollOperator: tollOpID,
+		// }, '_id');
+// 
+		// const tagIds = await Tag.find({
+			// tollOperator: tollOpID,
+		// }, '_id');
+// 
+		// const passes = await Pass.find({
+			// $and: [
+				// { 'toll._id': { $in: tollIds } },
+				// { 'tag._id': { $nin: tagIds } },
+			// ],
+			// time: { $gte: date_from, $lte: date_to },
+		// }).sort('time');
+// 
+		// // console.log(passes);
+// 
+		// // Group passes by visiting operators (tag.tollOperator)
+		// const operatorCharges = new Map<
+		// string,
+		// { nPasses: number; passesCost: number }
+		// >();
+// 
+		// for (const pass of passes) {
+			// const tag = await Tag.findById(pass.tag);
+			// if (!tag) {
+				// console.warn(`Tag not found for pass ${pass._id}`);
+				// continue;
+			// }
+			// if (tag.tollOperator == null) {
+				// console.warn('Invalid operator reference');
+				// continue;
+			// }
+			// const visitingOpID = tag.tollOperator;
+			// const passCharge = pass.charge;
+// 
+			// if (!operatorCharges.has(visitingOpID)) {
+				// operatorCharges.set(
+					// visitingOpID,
+					// { nPasses: 0, passesCost: 0 },
+				// );
+			// }
+// 
+			// const data = operatorCharges.get(visitingOpID)!;
+			// data.nPasses += 1;
+			// data.passesCost += passCharge;
+		// }
+// 
+		// // Convert map to list format
+		// const processed = Array.from(operatorCharges.entries())
+		// .map(( [visitingOpID, { nPasses, passesCost }]) => ({
+			// visitingOpID,
+			// nPasses,
+			// passesCost: Number(
+				// passesCost.toFixed(2),
+			// ),
+		// }))
+		// .sort((a, b) => a.visitingOpID.localeCompare(
+			// b.visitingOpID,
+		// ));
+// 
+		// res.status(200).json({
+			// tollOpID,
+			// requestTimestamp: set_date(new Date()),
+			// periodFrom: set_date(date_from),
+			// periodTo: set_date(date_to),
+			// vOpList: processed,
+		// });
+	// } catch (err) {
+		// console.error('Error fetching passes cost:', err);
+		// die(res, ErrorType.Internal, 'Error fetching passes cost');
+	// }
+}

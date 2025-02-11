@@ -22,6 +22,6 @@ export default async function (
 		return next();
 	} catch (err) {
 		console.error('ERR in token verification', err);
-		return die(res, ErrorType.Unauthorized, 'error in token verification');
+		return die(res, ErrorType.Unauthorized, err);
 	}
 }
