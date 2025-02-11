@@ -9,6 +9,19 @@ export enum UserLevel {
 	Admin = 2,
 }
 
+export interface TollOperatorInput {
+	_id: string;
+	passwordHash: string;
+	userLevel: UserLevel;
+	name?: string;
+	email?: string;
+	VAT?: string;
+	addressStreet?: string;
+	addressNumber?: number;
+	addressArea?: string;
+	addressZip?: number;
+};
+
 export interface TollOperatorDocument extends Document {
 	_id: string;
 	name: string;
@@ -25,31 +38,37 @@ export interface TollOperatorDocument extends Document {
 
 const tollOperatorSchema = new Schema<TollOperatorDocument>({
 	_id: unique(trim(require(String))), // username
-	name: trim(require(String)),
 	passwordHash: require(String),
+	name: {
+		...trim(require(String)),
+		default: '',
+	},
 	userLevel: {
 		type: Number,
 		enum: UserLevel
 	}, 
 	email: {
 		...trim(require(String)),
+		default: 'default@test.com',
 		validate: {
 			validator: (mail: string) => emailRegex.test(mail),
 			message: 'Email is of invalid format',
 		},
 	},
-	VAT: trim(require(String)),
-	addressStreet: trim(require(String)),
+	VAT: { ...trim(require(String)), default: '' },
+	addressStreet: { ...trim(require(String)), default: 'Default' },
 	addressNumber: {
 		...require(Number),
+		default: 0,
 		validate: [
 			range('Address number', 0),
 			precision('Address number', 0),
 		],
 	},
-	addressArea: trim(require(String)),
+	addressArea: { ...trim(require(String)), default: '' },
 	addressZip: {
 		...require(Number),
+		default: 99999,
 		validate: [
 			range('Address ZIP', 10_000, 99_999),
 			precision('Address ZIP', 0),
