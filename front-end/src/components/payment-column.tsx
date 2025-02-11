@@ -16,6 +16,8 @@ import { usePaymentColors } from '@/hooks/use-payment-color.ts';
 import { cn } from '@/lib/utils.ts';
 import { PaymentFilterFormValues } from '@/components/payment-filter-form.tsx';
 import { PaymentPopup } from '@/components/payment-popup.tsx';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface PaymentColumnProps {
 	paymentFilterFormValues: PaymentFilterFormValues;
@@ -36,26 +38,60 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 
 	const [currentPage, setPage] = useState(1);
 
-	const [payments, setPayments] = useState<Payment[]>([]);
-	const [totalPages, setTotalPages] = useState(1);
-
-	useEffect(() => {
-		if (paymentFilterFormValues.endDate) {
+	const { data, isLoading, error, isSuccess } = useQuery({
+		queryKey: [
+			'payments',
+			status,
+			isPayer,
+			isPayee,
+			currentPage,
+			paymentFilterFormValues,
+		],
+		queryFn: () =>
 			paymentService.getPayments(
 				paymentFilterFormValues,
 				status,
 				isPayer,
 				isPayee,
-				currentPage
-			).then((data) => {
-				setTotalPages(data.total_pages);
-				if (currentPage > data.total_pages) {
-					setPage(1);
-				}
-				setPayments(data.results);
-			});
-		}
-	}, [currentPage, paymentFilterFormValues]);
+				currentPage,
+			),
+	});
+
+	const id = status + (isPayer ? 'payer' : '') + (isPayee ? 'payee' : '');
+
+	if (isLoading) {
+		toast.loading('Loading payments...', {
+			id: `loading-${id}`,
+		});
+	} else {
+		setTimeout(() => {
+			toast.dismiss(`loading-${id}`);
+		}, 10);
+	}
+
+	if (error) {
+		toast.error(error.message, {
+			id: `error-payments-${id}`,
+		});
+	}
+
+	if (isSuccess) {
+		toast.success('Payments Loaded Successfully', {
+			id: `success-payments-${id}`,
+		});
+	}
+
+	const payments = data?.results?.map((payment) => ({
+		...payment,
+		dateofPayment: payment.dateofPayment === new Date(0).toISOString()
+			? undefined
+			: payment.dateofPayment,
+		dateofValidation: payment.dateofValidation === new Date(0).toISOString()
+			? undefined
+			: payment.dateofValidation,
+	})) as Payment[];
+
+	const totalPages = data?.total_pages;
 
 	return (
 		<div
@@ -71,13 +107,11 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 				<div className='space-y-4'>
 					{payments &&
 						payments.map((payment: Payment) => (
-							<Dialog key={payment.paymentId}>
+							<Dialog key={payment._id}>
 								<DialogTrigger asChild>
 									<div>
 										<PaymentCard
-											paymentId={payment.paymentId}
-											operatorName={payment.payer}
-											amount={payment.amount}
+											payment={payment}
 										/>
 									</div>
 								</DialogTrigger>
@@ -96,11 +130,13 @@ export const PaymentColumn: React.FC<PaymentColumnProps> = ({
 						))}
 				</div>
 			</ScrollArea>
-			<Pagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				onPageChange={setPage}
-			/>
+			{totalPages && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setPage}
+				/>
+			)}
 		</div>
 	);
 };
