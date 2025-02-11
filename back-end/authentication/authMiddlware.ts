@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "npm:express";
 import { verify } from "./jwt.ts"; // Import verify function from jwt.ts
-import { UserLevel } from '@/models/toll_operator.ts'; }
-import { Token } from '@/authentication/jwt.ts'; }
+import { UserLevel } from '@/models/toll_operator.ts';
+import { Token } from '@/authentication/jwt.ts';
 
 export async function authenticateUser(req: Request, res: Response, next: NextFunction) {
   try {

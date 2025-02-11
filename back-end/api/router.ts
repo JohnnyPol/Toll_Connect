@@ -10,12 +10,12 @@ import passes_cost from './routes/passes_cost.ts';
 import payments from './routes/payments.ts';
 import statistics from './routes/statistics.ts';
 import toll_passes from './routes/toll_station_passes.ts';
-import tolls         from './routes/db/tolls.ts';
-import pass          from './routes/db/pass.ts';
-import payment       from './routes/db/payment.ts';
-import road          from './routes/db/road.ts';
-import tag           from './routes/db/tag.ts';
-import toll_operators from './routes/db/toll_operators.ts';
+import tolls          from './routes/db/tolls.ts';
+import pass           from './routes/db/pass.ts';
+import payment        from './routes/db/payment.ts';
+import road           from './routes/db/road.ts';
+import tag            from './routes/db/tag.ts';
+import toll_operators from './routes/db/toll_operator.ts';
 
 
 export default function (oapi: Middleware): Router {

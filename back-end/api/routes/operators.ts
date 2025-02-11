@@ -1,8 +1,4 @@
 import { Middleware, Request, Response, Router } from 'npm:express';
-import Toll from '../../models/toll.ts';
-import Pass from '../../models/pass.ts';
-
-import TollOperator from '../../models/toll_operator.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
@@ -29,21 +25,11 @@ export default function (oapi: Middleware): Router {
 			},
 		}),
 		(_req: Request, res: Response) => {
-			setTimeout(() => {
-				res.status(200).json([
-					{
-						'_id': 'AM',
-						'name': 'aegeanmotorway',
-					},
-					{ '_id': 'EG', 'name': 'egnatia' },
-					{ '_id': 'GE', 'name': 'gefyra' },
-					{ '_id': 'KO', 'name': 'kentrikiodos' },
-					{ '_id': 'MO', 'name': 'moreas' },
-					{ '_id': 'NAO', 'name': 'naodos' },
-					{ '_id': 'NO', 'name': 'neaodos' },
-					{ '_id': 'OO', 'name': 'olympiaodos' },
-				]);
-			}, 1000); // 1000ms = 1 second
+			res.status(200).json([{
+				id: '0',
+				name: 'John Doe',
+				address: 'Morge',
+			}]);
 		},
 	);
 
@@ -86,102 +72,8 @@ export default function (oapi: Middleware): Router {
 				},
 			},
 		}),
-		async (_req: Request, res: Response) => {
-			const { id } = _req.params;
-			try {
-				const info = await TollOperator.findById(id)
-					.exec();
-				res.status(200).json(info);
-			} catch (error) {
-				console.error(error);
-				res.status(500).json({
-					error: 'Internal server error',
-				});
-			}
-		},
-	);
-
-	router.get(
-		'/:id/tolls',
-		async (req: Request, res: Response) => {
-			const { id } = req.params;
-			try {
-				const operator = await TollOperator.findById(
-					id,
-				);
-				if (!operator) {
-					return res.status(404).json({
-						error: 'Operator not found',
-					});
-				}
-				const info = await Toll.find({
-					tollOperator: id,
-				}, {
-					_id: 1,
-					name: 1,
-					latitude: 1,
-					longitude: 1,
-				});
-				// res.status(200).json({
-				// 	data:info,
-				// 	markerIcon: operator.markerIcon,
-				// });
-				const randomDelay = Math.floor(Math.random() * 2000) + 500; // Random delay between 500ms and 2500ms
-				setTimeout(() => {
-					// if (Math.random() < 0.2) { // 20% chance to throw an error
-					// 	return res.status(400).json({
-					// 		error: 'Random error occurred',
-					// 	});
-					// }
-					// res.status(200).json({
-					// 	data: info,
-					// 	markerIcon: operator.markerIcon, // Include markerIcon in the response
-					// });
-					res.status(200).json(info);
-				}, randomDelay);
-			} catch (error) {
-				console.error(error);
-				res.status(500).json({
-					error: 'Internal server error',
-				});
-			}
-		},
-	);
-
-	router.get(
-		'/:id/passes/heatmap',
-		async (req: Request, res: Response) => {
-			const { id } = req.params;
-
-			try {
-				const tolls = await Toll.find({}, {
-					_id: 1,
-					latitude: 1,
-					longitude: 1,
-				});
-				const tollPasses = await Promise.all(
-					tolls.map(async (toll) => {
-						const passesCount = await Pass
-							.getAveragePasses(
-								toll._id,
-							);
-						return {
-							lat: toll.latitude,
-							lng: toll.longitude,
-							mag: passesCount,
-						};
-					}),
-				);
-
-				setTimeout(() => {
-					res.status(200).json(tollPasses);
-				}, 1000); // 1000ms = 1 second
-			} catch (error) {
-				console.error(error);
-				res.status(500).json({
-					error: 'Internal server error',
-				});
-			}
+		(_req: Request, res: Response) => {
+			res.status(400).json([{ msg: 'WTF' }]);
 		},
 	);
 
