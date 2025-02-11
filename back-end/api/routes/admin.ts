@@ -1,5 +1,12 @@
 // api/routes/admin.ts
-import { Middleware, Request, Response, Router } from 'express';
+import {
+	Middleware,
+	NextFunction,
+	Request,
+	Response,
+	Router,
+	urlencoded,
+} from 'express';
 import mongoose from 'mongoose';
 import multer, { FileFilterCallback } from 'multer';
 import { dirname, fromFileUrl, join } from '@std/path';
@@ -9,11 +16,19 @@ import { insertTollsFromCSV } from '@/data-base_functions/inserts/toll_insert.ts
 import { insertPassesFromCSV } from '@/data-base_functions/inserts/pass_insert.ts';
 import { deleteCollection } from '@/data-base_functions/deletes/delete_collection.ts';
 import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
-import { die, ErrorType, get_date } from '@/api/util.ts';
+import { ConnectionStates, die, ErrorType, get_date } from '@/api/util.ts';
 
-import toll_operator from '@/models/toll_operator.ts';
+import TollOperator, {
+	TollOperatorInput,
+	UserLevel,
+} from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
-import { ConnectionStates } from '@/api/util.ts';
+import { tokenHeader } from '@/api/api-doc.ts';
+
+interface UserInput {
+	id: string;
+	password: string;
+}
 
 const hashPassword = async (password: string): Promise<string> => {
 	try {
@@ -116,6 +131,13 @@ function validateCSVFile(csvContent: string): boolean {
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
+	router.use((req: Request, res: Response, next: NextFunction) => {
+		if (req.user.level !== UserLevel.Admin) {
+			return die(res, ErrorType.BadRequest, 'Admin level required');
+		}
+		return next();
+	});
+
 	// Healthcheck endpoint
 	router.get(
 		'/healthcheck',
@@ -123,6 +145,7 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Check system health',
 			operationId: 'getHealthcheck',
+			parameters: [tokenHeader],
 			responses: {
 				200: {
 					description: 'System healthy',
@@ -198,12 +221,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Reset failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -262,12 +295,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Reset failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -293,7 +336,7 @@ export default function (oapi: Middleware): Router {
 
 				const newPassword = await hashPassword(testPassword);
 
-				await toll_operator.updateOne({ _id: 'admin' }, {
+				await TollOperator.updateOne({ _id: 'admin' }, {
 					passwordHash: newPassword,
 				});
 
@@ -336,12 +379,22 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
+				401: {
+					description: 'Unauthorized - Invalid JWT',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/Error'
+							}
+						}
+					}
+				},
 				500: {
 					description: 'Operation failed',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse',
+								$ref: '#/definitions/Error',
 							},
 						},
 					},
@@ -406,18 +459,10 @@ export default function (oapi: Middleware): Router {
 		 * 		passes: number,
 		 * 		cost: number
 		 * }[]
-		 *
-		 * Notes:
-		 *  - Only allowed on admin
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to);
-
-			// deno-lint-ignore no-constant-condition
-			if (false /* TODO: not logged in as admin && */) {
-				return die(res, ErrorType.BadRequest, 'only admin allowed');
-			}
 
 			try {
 				const response = await Pass.aggregate([
@@ -428,6 +473,43 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(response);
 			} catch (err) {
 				console.error('error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		},
+	);
+
+	router.post(
+		'/addadmin',
+		urlencoded({ extended: false }),
+		async (req: Request, res: Response) => {
+			if (req.body.id == null) {
+				return die(res, ErrorType.BadRequest, 'Username required');
+			}
+			if (req.body.password == null) {
+				return die(res, ErrorType.BadRequest, 'Username required');
+			}
+			const { id, password }: UserInput = req.body;
+
+			try {
+				const existing = await TollOperator.findById(id);
+				let info: string;
+
+				if (existing != null) {
+					existing.passwordHash = password;
+					await existing.save();
+					info = 'updated';
+				} else {
+					await TollOperator.create<TollOperatorInput>({
+						_id: id,
+						passwordHash: password,
+						userLevel: UserLevel.Admin,
+					});
+					info = 'created';
+				}
+
+				return res.status(200).json({ status: 'OK', info });
+			} catch (err) {
+				console.error('Internal error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
 		},

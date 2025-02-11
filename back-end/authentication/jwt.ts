@@ -8,7 +8,10 @@ import {
 import { Types } from 'npm:mongoose';
 import { assert } from '@std/assert';
 
-import TollOperator, { UserLevel } from '../models/toll_operator.ts';
+import TollOperator, {
+	UserLevel,
+	TollOperatorDocument,
+} from '@/models/toll_operator.ts';
 
 if (!Deno.env.has('JWT_ENCODE')) {
 	console.error(
@@ -26,7 +29,7 @@ const header: Header = { alg: 'HS512', type: 'JWT' };
 
 export type Token = {
 	level: UserLevel;
-	id: string;
+	id: TollOperatorDocument['_id'];
 	exp: number;
 };
 

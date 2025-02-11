@@ -48,7 +48,7 @@ export default function (oapi: Middleware): Router {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/AdminErrorResponse'
+								$ref: '#/definitions/Error'
 							}
 						}
 					}
@@ -70,6 +70,9 @@ export default function (oapi: Middleware): Router {
 			const tagOpID: string = req.params.tag_id;
 			const date_from: Date = get_date(req.params.date_from);
 			const date_to: Date = get_date(req.params.date_to);
+
+			if (req.user.id !== tollOpID && req.user.level !== UserLevel.Admin)
+				die(res, ErrorType.BadRequest, 'No permission for requested operator');
 
 			try {
 				const operator = await TollOperator.findById(
