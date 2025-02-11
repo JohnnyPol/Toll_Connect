@@ -17,6 +17,7 @@ export default function (oapi: Middleware): Router {
 			description: 'Returns an object with the number of pass events and their cost for the given period.',
 			operationId: 'getPassesCost',
 			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
 				{ in: 'path', name: 'tollOpID', schema: { type: 'string' }, required: true, description: 'The ID of the toll station operator' },
 				{ in: 'path', name: 'tagOpID', schema: { type: 'string' }, required: true, description: 'The ID of the tag provider' },
 				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'The start date of the period (YYYYMMDD)' },
@@ -33,36 +34,9 @@ export default function (oapi: Middleware): Router {
 						}
 					}
 				},
-				400: {
-					description: 'Bad Request - Invalid input',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Internal Server Error',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				}
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			}
 		}),
 		async (req: Request, res: Response) => {

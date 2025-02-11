@@ -137,6 +137,9 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Check system health',
 			operationId: 'getHealthcheck',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+			],
 			responses: {
 				200: {
 					description: 'System healthy',
@@ -201,6 +204,9 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Reset stations data',
 			operationId: 'resetStations',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+			],
 			responses: {
 				200: {
 					description: 'Reset successful',
@@ -212,26 +218,8 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Reset failed',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error',
-							},
-						},
-					},
-				},
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			},
 		}),
 		async (_req: Request, res: Response) => {
@@ -275,6 +263,9 @@ export default function (oapi: Middleware): Router {
 			tags: ['Admin'],
 			summary: 'Reset passes data',
 			operationId: 'resetPasses',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+			],
 			responses: {
 				200: {
 					description: 'Reset successful',
@@ -286,26 +277,8 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Reset failed',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error',
-							},
-						},
-					},
-				},
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			},
 		}),
 		async (_req: Request, res: Response) => {
@@ -351,6 +324,7 @@ export default function (oapi: Middleware): Router {
 			summary: 'Add passes from CSV',
 			operationId: 'addPasses',
 			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
 				{
 					in: 'formData',
 					name: 'file',
@@ -370,26 +344,8 @@ export default function (oapi: Middleware): Router {
 						},
 					},
 				},
-				401: {
-					description: 'Unauthorized - Invalid JWT',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error'
-							}
-						}
-					}
-				},
-				500: {
-					description: 'Operation failed',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/Error',
-							},
-						},
-					},
-				},
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
 			},
 		}),
 		upload.single('file'),

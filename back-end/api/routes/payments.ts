@@ -1,7 +1,7 @@
 import { Middleware, Request, Response, Router } from 'express';
 import Payments, { PaymentDocument, PaymentStatus } from '@/models/payment.ts';
 import { die, ErrorType, get_date } from '@/api/util.ts';
-import TollOperator, { TollOperatorDocument } from '@/models/toll_operator.ts';
+import { TollOperatorDocument } from '@/models/toll_operator.ts';
 import { Token } from '@/authentication/jwt.ts';
 
 interface PaymentsQuery {
@@ -100,6 +100,83 @@ export default function (oapi: Middleware): Router {
 		 *   - If status == Validated, disregard is_payer
 		 *   - If Admin, disregard is_payer and sent everything
 		 */
+		oapi.path({
+			tags: ['Payments'],
+			summary: 'Get payments',
+			operationId: 'getPayments',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+				{
+					in: 'path',
+					name: 'status',
+					schema: {
+						type: 'string',
+						enum: ['Created', 'Paid', 'Validated'],
+					},
+					required: true,
+					description: 'Payment status',
+				},
+				{
+					in: 'path',
+					name: 'date_from',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'Start date for filtering',
+				},
+				{
+					in: 'path',
+					name: 'date_to',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'End date for filtering',
+				},
+				{
+					in: 'query',
+					name: 'page_size',
+					schema: { type: 'integer' },
+					description: 'Number of results per page',
+				},
+				{
+					in: 'query',
+					name: 'page_number',
+					schema: { type: 'integer' },
+					description: 'Page number',
+				},
+				{
+					in: 'query',
+					name: 'target_op_id',
+					schema: { type: 'string' },
+					description: 'Target operator ID (optional)',
+				},
+				{
+					in: 'query',
+					name: 'is_payer',
+					schema: { type: 'boolean' },
+					description: 'Filter by payer (optional)',
+				},
+				{
+					in: 'query',
+					name: 'is_payee',
+					schema: { type: 'boolean' },
+					description: 'Filter by payee (optional)',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of payments',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/GetPaymentsResponse',
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			const query = parse_query(req.query);
 			if (typeof query === 'string') {
@@ -172,6 +249,34 @@ export default function (oapi: Middleware): Router {
 
 	router.put(
 		'/pay/:id',
+		oapi.path({
+			tags: ['Payments'],
+			summary: 'Pay a payment',
+			operationId: 'payPayment',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+				{
+					in: 'path',
+					name: 'id',
+					schema: { type: 'string' },
+					required: true,
+					description: 'ID of the payment to be paid',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Payment successfully paid',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/definitions/SuccessResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
 			const user = (<Token> req.user).id;
@@ -196,7 +301,7 @@ export default function (oapi: Middleware): Router {
 				if (resp !== payment) {
 					die(res, ErrorType.Internal, 'Internal db error');
 				} else {
-					res.status(200).json({ status: 'ok', info: 'ok' });
+					res.status(200).json({ status: 'OK', info: 'ok' });
 				}
 			} catch (err) {
 				console.error('Error at /pay:', err);
@@ -207,6 +312,34 @@ export default function (oapi: Middleware): Router {
 
 	router.put(
 		'/validate/:id',
+		oapi.path({
+			tags: ['Payments'],
+			summary: 'Validate a payment',
+			operationId: 'validatePayment',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+				{
+					in: 'path',
+					name: 'id',
+					schema: { type: 'string' },
+					required: true,
+					description: 'ID of the payment to be validated',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Payment successfully validated',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/definitions/SuccessResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			const id: PaymentDocument['_id'] = req.params.id;
 			const user: TollOperatorDocument['_id'] = (<Token> req.user).id;
@@ -230,7 +363,7 @@ export default function (oapi: Middleware): Router {
 				if (resp !== payment) {
 					die(res, ErrorType.Internal, 'Internal db error');
 				} else {
-					res.status(200).json({ status: 'ok', info: 'ok' });
+					res.status(200).json({ status: 'OK', info: 'ok' });
 				}
 			} catch (err) {
 				console.error('Error at /pay:', err);

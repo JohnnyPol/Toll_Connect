@@ -8,6 +8,13 @@ const apiDoc = {
 		version: '1.0.0',
 	},
 	definitions: {
+        TokenHeader: {
+            in: 'header',
+            required: true,
+            name: 'x-observatory-auth',
+            description: 'authentication token',
+            schema: { type: 'string' },
+        },
 		TollOperator: {
 			type: 'object',
 			properties: {
@@ -38,9 +45,23 @@ const apiDoc = {
 				status: { type: 'string' },
 				info: { type: 'string' },
 			},
-			required: ['status'],
+			required: ['status', 'info'],
 			additionalProperties: true,
 		},
+        SuccessResponse: {
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string',
+                description: 'OK',
+              },
+              info: {
+                type: 'string',
+                description: 'ok',
+              },
+            },
+            required: ['status', 'info'],
+          },
 		HealthcheckResponse: {
             type: 'object',
             properties: {
@@ -62,6 +83,37 @@ const apiDoc = {
             properties: {
                 status: { type: 'string' },
                 dbconnection: { type: 'string' }
+            },
+            required: ['status', 'dbconnection'],
+        },
+        UnauthorizedResponse: {
+            description: 'Unauthorized ',
+            content: {
+                'application/json': {
+                    schema: {
+                        $ref: '#/definitions/Error'
+                    }
+                }
+            }
+        },
+        BadRequestResponse: {
+            description: 'Bad Request',
+            content: {
+                'application/json': {
+                    schema: {
+                        $ref: '#/definitions/Error'
+                    }
+                }
+            }
+        },
+        InternalServerErrorResponse: {
+            description: 'Internal Server Error',
+            content: {
+                'application/json': {
+                    schema: {
+                        $ref: '#/definitions/Error'
+                    }
+                }
             }
         },
         TollStationPassesResponse: {
@@ -168,7 +220,36 @@ const apiDoc = {
                 passesCost: { type: 'number', format: 'float', description: 'Total cost' }
             },
             required: ['visitingOpID', 'nPasses', 'passesCost']
-        }
+        },
+        GetPaymentsResponse: {
+            type: 'object',
+            properties: {
+              total_pages: {
+                type: 'integer',
+                description: 'Total number of pages',
+              },
+              results: {
+                type: 'array',
+                items: {
+                  $ref: '#/definitions/Payment',
+                },
+              },
+            },
+            required: ['total_pages', 'results'],
+          },
+          Payment: {
+            type: 'object',
+            properties: {
+              _id: { type: 'string' },
+              payer: { type: 'string' },
+              payee: { type: 'string' },
+              dateofCharge: { type: 'string', format: 'date-time' },
+              amount: { type: 'number', description: 'The amount of the payment' },
+              dateofPayment: { type: 'string', format: 'date-time' },
+              dateofValidation: { type: 'string', format: 'date-time' },  
+            },
+            required: ['_id', 'payer', 'payee', 'amount','dateofCharge', 'dateofPayment', 'dateofValidation'], // Add other required properties
+          },
     },
     /*paths: {
         '/admin/healthcheck': {

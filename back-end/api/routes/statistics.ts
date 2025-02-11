@@ -1,12 +1,11 @@
 import { Middleware, Request, Response, Router } from 'npm:express';
-import { die, ErrorType, get_date, set_date } from '../util.ts';
+import { die, ErrorType, get_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
 import Toll from '@/models/toll.ts';
 import TollOperators, { TollOperatorDocument, UserLevel } from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
 import Tag from '@/models/tag.ts';
-import moment from 'npm:moment';
 
 const groupByOperator = (field: string) => ({
 	$group: {
@@ -50,7 +49,7 @@ export default function (oapi: Middleware): Router {
 
 	router.get(
 		'/heatmap',
-		async (req: Request, res: Response) => {
+		async (_req: Request, res: Response) => {
 			try {
 				const tolls = await Toll.find({}).sort('_id');
 				const passes = await Pass.find({}).sort('toll');
@@ -64,7 +63,7 @@ export default function (oapi: Middleware): Router {
 				let i = 0;
 				tolls.forEach((toll) => {
 					const { _id, latitude, longitude } = toll;
-					let len = resp.push({ latitude, longitude, count: 0 });
+					const len = resp.push({ latitude, longitude, count: 0 });
 					for (
 						;
 						i < passes.length && passes[i].toll._id == _id;
