@@ -32,4 +32,12 @@ export const paymentService = {
 
 		return response.data;
 	},
+
+	payPayment: async (paymentId: string) => {
+		await axios.put(`/payments/pay/${paymentId}`);
+	},
+
+	validatePayment: async (paymentId: string) => {
+		await axios.put(`/payments/validate/${paymentId}`);
+	},
 };
