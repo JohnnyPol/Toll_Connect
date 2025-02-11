@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { PaymentColumn } from '@/components/payment-column.tsx';
 import { PaymentColorsProvider } from '@/context/payment-colors-context.tsx';
@@ -6,10 +6,8 @@ import {
 	PaymentFilterForm,
 	PaymentFilterFormValues,
 } from '@/components/payment-filter-form.tsx';
-import { OperatorProvider } from '@/context/operator-context.tsx';
 import { Toaster } from '@/components/ui/toast.tsx';
 import { PaymentStatus } from '@/types/payments.ts';
-import { color } from 'highcharts';
 
 const columns = [
 	{

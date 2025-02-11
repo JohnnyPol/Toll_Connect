@@ -2,7 +2,7 @@ import { axios } from '@/api/index.ts';
 import { StatisticsCompanyFilterFormValues } from '@/components/statistics-company-filter-form.tsx';
 import { dateToURLParam } from '@/lib/date-transformer.ts';
 import { Operator } from '@/types/operators.ts';
-import { AggregatePassData, TimeseriesPassData } from '@/types/statistics.ts';
+import { AggregatePassData, AllPassData, TimeseriesPassData } from '@/types/statistics.ts';
 import { StatisticsAdminFilterFormValues } from '@/components/statistics-admin-filter-form.tsx';
 
 export const statisticsService = {
@@ -79,4 +79,15 @@ export const statisticsService = {
 		);
 		return response.data;
 	},
+	getAllPasses: async (
+		filters: StatisticsAdminFilterFormValues,
+	) => {
+		const startDate = dateToURLParam(filters.startDate || new Date(0));
+		const endDate = dateToURLParam(filters.endDate);
+
+		const response = await axios.get<AllPassData[]>(
+			`/admin/allpasses/${startDate}/${endDate}`,
+		);
+		return response.data;
+	}
 };

@@ -50,6 +50,7 @@
 		"react-day-picker": "npm:react-day-picker@^8.9.1",
 		"react-dom": "npm:react-dom@^18.3.1",
 		"react-hook-form": "npm:react-hook-form@^7.54.2",
+		"react-jsx-highcharts": "npm:react-jsx-highcharts@^5.0.3",
 		"react-router-dom": "npm:react-router-dom@^7.1.1",
 		"recharts": "npm:recharts@^2.15.1",
 		"sonner": "npm:sonner@^1.7.2",

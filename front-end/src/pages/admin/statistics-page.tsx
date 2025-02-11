@@ -9,7 +9,7 @@ import {
 	StatisticsAdminFilterForm,
 	StatisticsAdminFilterFormValues,
 } from '@/components/statistics-admin-filter-form.tsx';
-import { StatisticsAdminSankeyDiagram } from '@/components/statistics-admin-sankey-diagram.tsx';
+import StatisticsAdminSankeyDiagram from '@/components/statistics-admin-sankey-diagram.tsx';
 
 export default function AdminStatisticsPage() {
 	const [filterFormValues, setFilterFormValues] = useState<
@@ -56,7 +56,9 @@ export default function AdminStatisticsPage() {
 					? (
 						<div className='p-4'>
 							<div className='h-[calc(100vh-200px)]'>
-								<StatisticsAdminSankeyDiagram />
+								<StatisticsAdminSankeyDiagram 
+									filters={filterFormValues}
+								/>
 							</div>
 						</div>
 					)
@@ -73,10 +75,9 @@ export default function AdminStatisticsPage() {
 									/>
 								)}
 							</div>
-							<div className='h-half grid grid-cols-3 gap-4 p-4'>
+							<div className='h-half grid grid-cols-2 gap-4 p-4'>
 								{(aggregateLoading || aggregateError) && (
 									<>
-										<Skeleton className='h-72' />
 										<Skeleton className='h-72' />
 										<Skeleton className='h-72' />
 									</>
@@ -88,7 +89,6 @@ export default function AdminStatisticsPage() {
 											description='to our stations by other operator tags'
 											data={aggregateIncoming || []}
 										/>
-										<StatisticsAdminSankeyDiagram />
 										<StatisticsPieChart
 											title='Aggregated Outgoing Passes'
 											description='by our tags to other operators stations'
