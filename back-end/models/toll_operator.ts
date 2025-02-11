@@ -34,6 +34,7 @@ export interface TollOperatorDocument extends Document {
 	addressArea: string;
 	addressZip: number;
 	address: string;
+	blacklist: string[];
 };
 
 const tollOperatorSchema = new Schema<TollOperatorDocument>({
@@ -78,6 +79,10 @@ const tollOperatorSchema = new Schema<TollOperatorDocument>({
 			precision('Address ZIP', 0),
 		],
 	},
+	blacklist: {
+		type: [String],
+		default: [],
+	}
 });
 
 tollOperatorSchema.virtual('address').get(function (): string {

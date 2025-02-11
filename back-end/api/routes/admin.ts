@@ -1,5 +1,12 @@
 // api/routes/admin.ts
-import { Middleware, Request, Response, Router, urlencoded } from 'express';
+import {
+	Middleware,
+	NextFunction,
+	Request,
+	Response,
+	Router,
+	urlencoded,
+} from 'express';
 import mongoose from 'mongoose';
 import multer, { FileFilterCallback } from 'multer';
 import { dirname, fromFileUrl, join } from '@std/path';
@@ -123,11 +130,11 @@ function validateCSVFile(csvContent: string): boolean {
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
-	router.use((req: Request, res: Response, next: Middleware) => {
+	router.use((req: Request, res: Response, next: NextFunction) => {
 		if (req.user.level !== UserLevel.Admin) {
 			return die(res, ErrorType.BadRequest, 'Admin level required');
 		}
-		next();
+		return next();
 	});
 
 	// Healthcheck endpoint
@@ -406,17 +413,10 @@ export default function (oapi: Middleware): Router {
 		 * 		passes: number,
 		 * 		cost: number
 		 * }[]
-		 *
-		 * Notes:
-		 *  - Only allowed on admin
 		 */
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to);
-
-			if (req.user.level !== UserLevel.Admin) {
-				return die(res, ErrorType.BadRequest, 'only admin allowed');
-			}
 
 			try {
 				const response = await Pass.aggregate([

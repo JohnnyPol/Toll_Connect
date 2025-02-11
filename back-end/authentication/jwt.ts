@@ -5,7 +5,7 @@ import {
 	Payload,
 	verify as djwt_verify,
 } from 'https://deno.land/x/djwt/mod.ts';
-import { Types } from 'npm:mongoose';
+import { Types } from 'mongoose';
 import { assert } from '@std/assert';
 
 import TollOperator, {
@@ -17,7 +17,7 @@ if (!Deno.env.has('JWT_ENCODE')) {
 	console.error(
 		`Missing encode string for JWT: Add JWT_ENCODE to .env file`,
 	);
-	Deno.exit(2);
+	Deno.exit(1);
 }
 
 const key: CryptoKey = await crypto.subtle.generateKey(
@@ -41,12 +41,16 @@ async function create(obj: Omit<Token, 'exp'>): Promise<string> {
 	return await djwt_create(header, payload, key);
 }
 
-async function verify(token: string): Promise<Token> {
-	return await djwt_verify(token, key);
+async function verify(str: string): Promise<Token> {
+	const token: Token = await djwt_verify(str, key);
+	const doc = await TollOperator.findById(token.id);
+	if (doc == null) throw Error('could not find id in database');
+	if (str in doc.blacklist) throw Error('blacklisted token');
+	return token;
 }
 
 async function clearBlacklist(): Promise<void> {
-	const docs = await TollOperator.find({ blacklist: { $gt: [] } }).exec();
+	const docs = await TollOperator.find({ blacklist: { $gt: [] } });
 	for (const doc of docs) {
 		const now = new Date().getTime();
 		doc.blacklist.filter(async (token: string) => {
