@@ -9,7 +9,7 @@ import { insertTollsFromCSV } from '@/data-base_functions/inserts/toll_insert.ts
 import { insertPassesFromCSV } from '@/data-base_functions/inserts/pass_insert.ts';
 import { deleteCollection } from '@/data-base_functions/deletes/delete_collection.ts';
 import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
-import { die, ErrorType, get_date, ConnectionStates } from '@/api/util.ts';
+import { ConnectionStates, die, ErrorType, get_date } from '@/api/util.ts';
 
 import TollOperator, {
 	TollOperatorInput,
@@ -20,7 +20,7 @@ import Pass from '@/models/pass.ts';
 interface UserInput {
 	id: string;
 	password: string;
-};
+}
 
 const hashPassword = async (password: string): Promise<string> => {
 	try {
@@ -122,6 +122,12 @@ function validateCSVFile(csvContent: string): boolean {
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
+
+	router.use((req: Request, res: Response, next: Middleware) => {
+		if (req.user.level !== UserLevel.Admin) {
+			return die(res, ErrorType.BadRequest, 'Admin level required');
+		}
+	});
 
 	// Healthcheck endpoint
 	router.get(
@@ -452,7 +458,7 @@ export default function (oapi: Middleware): Router {
 			const date_to = get_date(req.params.date_to);
 
 			// deno-lint-ignore no-constant-condition
-			if (false /* TODO: not logged in as admin && */) {
+			if (req.user.level !== UserLevel.Admin) {
 				return die(res, ErrorType.BadRequest, 'only admin allowed');
 			}
 
@@ -474,10 +480,12 @@ export default function (oapi: Middleware): Router {
 		'/addadmin',
 		urlencoded({ extended: false }),
 		async (req: Request, res: Response) => {
-			if (req.body.id == null)
+			if (req.body.id == null) {
 				return die(res, ErrorType.BadRequest, 'Username required');
-			if (req.body.password == null)
+			}
+			if (req.body.password == null) {
 				return die(res, ErrorType.BadRequest, 'Username required');
+			}
 			const { id, password }: UserInput = req.body;
 
 			try {
@@ -502,7 +510,7 @@ export default function (oapi: Middleware): Router {
 				console.error('Internal error:', err);
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
-		}
+		},
 	);
 
 	return router;
