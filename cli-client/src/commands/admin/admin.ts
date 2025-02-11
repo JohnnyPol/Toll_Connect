@@ -74,10 +74,10 @@ async function executeAdminCommand(
 
         // List all users
         else if (users) {
-
-            // Make a POST request to the /login API
-            const response = await fetch('http://localhost:9115/api/admin/', {
-                method: 'POST',
+            console.log("📡 Fetching Toll Operator IDs...");
+            // Make a GET request to get all usersnames
+            const response = await fetch('http://localhost:9115/api/db/toll-operators/admin/all', {
+                method: 'GET',
                 headers: {
                     'X-OBSERVATORY-AUTH': token,
                 },
@@ -89,19 +89,21 @@ async function executeAdminCommand(
                 Deno.exit(1);
             }
 
-            // Parse the response body
-            const data = await response.json();
+            // Parse the response body (list of strings)
+            const data: string[] = await response.json();
 
-            // Check if operation was successful
-            if (data.status === "OK") {
-                console.log("✅ Success.\n", data);
-            } else if (data.status === "failed") {
-                console.error(`❌ Operation failed:\n ${data.info || "Unknown error occurred."}`);
-                Deno.exit(1);
-            } else {
-                console.error("❌ Error");
-                Deno.exit(1);
+            if (!data || data.length === 0) {
+                console.log("⚠️ No operators found.");
+                return;
             }
+
+            // Convert list of strings to an array of objects for vertical table output
+            const formattedData = data.map((id) => ({ "Toll Operator ID": id }));
+
+            // ✅ Display as a vertical table
+            console.log("\n🏢 Toll Operator IDs:");
+            console.table(formattedData);
+
         }
 
         // Add passes from CSV file
