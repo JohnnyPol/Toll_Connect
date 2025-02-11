@@ -18,6 +18,7 @@ import payment from './routes/db/payment.ts';
 import road from './routes/db/road.ts';
 import tag from './routes/db/tag.ts';
 import toll_operators from './routes/db/toll_operators.ts';
+import { UserLevel } from '@/models/toll_operator.ts';
 
 function csv_parser (req: Request, res: Response, next: Middleware) {
 		if (req.query.format === undefined || req.query.format === 'json') {
@@ -60,6 +61,10 @@ export default function (oapi: Middleware): Router {
 
 	// TODO: Remove the below comment
 	// router.use(authenticateUser);
+	router.use((req, res, next) => {
+		req.user = { id: 'AM', level: UserLevel.Admin };
+		next();
+	})
 
 	// Protected Routes (Require authentication)
 	router.use('/admin', admin(oapi));
