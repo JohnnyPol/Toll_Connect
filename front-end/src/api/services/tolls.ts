@@ -5,11 +5,17 @@ import { dateToURLParam } from '@/lib/date-transformer.ts';
 
 export const tollService = {
 	getByOperator: async (operatorId: Operator['_id']) => {
-		const response = await axios.get<TollMarkerData[]>(`/db/tolls/by_operator/${operatorId}`);
+		const response = await axios.get<TollMarkerData[]>(
+			`/db/tolls/by_operator/${operatorId}`,
+		);
 		return response.data;
 	},
 	getById: async (tollId: Toll['_id'], startDate: Date, endDate: Date) => {
-		const response = await axios.get<TollStatistics>(`/statistics/${tollId}/${dateToURLParam(startDate)}/${dateToURLParam(endDate)}`);
+		const response = await axios.get<TollStatistics>(
+			`/statistics/${tollId}/${dateToURLParam(startDate)}/${
+				dateToURLParam(endDate)
+			}`,
+		);
 		return response.data;
 	},
 };

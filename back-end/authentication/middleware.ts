@@ -1,6 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
-import { verify } from './jwt.ts'; // Import verify function from jwt.ts
-import { Token } from '@/authentication/jwt.ts';
+import { NextFunction, Request, Response, Middleware } from 'express';
+import { Token, verify } from '@/authentication/jwt.ts';
 import { die, ErrorType } from '@/api/util.ts';
 import { UserLevel } from '@/models/toll_operator.ts';
 
@@ -9,7 +8,7 @@ export default async function (
 	res: Response,
 	next: NextFunction,
 ) : Middleware {
-	const token: Token | undefined = req.get('x-observatory-auth');
+	const token: string | undefined = req.get('x-observatory-auth');
 
 	if (token == null) {
 		req.user = <Token> { level: UserLevel.Anonymous, id: '', exp: -1 };
@@ -23,6 +22,6 @@ export default async function (
 		return next();
 	} catch (err) {
 		console.error('ERR in token verification', err);
-		return die(res, ErrorType.Unauthorized, 'error in token verification');
+		return die(res, ErrorType.Unauthorized, err);
 	}
 }

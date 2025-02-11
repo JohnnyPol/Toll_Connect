@@ -9,13 +9,13 @@ export default function (oapi: Middleware): Router {
 	 * GET /tolls
 	 * Retrieves all toll documents
 	 */
-	router.get('/', async (req: Request, res: Response) => {
+	router.get('/', async (_req: Request, res: Response) => {
 		try {
 			const tolls = await Toll.find().lean();
 			res.status(200).json(tolls);
 		} catch (error) {
 			console.error('Error fetching tolls:', error);
-			die(res, ErrorType.Internal, 'Error fetching tolls');
+			die(res, ErrorType.Internal, error);
 		}
 	});
 
@@ -33,7 +33,7 @@ export default function (oapi: Middleware): Router {
 			res.status(200).json(toll);
 		} catch (error) {
 			console.error('Error fetching toll:', error);
-			die(res, ErrorType.Internal, 'Error fetching toll');
+			die(res, ErrorType.Internal, error);
 		}
 	});
 	/**
@@ -61,11 +61,7 @@ export default function (oapi: Middleware): Router {
 				res.status(200).json(tolls);
 			} catch (error) {
 				console.error('Error fetching tolls by operator:', error);
-				die(
-					res,
-					ErrorType.Internal,
-					'Error fetching tolls by operator',
-				);
+				die(res, ErrorType.Internal, error);
 			}
 		},
 	);

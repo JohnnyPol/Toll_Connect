@@ -79,14 +79,9 @@ async function insertTollConnect({
 		console.log('Inserted Toll:', newToll);
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
-			console.error(
-				'Failed to insert Toll:',
-				dbError.message,
-			);
+			console.error('Failed to insert Toll:', dbError);
 		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
+			console.error('Unknown error occurred during database operation.');
 		}
 		throw dbError;
 	} finally {
@@ -94,16 +89,11 @@ async function insertTollConnect({
 		try {
 			await disconnect();
 			console.log('Disconnected from MongoDB');
-		} catch (disconnectError: unknown) {
-			if (disconnectError instanceof Error) {
-				console.error(
-					'Error disconnecting from MongoDB:',
-					disconnectError.message,
-				);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				console.error('Error disconnecting from MongoDB:', err);
 			} else {
-				console.error(
-					'Unknown error occurred during disconnection.',
-				);
+				console.error('Unknown error occurred during disconnection.');
 			}
 		}
 	}
@@ -181,14 +171,9 @@ roadName,
 		console.log('Inserted Toll:', newToll);
 	} catch (dbError: unknown) {
 		if (dbError instanceof Error) {
-			console.error(
-				'Failed to insert Toll:',
-				dbError.message,
-			);
+			console.error('Failed to insert Toll:', dbError);
 		} else {
-			console.error(
-				'Unknown error occurred during database operation.',
-			);
+			console.error('Unknown error occurred during database operation.');
 		}
 		throw dbError;
 	}
