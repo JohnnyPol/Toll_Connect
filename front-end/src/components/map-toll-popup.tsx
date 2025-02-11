@@ -76,7 +76,7 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 		);
 	}
 
-	const popupType = toll?.my_passes
+	const popupType = toll?.my_passes !== undefined
 		? PopupType.OPERATOR_MINE
 		: toll?.operators
 		? PopupType.OPERATOR_OTHER
@@ -104,8 +104,8 @@ export const MapTollPopup: React.FC<MapTollPopupProps> = ({
 			<Input id='avg-passes' value={toll?.avg_passes} disabled />
 			{popupType === PopupType.OPERATOR_MINE && (
 				<>
-					<Label htmlFor='avg-passes'>My Passes</Label>
-					<Input id='avg-passes' value={toll?.my_passes} disabled />
+					<Label htmlFor='my-passes'>My Passes</Label>
+					<Input id='my-passes' value={toll?.my_passes} disabled />
 				</>
 			)}
 		</div>

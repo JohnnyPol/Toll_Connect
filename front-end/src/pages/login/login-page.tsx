@@ -5,7 +5,7 @@ import { GalleryVerticalEnd } from 'lucide-react';
 
 import { LoginForm } from '@/components/login-form.tsx';
 import tollImage from '@/assets/tolls.jpeg';
-import { Token, UserLevel } from '@/components/login-form.tsx';
+import { Token, UserLevel } from '@/types/auth.ts';
 
 export default function LoginPage() {
 	// Redirection of login if valid token

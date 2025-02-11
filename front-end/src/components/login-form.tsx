@@ -6,18 +6,7 @@ import incognitoLogo from '@/assets/incognito.svg';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
-
-export enum UserLevel {
-	Anonymous = 0,
-	Operator = 1,
-	Admin = 2,
-}
-
-export type Token = {
-	level: UserLevel;
-	name: string;
-	exp: number;
-};
+import { Token, UserLevel } from '@/types/auth.ts';
 
 export function LoginForm({
 	className,

@@ -12,6 +12,7 @@ import { ConnectionStates } from '@/api/util.ts';
 import apiDoc from './api/api-doc.ts';
 import api from './api/router.ts';
 import cors from 'cors';
+import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
 
 async function check_connection(): Promise<void> {
 	if (mongoose.connection.readyState === ConnectionStates.connected) {
@@ -30,6 +31,11 @@ async function check_connection(): Promise<void> {
 			ConnectionStates.connected
 	) {
 		console.log('OK connecting to DB');
+		try {
+			await insertTollOperators();
+		} catch (err) {
+			console.error('ERR inserting operators:', err);
+		}
 		try {
 			await clearBlacklist();
 		} catch (err) {

@@ -21,6 +21,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
 import { useOperators } from '@/hooks/use-operators.ts';
 import { toast } from 'sonner';
 import { CheckIcon } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
+import { Token } from '@/types/auth.ts';
 
 const formSchema = z.object({
 	startDate: z.date().optional(),
@@ -73,6 +75,9 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 	onSubmit,
 }) => {
 	const { operators, isLoading, error } = useOperators();
+	const token = localStorage.getItem('authToken');
+
+	const decodedToken: Token | undefined = token ? jwtDecode(token) : undefined;
 
 	if (isLoading) {
 		toast.loading('Loading operators...', {
@@ -89,6 +94,10 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 			id: 'error-operators',
 		});
 	}
+
+	const filteredOperators = operators?.filter((operator) =>
+		operator._id !== decodedToken?.id
+	);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -214,7 +223,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 									</SelectTrigger>
 									<SelectContent>
 										{!isLoading && !error &&
-											operators.map((operator) => (
+											filteredOperators.map((operator) => (
 												<SelectItem key={operator._id} value={operator._id}>
 													{operator.name.toUpperCase()}
 												</SelectItem>

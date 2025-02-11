@@ -43,15 +43,17 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 	title,
 }) => {
 	const { operators } = useOperators();
-	const chartConfig = useMemo<ChartConfig>(() => {
-		const config: ChartConfig = {};
-		operators.forEach((operator, _) => {
-			config[operator._id] = {
-				label: operator.name.toLocaleUpperCase(),
-			};
-		});
-		return config;
-	}, [operators]);
+
+	if (!operators) {
+		return null;
+	}
+
+	const chartConfig: ChartConfig = {};
+	operators.forEach((operator, _) => {
+		chartConfig[operator._id] = {
+			label: operator.name.toLocaleUpperCase(),
+		};
+	});
 
 	const chartData = data.map((item, index) => ({
 		operator: item._id,
