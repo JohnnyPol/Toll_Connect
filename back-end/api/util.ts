@@ -1,5 +1,5 @@
-import { format, parse } from 'jsr:@std/datetime';
-import { Response } from 'npm:express';
+import { format, parse } from '@std/datetime';
+import { Response } from 'express';
 
 /**                       MONGOOSE CONNECTION ENUM                            */
 
