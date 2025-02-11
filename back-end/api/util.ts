@@ -35,8 +35,10 @@ enum ErrorType {
 function
 die (
 	res: Response, type: ErrorType, msg: string, extra: object = {}
-): void {
-	return res.status(type).json({ status: 'failed', info: msg, ...extra });
+): object {
+	const json = { status: 'failed', info: msg, ...extra };
+	res.status(type).json(json);
+	return json;
 };
 
 export { get_date, set_date, ErrorType, die };
