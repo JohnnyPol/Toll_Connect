@@ -1,5 +1,5 @@
 // api/routes/admin.ts
-import { Middleware, Request, Response, Router } from 'express';
+import { Middleware, Request, Response, Router, urlencoded } from 'express';
 import mongoose from 'mongoose';
 import multer, { FileFilterCallback } from 'multer';
 import { dirname, fromFileUrl, join } from '@std/path';
@@ -9,11 +9,18 @@ import { insertTollsFromCSV } from '@/data-base_functions/inserts/toll_insert.ts
 import { insertPassesFromCSV } from '@/data-base_functions/inserts/pass_insert.ts';
 import { deleteCollection } from '@/data-base_functions/deletes/delete_collection.ts';
 import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
-import { die, ErrorType, get_date } from '@/api/util.ts';
+import { die, ErrorType, get_date, ConnectionStates } from '@/api/util.ts';
 
-import toll_operator from '@/models/toll_operator.ts';
+import TollOperator, {
+	TollOperatorInput,
+	UserLevel,
+} from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
-import { ConnectionStates } from '@/api/util.ts';
+
+interface UserInput {
+	id: string;
+	password: string;
+};
 
 const hashPassword = async (password: string): Promise<string> => {
 	try {
@@ -293,7 +300,7 @@ export default function (oapi: Middleware): Router {
 
 				const newPassword = await hashPassword(testPassword);
 
-				await toll_operator.updateOne({ _id: 'admin' }, {
+				await TollOperator.updateOne({ _id: 'admin' }, {
 					passwordHash: newPassword,
 				});
 
@@ -431,6 +438,41 @@ export default function (oapi: Middleware): Router {
 				die(res, ErrorType.Internal, 'Internal server error');
 			}
 		},
+	);
+
+	router.post(
+		'/addadmin',
+		urlencoded({ extended: false }),
+		async (req: Request, res: Response) => {
+			if (req.body.id == null)
+				return die(res, ErrorType.BadRequest, 'Username required');
+			if (req.body.password == null)
+				return die(res, ErrorType.BadRequest, 'Username required');
+			const { id, password }: UserInput = req.body;
+
+			try {
+				const existing = await TollOperator.findById(id);
+				let info: string;
+
+				if (existing != null) {
+					existing.passwordHash = password;
+					await existing.save();
+					info = 'updated';
+				} else {
+					await TollOperator.create<TollOperatorInput>({
+						_id: id,
+						passwordHash: password,
+						userLevel: UserLevel.Admin,
+					});
+					info = 'created';
+				}
+
+				return res.status(200).json({ status: 'OK', info });
+			} catch (err) {
+				console.error('Internal error:', err);
+				die(res, ErrorType.Internal, 'Internal server error');
+			}
+		}
 	);
 
 	return router;
