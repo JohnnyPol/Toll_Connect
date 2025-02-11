@@ -77,7 +77,7 @@ const StatisticsAdminSankeyDiagram: React.FC<
 			<CardHeader className='items-center pb-0'>
 				<CardTitle>All Passes</CardTitle>
 				<CardDescription>
-					Passes from all Operators to all Operators
+					Passes from Tags of all Operators to Tolls of all Operators
 				</CardDescription>
 			</CardHeader>
 			<CardContent className='flex-1'>
