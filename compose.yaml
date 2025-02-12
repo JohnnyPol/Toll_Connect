@@ -1,0 +1,48 @@
+services:
+  backend:
+    container_name: toll-connect-backend
+    restart: always
+    build: 
+      context: './back-end/'
+      target: base
+    depends_on:
+      - db
+    ports:
+      - "9115:9115"
+    networks:
+      - frontend_net
+      - backend_net
+  frontend:
+    build:
+      context: './front-end/'
+      target: production
+      
+    depends_on:
+      - backend
+    networks:
+      - frontend_net
+    ports:
+      - "80:80"
+    volumes:
+      - ./front-end/dist/:/var/www/html/
+      - ./front-end/ssl/certificate.crt:/etc/ssl/certs/certificate.crt
+      - ./front-end/ssl/private.key:/etc/ssl/private/private.key
+    container_name: toll-connect-frontend
+    restart: always 
+  db:
+    image: mongodb/mongodb-community-server:latest
+    restart: always
+    volumes:
+      - db-data:/data/db
+    ports:
+      - "27017:27017"
+    container_name: softeng-mongodb
+    networks:
+      - backend_net
+networks:
+  frontend_net:
+    name: toll-connect-frontend-net
+  backend_net:
+    name: toll-connect-backend-net
+volumes:
+  db-data:
