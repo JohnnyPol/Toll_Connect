@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/protected-route.tsx';
 import { UserLevel } from '@/types/auth.ts';
 import '@/index.css';
@@ -32,12 +32,18 @@ function App() {
 						<Route path='/login' element={<LoginPage />} />
 
 						{/* Protected Routes for Company Users*/}
-						<Route element={<ProtectedRoute requiredLevel={UserLevel.Operator} />}>
+						<Route
+							element={<ProtectedRoute requiredLevel={UserLevel.Operator} />}
+						>
 							<Route path='company'>
+								<Route index element={<Navigate to='dashboard' replace />} />
 								<Route path='dashboard' element={<CompanyLayout />}>
 									<Route index element={<CompanyDashboard />} />
 									<Route path='map' element={<CompanyMapPage />} />
-									<Route path='statistics' element={<CompanyStatisticsPage />} />
+									<Route
+										path='statistics'
+										element={<CompanyStatisticsPage />}
+									/>
 									<Route path='payments' element={<CompanyPaymentsPage />} />
 								</Route>
 							</Route>
@@ -45,11 +51,14 @@ function App() {
 
 						{/* Protected Routes for Admin Users */}
 						<Route element={<ProtectedRoute requiredLevel={UserLevel.Admin} />}>
-							<Route path='/admin' element={<AdminLayout />}>
-								<Route path='dashboard' element={<AdminDashboard />} />
-								<Route path='map' element={<AdminMapPage />} />
-								<Route path='statistics' element={<AdminStatisticsPage />} />
-								<Route path='payments' element={<AdminPaymentsPage />} />
+							<Route path='admin'>
+								<Route index element={<Navigate to='dashboard' replace />} />
+								<Route path='dashboard' element={<AdminLayout />}>
+									<Route index element={<AdminDashboard />} />
+									<Route path='map' element={<AdminMapPage />} />
+									<Route path='statistics' element={<AdminStatisticsPage />} />
+									<Route path='payments' element={<AdminPaymentsPage />} />
+								</Route>
 							</Route>
 						</Route>
 						{/* Default Route */}

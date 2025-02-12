@@ -89,7 +89,7 @@ export function CompanySidebar(
 										Toll Connect
 									</span>
 									<span className=''>
-										v420.69
+										v1.7.42
 									</span>
 								</div>
 							</Link>
