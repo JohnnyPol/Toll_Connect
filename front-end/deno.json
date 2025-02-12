@@ -39,6 +39,7 @@
 		"axios-cache-interceptor": "npm:axios-cache-interceptor@^1.6.2",
 		"class-variance-authority": "npm:class-variance-authority@^0.7.1",
 		"clsx": "npm:clsx@^2.1.1",
+		"crypto-js": "npm:crypto-js@^4.2.0",
 		"date-fns": "npm:date-fns@^4.1.0",
 		"googlemaps": "npm:googlemaps@^1.12.0",
 		"highcharts": "npm:highcharts@^12.1.2",

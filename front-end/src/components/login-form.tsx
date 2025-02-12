@@ -7,6 +7,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { Token, UserLevel } from '@/types/auth.ts';
+import CryptoJS from 'crypto-js';
+
 
 export function LoginForm({
 	className,
@@ -78,12 +80,7 @@ export function LoginForm({
 
 	// Function to hash the password with SHA-512
 	const hashPassword = async (password: string): Promise<string> => {
-		const encoder = new TextEncoder();
-		const data = encoder.encode(password);
-		const hashBuffer = await crypto.subtle.digest('SHA-512', data);
-		return Array.from(new Uint8Array(hashBuffer))
-			.map((byte) => byte.toString(16).padStart(2, '0'))
-			.join('');
+		return CryptoJS.SHA512(password).toString();
 	};
 
 	return (
