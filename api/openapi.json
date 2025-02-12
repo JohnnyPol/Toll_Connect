@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "basePath": "/api",
   "info": {
-    "title": "TITLE",
+    "title": "Toll connect",
     "version": "1.0.0",
     "description": "API for SoftEng 2024 NTUA course"
   },
