@@ -49,6 +49,10 @@ export const StatisticsTimeseriesChart: React.FC<
 
 	const { operators } = useOperators();
 
+	if (!operators) {
+		return null;
+	}
+
 	const filteredOperators = operators.filter((operator) => {
 		const incomingHasData = incomingData.some((item) =>
 			item.operators.some((op) => op.operator === operator._id && op.cost > 0)
@@ -59,17 +63,14 @@ export const StatisticsTimeseriesChart: React.FC<
 		return incomingHasData || outgoingHasData;
 	});
 
-	const chartConfig = useMemo<ChartConfig>(() => {
-		const config: ChartConfig = {};
-		filteredOperators.forEach((operator, index) => {
-			config[operator._id] = {
-				label: operator.name.toLocaleUpperCase(),
-				color: operator?.chartColor ||
-					DEFAULT_COLORS[index % DEFAULT_COLORS.length],
-			};
-		});
-		return config;
-	}, [filteredOperators]);
+	const chartConfig: ChartConfig = {};
+	filteredOperators.forEach((operator, index) => {
+		chartConfig[operator._id] = {
+			label: operator.name.toLocaleUpperCase(),
+			color: operator?.chartColor ||
+				DEFAULT_COLORS[index % DEFAULT_COLORS.length],
+		};
+	});
 
 	const incomingChartData = incomingData.map((item) => {
 		const operatorData = item.operators.reduce(
@@ -168,7 +169,7 @@ export const StatisticsTimeseriesChart: React.FC<
 							Outgoing
 						</span>
 						<span className='text-lg font-bold leading-none sm:text-3xl'>
-						{total.outgoing.toLocaleString('el-GR', {
+							{total.outgoing.toLocaleString('el-GR', {
 								style: 'currency',
 								currency: 'EUR',
 							})}

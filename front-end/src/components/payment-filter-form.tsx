@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isAfter } from 'date-fns/isAfter';
 import {
 	Form,
 	FormControl,
@@ -22,21 +21,23 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
 import { useOperators } from '@/hooks/use-operators.ts';
 import { toast } from 'sonner';
 import { CheckIcon } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
+import { Token } from '@/types/auth.ts';
 
 const formSchema = z.object({
 	startDate: z.date().optional(),
 	endDate: z.date(),
 	targets: z.enum(['all', 'specific']),
-	specificOperator: z.string().optional()
+	specificOperator: z.string().optional(),
 }).refine(
 	(data) => {
 		// Validate dates aren't in the future
 		return data.endDate <= new Date();
 	},
 	{
-		message: "End date cannot be in the future",
-		path: ["endDate"]
-	}
+		message: 'End date cannot be in the future',
+		path: ['endDate'],
+	},
 ).refine(
 	(data) => {
 		// Validate start date is before end date when start date exists
@@ -44,9 +45,9 @@ const formSchema = z.object({
 		return data.startDate <= data.endDate;
 	},
 	{
-		message: "Start date must be before or equal to end date",
-		path: ["startDate"]
-	}
+		message: 'Start date must be before or equal to end date',
+		path: ['startDate'],
+	},
 ).refine(
 	(data) => {
 		// When targets is 'all', specificOperator must be undefined/null
@@ -57,9 +58,9 @@ const formSchema = z.object({
 		return !!data.specificOperator;
 	},
 	{
-		message: "Bad Operator Selection",
-		path: ["specificOperator"]
-	}
+		message: 'Bad Operator Selection',
+		path: ['specificOperator'],
+	},
 );
 
 export type PaymentFilterFormValues = z.infer<typeof formSchema>;
@@ -74,6 +75,9 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 	onSubmit,
 }) => {
 	const { operators, isLoading, error } = useOperators();
+	const token = localStorage.getItem('authToken');
+
+	const decodedToken: Token | undefined = token ? jwtDecode(token) : undefined;
 
 	if (isLoading) {
 		toast.loading('Loading operators...', {
@@ -90,6 +94,10 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 			id: 'error-operators',
 		});
 	}
+
+	const filteredOperators = operators?.filter((operator) =>
+		operator._id !== decodedToken?.id
+	);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -110,7 +118,7 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 
 	useEffect(() => {
 		const { errors } = form.formState;
-		
+
 		if (errors.startDate) {
 			toast.error(errors.startDate.message, {
 				id: 'start-date-error',
@@ -199,33 +207,33 @@ export const PaymentFilterForm: React.FC<PaymentFilterFormProps> = ({
 						</FormItem>
 					)}
 				/>
-					<FormField
-						control={form.control}
-						name='specificOperator'
-						render={({ field }) => (
-							<FormItem className='flex-grow'>
-								<FormControl>
-									<Select
-										onValueChange={field.onChange}
-										value={field.value}
-										disabled={form.watch('targets') === 'all'}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder='Select an operator' />
-										</SelectTrigger>
-										<SelectContent>
-											{!isLoading && !error &&
-												operators.map((operator) => (
-													<SelectItem key={operator._id} value={operator._id}>
-														{operator.name.toUpperCase()}
-													</SelectItem>
-												))}
-										</SelectContent>
-									</Select>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
+				<FormField
+					control={form.control}
+					name='specificOperator'
+					render={({ field }) => (
+						<FormItem className='flex-grow'>
+							<FormControl>
+								<Select
+									onValueChange={field.onChange}
+									value={field.value}
+									disabled={form.watch('targets') === 'all'}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder='Select an operator' />
+									</SelectTrigger>
+									<SelectContent>
+										{!isLoading && !error &&
+											filteredOperators.map((operator) => (
+												<SelectItem key={operator._id} value={operator._id}>
+													{operator.name.toUpperCase()}
+												</SelectItem>
+											))}
+									</SelectContent>
+								</Select>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
 				<Button type='submit' className='flex-shrink-0'>
 					<CheckIcon className='h-4 w-4' />
 					<span className='sr-only'>Submit</span>

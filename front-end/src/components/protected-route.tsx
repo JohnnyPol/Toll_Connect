@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { UserLevel } from "@/components/login-form.tsx";
+import { UserLevel } from "@/types/auth.ts";
 import { isAuthenticated } from "@/components/auth.tsx";
 
 export function ProtectedRoute({

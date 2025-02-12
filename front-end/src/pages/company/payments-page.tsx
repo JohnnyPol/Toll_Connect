@@ -59,10 +59,6 @@ export default function CompanyPaymentsPage() {
 		},
 	);
 
-	useEffect(() => {
-		console.log(filterFormValues);
-	}, [filterFormValues]);
-
 	return (
 		<>
 			<Toaster position='bottom-center' richColors closeButton />

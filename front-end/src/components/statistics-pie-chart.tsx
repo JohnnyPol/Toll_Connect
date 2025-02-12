@@ -43,15 +43,17 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 	title,
 }) => {
 	const { operators } = useOperators();
-	const chartConfig = useMemo<ChartConfig>(() => {
-		const config: ChartConfig = {};
-		operators.forEach((operator, _) => {
-			config[operator._id] = {
-				label: operator.name.toLocaleUpperCase(),
-			};
-		});
-		return config;
-	}, [operators]);
+
+	if (!operators) {
+		return null;
+	}
+
+	const chartConfig: ChartConfig = {};
+	operators.forEach((operator, _) => {
+		chartConfig[operator._id] = {
+			label: operator.name.toLocaleUpperCase(),
+		};
+	});
 
 	const chartData = data.map((item, index) => ({
 		operator: item._id,
@@ -59,6 +61,8 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 		fill: operators.find((operator) => operator._id === item._id)
 			?.chartColor || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
 	}));
+
+	const totalPasses = data.reduce((acc, item) => acc + item.passes, 0);
 
 	return (
 		<Card className='flex flex-col'>
@@ -94,7 +98,7 @@ export const StatisticsPieChart: React.FC<StatisticsPieChartProps> = ({
 													y={viewBox.cy}
 													className='fill-foreground text-3xl font-bold'
 												>
-													{100}
+													{totalPasses}
 												</tspan>
 												<tspan
 													x={viewBox.cx}
