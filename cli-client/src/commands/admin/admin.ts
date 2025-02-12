@@ -20,15 +20,6 @@ async function executeAdminCommand(
         const token = await getAuthToken();
         if (!token) return;
 
-        // Define headers
-        const headers: Record<string, string> = {
-            "Content-Type": "application/json",
-            "X-OBSERVATORY-AUTH": token,
-        };
-
-        let endpoint = "";
-        let requestBody: object | undefined;
-
         // Modify user credentials
         if (usermod) {
             if (!username || !passw) {

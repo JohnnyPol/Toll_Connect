@@ -5,12 +5,14 @@ import { getAuthToken, isValidFormat } from "@/src/utils.ts";
 /**
  * Fetches total cost of passes for a specific tag operator within a date range.
  */
-async function fetchPassesCost(stationop: string, tagop: string, from: string, to: string, format: string) {
+async function fetchPassesCost(stationop: string, tagop: string, from: string, to: string, format: string, beautify: boolean) {
     try {
         // Check if the --format option is valid
         if (!isValidFormat(format)) return;
 
-        console.log(`🔍 Fetching passes cost for station operator ${stationop} with tag operator ${tagop} from ${from} to ${to}...`);
+        if (beautify) {
+            console.log(`🔍 Fetching passes cost for station operator ${stationop} with tag operator ${tagop} from ${from} to ${to}...`);
+        }
 
         // Read authentication token
         const token = await getAuthToken();
@@ -42,6 +44,12 @@ async function fetchPassesCost(stationop: string, tagop: string, from: string, t
 
             // Parse the response body
             const data = await response.json();
+
+            if (!beautify) {
+                console.log(data);
+                return;
+            }
+
             //console.log("Response JSON:, ", data);
 
             // Check if data is valid
@@ -56,20 +64,29 @@ async function fetchPassesCost(stationop: string, tagop: string, from: string, t
         else {
             // Read response body as text
             const csvText = await response.text();
-            // Extract the main fields from the CSV (excluding `passList` for now)
+
+            if (!beautify) {
+                console.log(csvText);
+                return;
+            }
+
+            // Split the CSV into rows and clean up empty lines
             const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+
+            // Extract headers and values
             const headers = csvRows[0].split(",");
             const values = csvRows[1].split(",");
 
-            // Convert CSV row into an object
-            const csvData: Record<string, string> = {};
-            headers.forEach((header, index) => {
-                if (header !== "passList") {
-                    csvData[header] = values[index];
-                }
-            });
+            // Convert extracted data into an array of key-value pairs for vertical table display
+            const parsedData = headers.map((header, i) => ({
+                Key: header,
+                Value: values[i],
+            }));
+
+            // Display the formatted table with a title
             console.log("\n✅ Passes Cost Summary:");
-            console.table([csvData]); 
+            console.table(parsedData);
+
         }
 
     } catch (error) {
@@ -88,7 +105,8 @@ export const passesCostCommand = (program: CommandOptions) => {
         .requiredOption("--from <from>", "Start date (YYYYMMDD)")
         .requiredOption("--to <to>", "End date (YYYYMMDD)")
         .option("--format <format>", "Response format (json/csv)")
-        .action(async ({ stationop, tagop, from, to, format }: { stationop: string, tagop: string; from: string; to: string, format: string }) => {
-            await fetchPassesCost(stationop, tagop, from, to, format || "csv");
+        .option("--beautify", "Flag to display beautiful data instead of raw")
+        .action(async ({ stationop, tagop, from, to, format, beautify }: { stationop: string, tagop: string; from: string; to: string; format?: string; beautify?: string }) => {
+            await fetchPassesCost(stationop, tagop, from, to, format || "csv", beautify ? true : false);
         });
 };

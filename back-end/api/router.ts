@@ -6,7 +6,6 @@ import parser from '@/api/parser.ts';
 import admin from '@/api/routes/admin.ts';
 import charges_by from '@/api/routes/charges_by.ts';
 import login from '@/authentication/login.ts';
-import operators from '@/api/routes/operators.ts';
 import pass_analysis from '@/api/routes/pass_analysis.ts';
 import passes_cost from '@/api/routes/passes_cost.ts';
 import payments from '@/api/routes/payments.ts';
@@ -26,14 +25,13 @@ export default function (oapi: NextFunction): Router {
 	router.use(parser);
 	router.use(authenticate);
 	// router.use((req, res, next) => {
-		// req.user = { id: 'AM', level: UserLevel.Admin };
-		// next();
+	// req.user = { id: 'AM', level: UserLevel.Admin };
+	// next();
 	// })
 
 	router.use('/', login(oapi));
 	router.use('/admin', admin(oapi));
 	router.use('/chargesBy', charges_by(oapi));
-	router.use('/operators', operators(oapi));
 	router.use('/passAnalysis', pass_analysis(oapi));
 	router.use('/passesCost', passes_cost(oapi));
 	router.use('/payments', payments(oapi));

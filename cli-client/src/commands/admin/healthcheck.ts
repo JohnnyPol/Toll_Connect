@@ -1,6 +1,6 @@
 import type { CommandOptions } from "@/types.ts";
 import { CONFIG } from "@/src/config.ts";
-import { getAuthToken } from "../../utils.ts";
+import { getAuthToken } from "@/src/utils.ts";
 
 /**
  * Fetches and displays the system health status.
