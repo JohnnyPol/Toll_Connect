@@ -63,28 +63,6 @@ app.use(oapi);
 app.use('/docs', oapi.swaggerui());
 app.use('/api', api(oapi));
 
-app.get(
-	'/',
-	oapi.path({
-		responses: {
-			200: {
-				description: 'successful response',
-				content: {
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/TollOperator',
-						},
-					},
-				},
-			},
-		},
-	}),
-	(_req, res) => {
-		res.json({ id: '0', name: 'John Doe', address: 'Morge' });
-	},
-);
-
 if (import.meta.main) {
 	/* CONNECTING TO DB */
 	check_connection();
