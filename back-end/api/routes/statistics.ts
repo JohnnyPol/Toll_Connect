@@ -347,7 +347,7 @@ export default function (oapi: Middleware): Router {
 		}),
 		async (req: Request, res: Response) => {
 			if (req.user.level === UserLevel.Anonymous) {
-				return die(res, ErrorType.Unauthorized, `Unauthorized: ${req.user.level}`);
+				return die(res, ErrorType.Unauthorized, 'Unauthorized');
 			}
 
 			const date_from = get_date(req.params.date_from);
