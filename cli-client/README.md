@@ -3,13 +3,13 @@
 It allows operators and administrators to manage toll stations, analyze pass transactions, and retrieve reports.
 
 ## **📌 Table of Contents**
-- [Installation](#installation)
-- [Usage](#usage)
-- [Authentication](#authentication)
-- [Available Commands](#available-commands)
-- [Admin Commands](#admin-commands)
-- [Examples](#examples)
-- [Running Tests](#running-tests)
+- [Installation](#️-installation)
+- [Usage](#-usage)
+- [Authentication](#-authentication)
+- [Available Commands](#-available-commands)
+- [Admin Commands](#-admin-commands)
+- [Examples](#-examples)
+- [Running Tests](#-running-tests)
 
 ---
 
