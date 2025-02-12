@@ -2,6 +2,8 @@ import { Middleware, Request, Response, Router } from 'express';
 import { die, ErrorType } from '@/api/util.ts';
 import TollOperator, { UserLevel } from '@/models/toll_operator.ts';
 
+const return_fields = ['_id', 'name', 'userLevel', 'email', 'VAT', 'address'];
+
 export default function (_oapi: Middleware): Router {
 	const router = new Router();
 
@@ -13,7 +15,7 @@ export default function (_oapi: Middleware): Router {
 		try {
 			const tollOperators = await TollOperator.find({
 				userLevel: UserLevel.Operator,
-			});
+			}, return_fields);
 			res.status(200).json(tollOperators);
 		} catch (error) {
 			console.error('Error fetching toll operators:', error);
@@ -29,7 +31,10 @@ export default function (_oapi: Middleware): Router {
 		const { id } = req.params;
 
 		try {
-			const tollOperator = await TollOperator.findById(id);
+			const tollOperator = await TollOperator.findById(
+				id,
+				return_fields,
+			);
 			if (!tollOperator) {
 				return die(
 					res,

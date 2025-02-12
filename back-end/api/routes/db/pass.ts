@@ -13,7 +13,7 @@ export default function (oapi: Middleware): Router {
 	router.get(
 		'/', 
 		oapi.path({
-			tags: ['Passes'],
+			tags: ['DB'],
 			summary: 'Retrieve all pass documents',
 			operationId: 'getAllPasses',
 			parameters: [
@@ -28,7 +28,7 @@ export default function (oapi: Middleware): Router {
 							schema: {
 								type: 'array',
 								items: {
-									$ref: '#/definitions/PassSchema', 
+									$ref: '#/definitions/PassesSchema', 
 								},
 							},
 						},
@@ -56,9 +56,9 @@ export default function (oapi: Middleware): Router {
 	router.get(
 		'/:id', 
 		oapi.path({
-			tags: ['Passes'],
+			tags: ['DB'],
 			summary: 'Retrieve pass document with specified id',
-			operationId: 'getAllPasses',
+			operationId: 'getPassWithID',
 			parameters: [
 				{ $ref: '#/definitions/TokenHeader' },
 				{ in: 'path', name: 'id', schema: { type: 'string' }, required: true, description: 'Pass Id' },
@@ -66,11 +66,11 @@ export default function (oapi: Middleware): Router {
 			],
 			responses: {
 				200: {
-					description: 'Successful retrieval of pass documents',
+					description: 'Successful retrieval of pass document',
 					content: {
 						'application/json': {
 							schema: {
-									$ref: '#/definitions/PassSchema', 
+									$ref: '#/definitions/PassesSchema', 
 								},
 							},
 						},

@@ -425,6 +425,7 @@ const apiDoc = {
 				},
 				dateofPayment: { type: 'string', format: 'date-time' },
 				dateofValidation: { type: 'string', format: 'date-time' },
+				__v: { type: 'integer', description: "Version number (Mongoose)" }
 			},
 			required: [
 				'_id',
@@ -434,7 +435,7 @@ const apiDoc = {
 				'dateofCharge',
 				'dateofPayment',
 				'dateofValidation',
-			], // Add other required properties
+			],
 		},
 		GetTollDataResponse: {
 			type: 'object',
@@ -513,7 +514,56 @@ const apiDoc = {
 			},
 			required: ['_id', 'tag', 'toll', 'time', 'charge', 'payment', '__v']
 		},
-	},
+		RoadsSchema: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string' },
+				name: { type: 'string' },
+				__v: { type: 'integer', description: "Version number (Mongoose)" }
+			},
+			required: [
+				'_id',
+				'name',
+			], 
+		},
+		TagsSchema: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string' },
+				tollOperator: { type: 'string', description: "The Id of the Operator of the tag" },
+				__v: { type: 'integer', description: "Version number (Mongoose)" }
+			}
+		},
+		TollSchema: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string', description: "Unique identifier for the pass" },
+				tag: {
+					type: 'object',
+					description: "Details about the tag",
+					properties: {
+						_id: { type: 'string', description: "Unique identifier for the tag" },
+						tollOperator: { type: 'string', description: "The toll operator of the tag" }
+					},
+					required: ['_id', 'tollOperator']
+				},
+				toll: {
+					type: 'object',
+					description: "Details about the toll location",
+					properties: {
+						_id: { type: 'string', description: "Unique identifier for the toll" },
+						tollOperator: { type: 'string', description: "The toll operator of the toll" }
+					},
+					required: ['_id', 'tollOperator']
+				},
+				time: { type: 'string', format: 'date-time', description: "Date and time of the pass" },
+				charge: { type: 'number', format: 'double', description: "The charge for the pass" },
+				payment: { type: 'string', description: "ID of the payment associated with the pass" },
+				__v: { type: 'integer', description: "Version number (Mongoose)" }
+			},
+			required: ['_id', 'tag', 'toll', 'time', 'charge', 'payment', '__v']
+		}
+	}
 };
 
 export default apiDoc;

@@ -12,7 +12,7 @@ export default function (oapi: Middleware): Router {
 	 */
 	router.get('/', async (_req: Request, res: Response) => {
 		try {
-			const tags = await Tag.find().populate('tollOperator');
+			const tags = await Tag.find();
 			res.status(200).json(tags);
 		} catch (error) {
 			console.error('Error fetching tags:', error);
@@ -28,7 +28,7 @@ export default function (oapi: Middleware): Router {
 		const { id } = req.params;
 
 		try {
-			const tag = await Tag.findById(id).populate('tollOperator');
+			const tag = await Tag.findById(id);
 			if (!tag) return die(res, ErrorType.BadRequest, 'Tag not found');
 
 			res.status(200).json(tag);
