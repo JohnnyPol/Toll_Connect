@@ -8,7 +8,8 @@
 		"db-operators": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/inserts/initialize_operators.ts",
 		"db-tolls": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/inserts/toll_insert.ts ./data-base_functions/inserts/tollstations2024.csv",
 		"db-passes": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/inserts/pass_insert.ts ./data-base_functions/inserts/passes-sample.csv",
-		"db-delete-all": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/deletes/delete_all.ts"
+		"db-delete-all": "deno run  --allow-sys --allow-env --allow-read --allow-net --env-file ./data-base_functions/deletes/delete_all.ts",
+		"db-reset": "deno task db-delete-all && deno task db-operators && deno task db-tolls && deno task db-passes"
 	},
 
 	"imports": {

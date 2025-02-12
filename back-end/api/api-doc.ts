@@ -23,6 +23,13 @@ const apiDoc = {
 			description: 'authentication token',
 			schema: { type: 'string' },
 		},
+		Format: {
+			in: 'query',
+			required: false,
+			name: 'format',
+			description: 'format specification',
+			schema: { type: 'string', enum: ['json', 'csv'] },
+		},
 		TollOperator: {
 			type: 'object',
 			properties: {
@@ -428,6 +435,43 @@ const apiDoc = {
 				'dateofPayment',
 				'dateofValidation',
 			], // Add other required properties
+		},
+		GetTollDataResponse: {
+			type: 'object',
+			properties: {
+				toll: { type: 'object' },
+				avg_passes: { type: 'number' },
+				operators: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							operator: { type: 'string' },
+							passes: { type: 'integer' },
+						},
+					},
+				},
+			},
+		},
+		TimeseriesResponse: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					date: { type: 'string', format: 'date' },
+					operators: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								operator: { type: 'string' },
+								passes: { type: 'integer' },
+								cost: { type: 'number' },
+							},
+						},
+					},
+				},
+			},
 		},
 	},
 };

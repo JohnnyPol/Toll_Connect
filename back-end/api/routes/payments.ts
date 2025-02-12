@@ -160,6 +160,7 @@ export default function (oapi: Middleware): Router {
 					schema: { type: 'boolean' },
 					description: 'Filter by payee (optional)',
 				},
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
@@ -261,6 +262,7 @@ export default function (oapi: Middleware): Router {
 					required: true,
 					description: 'ID of the payment to be paid',
 				},
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
@@ -325,6 +327,7 @@ export default function (oapi: Middleware): Router {
 					required: true,
 					description: 'ID of the payment to be validated',
 				},
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {

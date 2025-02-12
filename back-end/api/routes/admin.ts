@@ -146,6 +146,7 @@ export default function (oapi: Middleware): Router {
 			operationId: 'getHealthcheck',
 			parameters: [
 				{ $ref: '#definitions/TokenHeader' },
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
@@ -213,6 +214,7 @@ export default function (oapi: Middleware): Router {
 			operationId: 'resetStations',
 			parameters: [
 				{ $ref: '#definitions/TokenHeader' },
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
@@ -267,6 +269,7 @@ export default function (oapi: Middleware): Router {
 			operationId: 'resetPasses',
 			parameters: [
 				{ $ref: '#definitions/TokenHeader' },
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
@@ -329,6 +332,7 @@ export default function (oapi: Middleware): Router {
 					type: 'file',
 					description: 'CSV file with passes data',
 				},
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
@@ -399,6 +403,56 @@ export default function (oapi: Middleware): Router {
 		 * 		cost: number
 		 * }[]
 		 */
+		oapi.path({
+			tags: ['Admin'],
+			summary: 'Returns all aggregated pass data in range between all pair of operators in both directions.',
+			operationId: 'getAllPasses',
+			parameters: [
+				{
+				in: 'path',
+				name: 'date_from',
+				required: true,
+				type: 'string',
+				format: 'date',
+				description: 'Start date for the query (YYYY-MM-DD)',
+				},
+				{
+				in: 'path',
+				name: 'date_to',
+				required: true,
+				type: 'string',
+				format: 'date',
+				description: 'End date for the query (YYYY-MM-DD)',
+				},
+				{ $ref: '#/definitions/TokenHeader' }, 
+				{ $ref: '#definitions/Format' },
+			],
+			responses: {
+				200: {
+				description: 'Successful retrieval of pass data',
+				content: {
+					'application/json': {
+					schema: {
+						type: 'array',
+						items: {
+						type: 'object',
+						properties: {
+							tollOperator: { type: 'string' },
+							tagOperator: { type: 'string' },
+							passes: { type: 'integer' },
+							cost: { type: 'number' },
+						},
+						},
+					},
+					},
+				},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+
+		}),
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to, true);
@@ -419,6 +473,47 @@ export default function (oapi: Middleware): Router {
 
 	router.post(
 		'/addadmin',
+		oapi.path({
+			tags: ['Admin'],
+			summary: 'Add or update an admin user.',
+			operationId: 'addAdmin',
+			parameters: [
+			  { $ref: '#/definitions/Format' } 
+			],
+			requestBody: {
+			  content: {
+				'application/x-www-form-urlencoded': {
+				  schema: {
+					type: 'object',
+					properties: {
+					  id: { type: 'string', description: 'Username of the admin' },
+					  password: { type: 'string', description: 'Password for the admin' },
+					},
+					required: ['id', 'password'],
+				  },
+				},
+			  },
+			},
+			responses: {
+			  200: {
+				description: 'Admin user created or updated successfully',
+				content: {
+				  'application/json': {
+					schema: {
+					  type: 'object',
+					  properties: {
+						status: { type: 'string', example: 'OK' },
+						info: { type: 'string', example: 'created' },
+					  },
+					},
+				  },
+				},
+			  },
+			  400: { $ref: '#/definitions/BadRequestResponse' },
+			  401: { $ref: '#/definitions/UnauthorizedResponse' }, 
+			  500: { $ref: '#/definitions/InternalServerErrorResponse' }, 
+			},
+		}),
 		urlencoded({ extended: false }),
 		async (req: Request, res: Response) => {
 			if (req.body.id == null) {

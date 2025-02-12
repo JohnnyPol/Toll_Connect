@@ -39,6 +39,7 @@ export default function (oapi: Middleware): Router {
 					required: true,
 					description: 'The end date of the period (YYYYMMDD)',
 				},
+				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
