@@ -43,6 +43,10 @@ function expandArrays(obj: Record<string, any>): Record<string, any>[] {
 	const rest = { ...obj };
 	delete rest[key];
 
+	if (arr.length === 0) {
+    return [rest];
+  }
+
 	return arr.flatMap((item) => {
 		const flattenedItem = flatten(item);
 		const newObj = { ...rest };
