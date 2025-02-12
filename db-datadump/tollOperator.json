@@ -1,0 +1,165 @@
+{
+    "value":  [
+                  {
+                      "_id":  "AM",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "aegeanmotorway",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "EG",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "egnatia",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "GE",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "gefyra",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "KO",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "kentrikiodos",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "MO",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "moreas",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "NAO",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "naodos",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "NO",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "neaodos",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "OO",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  1,
+                      "name":  "olympiaodos",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "admin",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  2,
+                      "name":  "admin",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  },
+                  {
+                      "_id":  "dummy@mail",
+                      "passwordHash":  "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+                      "userLevel":  2,
+                      "name":  "admin",
+                      "email":  "operator@example.com",
+                      "VAT":  "VAT12345",
+                      "addressStreet":  "Main Street",
+                      "addressNumber":  123,
+                      "addressArea":  "Central Area",
+                      "addressZip":  12345,
+                      "blacklist":  [
+
+                                    ],
+                      "__v":  0
+                  }
+              ],
+    "Count":  10
+}
