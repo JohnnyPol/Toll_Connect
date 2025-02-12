@@ -265,7 +265,9 @@ export default function (oapi: Middleware): Router {
 						res.status(200).json({
 							toll: tollDocument,
 							avg_passes: avgPasses,
-							my_passes: operatorsPassesList.find( (op) => op.operator === req.user.id)?.passes || 0,
+							my_passes: operatorsPassesList.find((op) =>
+								op.operator === req.user.id
+							)?.passes || 0,
 						});
 						return;
 					}
@@ -304,9 +306,26 @@ export default function (oapi: Middleware): Router {
 			summary: 'Get timeseries data for incoming passes.',
 			operationId: 'getIncomingPassesTimeseries',
 			parameters: [
-				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
-				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
-				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{
+					in: 'path',
+					name: 'date_from',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'Start date.',
+				},
+				{
+					in: 'path',
+					name: 'date_to',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'End date.',
+				},
+				{
+					in: 'query',
+					name: 'as_operator',
+					schema: { type: 'string' },
+					description: 'Operator ID (required for Admin).',
+				},
 				{ $ref: '#/definitions/TokenHeader' },
 				{ $ref: '#/definitions/Format' },
 			],
@@ -328,7 +347,7 @@ export default function (oapi: Middleware): Router {
 		}),
 		async (req: Request, res: Response) => {
 			if (req.user.level === UserLevel.Anonymous) {
-				return die(res, ErrorType.Unauthorized, 'Unauthorized');
+				return die(res, ErrorType.Unauthorized, `Unauthorized: ${req.user.level}`);
 			}
 
 			const date_from = get_date(req.params.date_from);
@@ -392,9 +411,26 @@ export default function (oapi: Middleware): Router {
 			summary: 'Get timeseries data for outgoing passes.',
 			operationId: 'getOutgoingPassesTimeseries',
 			parameters: [
-				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
-				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
-				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{
+					in: 'path',
+					name: 'date_from',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'Start date.',
+				},
+				{
+					in: 'path',
+					name: 'date_to',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'End date.',
+				},
+				{
+					in: 'query',
+					name: 'as_operator',
+					schema: { type: 'string' },
+					description: 'Operator ID (required for Admin).',
+				},
 				{ $ref: '#/definitions/TokenHeader' },
 				{ $ref: '#/definitions/Format' },
 			],
@@ -479,9 +515,26 @@ export default function (oapi: Middleware): Router {
 			operationId: 'getAggregatedIncomingPasses',
 			parameters: [
 				{ $ref: '#/definitions/TokenHeader' },
-				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
-				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
-				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{
+					in: 'path',
+					name: 'date_from',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'Start date.',
+				},
+				{
+					in: 'path',
+					name: 'date_to',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'End date.',
+				},
+				{
+					in: 'query',
+					name: 'as_operator',
+					schema: { type: 'string' },
+					description: 'Operator ID (required for Admin).',
+				},
 				{ $ref: '#/definitions/Format' },
 			],
 			responses: {
@@ -562,9 +615,26 @@ export default function (oapi: Middleware): Router {
 			operationId: 'getAggregatedOutgoingPasses',
 			parameters: [
 				{ $ref: '#/definitions/TokenHeader' },
-				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
-				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
-				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{
+					in: 'path',
+					name: 'date_from',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'Start date.',
+				},
+				{
+					in: 'path',
+					name: 'date_to',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'End date.',
+				},
+				{
+					in: 'query',
+					name: 'as_operator',
+					schema: { type: 'string' },
+					description: 'Operator ID (required for Admin).',
+				},
 				{ $ref: '#/definitions/Format' },
 			],
 			responses: {
