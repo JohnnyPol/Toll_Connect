@@ -27,6 +27,7 @@
     "npm:axios@^1.7.9": "1.7.9",
     "npm:class-variance-authority@~0.7.1": "0.7.1",
     "npm:clsx@^2.1.1": "2.1.1",
+    "npm:crypto-js@^4.2.0": "4.2.0",
     "npm:date-fns@^4.1.0": "4.1.0",
     "npm:googlemaps@^1.12.0": "1.12.0",
     "npm:highcharts-react-official@^3.2.1": "3.2.1_highcharts@12.1.2_react@18.3.1",
@@ -1216,6 +1217,9 @@
         "which"
       ]
     },
+    "crypto-js@4.2.0": {
+      "integrity": "sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q=="
+    },
     "cssesc@3.0.0": {
       "integrity": "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="
     },
@@ -2369,6 +2373,7 @@
       "npm:axios@^1.7.9",
       "npm:class-variance-authority@~0.7.1",
       "npm:clsx@^2.1.1",
+      "npm:crypto-js@^4.2.0",
       "npm:date-fns@^4.1.0",
       "npm:googlemaps@^1.12.0",
       "npm:highcharts-react-official@^3.2.1",

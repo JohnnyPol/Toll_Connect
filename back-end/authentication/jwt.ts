@@ -6,8 +6,8 @@ import {
 } from 'https://deno.land/x/djwt/mod.ts';
 
 import TollOperator, {
-	UserLevel,
 	TollOperatorDocument,
+	UserLevel,
 } from '@/models/toll_operator.ts';
 
 if (!Deno.env.has('JWT_ENCODE')) {
@@ -17,11 +17,33 @@ if (!Deno.env.has('JWT_ENCODE')) {
 	Deno.exit(1);
 }
 
-const key: CryptoKey = await crypto.subtle.generateKey(
+if (!Deno.env.has('JWT_KEY')) {
+	const key: CryptoKey = await crypto.subtle.generateKey(
+		{ name: 'HMAC', hash: 'SHA-512' },
+		true,
+		['sign', 'verify'],
+	);
+	const bytes = btoa(String.fromCharCode(
+		...new Uint8Array(
+			await crypto.subtle.exportKey('raw', key),
+		),
+	));
+	await Deno.writeTextFile('.env', `JWT_KEY=${bytes}\n`, { append: true });
+	Deno.env.set('JWT_KEY', bytes);
+}
+
+const keyBytes = Uint8Array.from(
+	atob(<string> Deno.env.get('JWT_KEY')),
+	(c) => c.charCodeAt(0),
+);
+const key: CryptoKey = await crypto.subtle.importKey(
+	'raw',
+	keyBytes,
 	{ name: 'HMAC', hash: 'SHA-512' },
 	true,
 	['sign', 'verify'],
 );
+
 const header: Header = { alg: 'HS512', type: 'JWT' };
 
 export type Token = {

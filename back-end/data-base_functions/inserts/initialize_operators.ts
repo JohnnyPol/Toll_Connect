@@ -112,7 +112,7 @@ const list_of_operators = [
 		_id: 'admin',
 		name: 'admin',
 		passwordHash:
-			'd9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85',
+			'622cda4cd65c70f0995792814040421b062c7ca378b6223d3e958c65886b2cb62381a177e6acee4ee0b5ea555f0eda34ea30dca1e3ed48d6767e7039bbe507b6',
 		userLevel: UserLevel.Admin,
 		email: 'operator@example.com',
 		VAT: 'VAT12345',

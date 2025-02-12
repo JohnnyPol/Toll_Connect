@@ -223,7 +223,7 @@ export default function (oapi: Middleware): Router {
 					},
 				},
 				401: { $ref: '#/definitions/UnauthorizedResponse' },
-				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
 			},
 		}),
 		async (_req: Request, res: Response) => {
@@ -278,7 +278,7 @@ export default function (oapi: Middleware): Router {
 					},
 				},
 				401: { $ref: '#/definitions/UnauthorizedResponse' },
-				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
 			},
 		}),
 		async (_req: Request, res: Response) => {
@@ -296,13 +296,13 @@ export default function (oapi: Middleware): Router {
 
 				await insertTollOperators();
 
-				const testPassword = 'freepasses4all';
-
-				const newPassword = await hashPassword(testPassword);
-
-				await TollOperator.updateOne({ _id: 'admin' }, {
-					passwordHash: newPassword,
-				});
+				// const testPassword = 'freepasses4all';
+				//
+				// const newPassword = await hashPassword(testPassword);
+				//
+				// await TollOperator.updateOne({ _id: 'admin' }, {
+				// 	passwordHash: newPassword,
+				// });
 
 				res.status(200).json({ status: 'OK' });
 			} catch (error) {
@@ -341,7 +341,7 @@ export default function (oapi: Middleware): Router {
 					},
 				},
 				401: { $ref: '#/definitions/UnauthorizedResponse' },
-				500: { $ref: '#/definitions/InternalServerErrorResponse' },	
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
 			},
 		}),
 		upload.single('file'),
@@ -400,53 +400,53 @@ export default function (oapi: Middleware): Router {
 		 */
 		oapi.path({
 			tags: ['Admin'],
-			summary: 'Returns all aggregated pass data in range between all pair of operators in both directions.',
+			summary:
+				'Returns all aggregated pass data in range between all pair of operators in both directions.',
 			operationId: 'getAllPasses',
 			parameters: [
 				{
-				in: 'path',
-				name: 'date_from',
-				required: true,
-				type: 'string',
-				format: 'date',
-				description: 'Start date for the query (YYYY-MM-DD)',
+					in: 'path',
+					name: 'date_from',
+					required: true,
+					type: 'string',
+					format: 'date',
+					description: 'Start date for the query (YYYY-MM-DD)',
 				},
 				{
-				in: 'path',
-				name: 'date_to',
-				required: true,
-				type: 'string',
-				format: 'date',
-				description: 'End date for the query (YYYY-MM-DD)',
+					in: 'path',
+					name: 'date_to',
+					required: true,
+					type: 'string',
+					format: 'date',
+					description: 'End date for the query (YYYY-MM-DD)',
 				},
-				{ $ref: '#/definitions/TokenHeader' }, 
+				{ $ref: '#/definitions/TokenHeader' },
 				{ $ref: '#definitions/Format' },
 			],
 			responses: {
 				200: {
-				description: 'Successful retrieval of pass data',
-				content: {
-					'application/json': {
-					schema: {
-						type: 'array',
-						items: {
-						type: 'object',
-						properties: {
-							tollOperator: { type: 'string' },
-							tagOperator: { type: 'string' },
-							passes: { type: 'integer' },
-							cost: { type: 'number' },
-						},
+					description: 'Successful retrieval of pass data',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										tollOperator: { type: 'string' },
+										tagOperator: { type: 'string' },
+										passes: { type: 'integer' },
+										cost: { type: 'number' },
+									},
+								},
+							},
 						},
 					},
-					},
-				},
 				},
 				400: { $ref: '#/definitions/BadRequestResponse' },
 				401: { $ref: '#/definitions/UnauthorizedResponse' },
 				500: { $ref: '#/definitions/InternalServerErrorResponse' },
 			},
-
 		}),
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
@@ -473,40 +473,49 @@ export default function (oapi: Middleware): Router {
 			summary: 'Add or update an admin user.',
 			operationId: 'addAdmin',
 			parameters: [
-			  { $ref: '#/definitions/Format' } 
+				{ $ref: '#/definitions/Format' },
 			],
 			requestBody: {
-			  content: {
-				'application/x-www-form-urlencoded': {
-				  schema: {
-					type: 'object',
-					properties: {
-					  id: { type: 'string', description: 'Username of the admin' },
-					  password: { type: 'string', description: 'Password for the admin' },
+				content: {
+					'application/x-www-form-urlencoded': {
+						schema: {
+							type: 'object',
+							properties: {
+								id: {
+									type: 'string',
+									description: 'Username of the admin',
+								},
+								password: {
+									type: 'string',
+									description: 'Password for the admin',
+								},
+							},
+							required: ['id', 'password'],
+						},
 					},
-					required: ['id', 'password'],
-				  },
 				},
-			  },
 			},
 			responses: {
-			  200: {
-				description: 'Admin user created or updated successfully',
-				content: {
-				  'application/json': {
-					schema: {
-					  type: 'object',
-					  properties: {
-						status: { type: 'string', example: 'OK' },
-						info: { type: 'string', example: 'created' },
-					  },
+				200: {
+					description: 'Admin user created or updated successfully',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									status: { type: 'string', example: 'OK' },
+									info: {
+										type: 'string',
+										example: 'created',
+									},
+								},
+							},
+						},
 					},
-				  },
 				},
-			  },
-			  400: { $ref: '#/definitions/BadRequestResponse' },
-			  401: { $ref: '#/definitions/UnauthorizedResponse' }, 
-			  500: { $ref: '#/definitions/InternalServerErrorResponse' }, 
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
 			},
 		}),
 		urlencoded({ extended: false }),
