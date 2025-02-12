@@ -56,20 +56,24 @@ async function fetchPassesCost(stationop: string, tagop: string, from: string, t
         else {
             // Read response body as text
             const csvText = await response.text();
-            // Extract the main fields from the CSV (excluding `passList` for now)
+
+            // Split the CSV into rows and clean up empty lines
             const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+
+            // Extract headers and values
             const headers = csvRows[0].split(",");
             const values = csvRows[1].split(",");
 
-            // Convert CSV row into an object
-            const csvData: Record<string, string> = {};
-            headers.forEach((header, index) => {
-                if (header !== "passList") {
-                    csvData[header] = values[index];
-                }
-            });
+            // Convert extracted data into an array of key-value pairs for vertical table display
+            const parsedData = headers.map((header, i) => ({
+                Key: header,
+                Value: values[i],
+            }));
+
+            // Display the formatted table with a title
             console.log("\n✅ Passes Cost Summary:");
-            console.table([csvData]); 
+            console.table(parsedData);
+
         }
 
     } catch (error) {

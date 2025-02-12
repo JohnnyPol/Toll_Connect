@@ -61,57 +61,31 @@ async function fetchPassAnalysis(stationop: string, tagop: string, from: string,
         else {
             // Read response body as text
             const csvText = await response.text();
-
-            // Extract the main fields from the CSV (excluding `passList` for now)
+            // Split the CSV into rows and clean up empty lines
             const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+
+            // Extract headers and values
             const headers = csvRows[0].split(",");
-            const values: string[] = [];
-            let insidePassList = false;
-            let passListRaw = "";
+            const values = csvRows.slice(1).map(row => row.split(","));
 
-            csvRows[1].split(",").forEach((part, index) => {
-                if (headers[index] === "passList" || insidePassList) {
-                    // Keep appending to passListRaw until the entire JSON is captured
-                    insidePassList = true;
-                    passListRaw += part + ",";
+            // Extract general toll station info (first unique row, up until nPasses column)
+            const stationInfoHeaders = headers.slice(0, 6); // stationID to nPasses
+            const stationInfoValues = values[0].slice(0, 6); // First row (only general info)
 
-                    // Detect end of JSON array
-                    if (part.endsWith("}]\"")) {
-                        insidePassList = false;
-                        values.push(passListRaw.slice(0, -1)); // ✅ Remove trailing comma
-                    }
-                } else {
-                    values.push(part);
-                }
-            });
-
-            // Convert CSV row into an object
-            const csvData: Record<string, string> = {};
-            headers.forEach((header, index) => {
-                if (header !== "passList") {
-                    csvData[header] = values[index];
-                }
-            });
+            // Display Toll Station Information (excluding individual pass records)
             console.log("\n🚏 Toll Station Info:");
-            console.table([csvData]);
+            console.table([{ ...Object.fromEntries(stationInfoHeaders.map((h, i) => [h, stationInfoValues[i]])) }]);
 
-            // Extract and parse `passList` field (which is a JSON string inside the CSV)
-            try {
-                const passListRaw = values[headers.indexOf("passList")];
-                if (!passListRaw) {
-                    console.log("⚠️ No pass records found in the CSV response.");
-                    return;
-                }
+            // Extract passList records (passIndex onwards)
+            const passListHeaders = headers.slice(6); // Headers from passIndex onwards
+            const passListValues = values.map(row => row.slice(6)); // Extract only pass data
 
-                // Convert JSON string into an arrayheaders.indexOf("passList")
-                const formattedPassListRaw = passListRaw.replace(/""/g, '"').replace(/^"|"$/g, ""); // Remove surrounding quotes                
+            // Convert extracted data into an array of objects for console.table()
+            const passList = passListValues.map(row => Object.fromEntries(passListHeaders.map((h, i) => [h, row[i]])));
 
-                const passList = JSON.parse(formattedPassListRaw);
-                console.log("\n✅ Toll Station Passes:");
-                console.table(passList);
-            } catch (error) {
-                console.error("❌ Error parsing `passList` JSON:", error);
-            }
+            // Display Pass Records in a table format
+            console.log("\n✅ Toll Station Passes:");
+            console.table(passList);
         }
     } catch (error) {
         console.error("❌ Fetch failed:", error);

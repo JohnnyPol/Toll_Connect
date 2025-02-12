@@ -60,57 +60,32 @@ async function fetchChargesBy(opid: string, from: string, to: string, format: st
         else {
             // Read response body as text
             const csvText = await response.text();
-
-            // Extract the main fields from the CSV (excluding `vOpList` for now)
+            // Split the CSV into rows and clean up empty lines
             const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
+
+            // Extract headers and values
             const headers = csvRows[0].split(",");
-            const values: string[] = [];
-            let insidevOpList = false;
-            let vOpListRaw = "";
+            const values = csvRows.slice(1).map(row => row.split(","));
 
-            csvRows[1].split(",").forEach((part, index) => {
-                if (headers[index] === "vOpList" || insidevOpList) {
-                    // Keep appending to vOpListRaw until the entire JSON is captured
-                    insidevOpList = true;
-                    vOpListRaw += part + ",";
+            // Extract general toll station info (first unique row, up until nPasses column)
+            const stationInfoHeaders = headers.slice(0, 4); // stationID to nPasses
+            const stationInfoValues = values[0].slice(0, 4); // First row (only general info)
 
-                    // Detect end of JSON array
-                    if (part.endsWith("}]\"")) {
-                        insidevOpList = false;
-                        values.push(vOpListRaw.slice(0, -1)); // ✅ Remove trailing comma
-                    }
-                } else {
-                    values.push(part);
-                }
-            });
-
-            // Convert CSV row into an object
-            const csvData: Record<string, string> = {};
-            headers.forEach((header, index) => {
-                if (header !== "vOpList") {
-                    csvData[header] = values[index];
-                }
-            });
+            // Display Toll Station Information (excluding individual pass records)
+ 
             console.log("\n🚏 Toll Station Info:");
-            console.table([csvData]);
+            console.table([{ ...Object.fromEntries(stationInfoHeaders.map((h, i) => [h, stationInfoValues[i]])) }]);
 
-            // Extract and parse `vOpList` field (which is a JSON string inside the CSV)
-            try {
-                const vOpListRaw = values[headers.indexOf("vOpList")];
-                if (!vOpListRaw) {
-                    console.log("⚠️ No pass records found in the CSV response.");
-                    return;
-                }
+            // Extract passList records (passIndex onwards)
+            const passListHeaders = headers.slice(4); // Headers from passIndex onwards
+            const passListValues = values.map(row => row.slice(4)); // Extract only pass data
 
-                // Convert JSON string into an arrayheaders.indexOf("vOpList")
-                const formattedvOpListRaw = vOpListRaw.replace(/""/g, '"').replace(/^"|"$/g, ""); // Remove surrounding quotes                
+            // Convert extracted data into an array of objects for console.table()
+            const passList = passListValues.map(row => Object.fromEntries(passListHeaders.map((h, i) => [h, row[i]])));
 
-                const vOpList = JSON.parse(formattedvOpListRaw);
-                console.log("\n✅ Toll Station Passes:");
-                console.table(vOpList);
-            } catch (error) {
-                console.error("❌ Error parsing `vOpList` JSON:", error);
-            }
+            // Display Pass Records in a table format
+            console.log("\n✅ Toll Station Passes:");
+            console.table(passList);
         }
     } catch (error) {
         console.error("❌ Error fetching charges:", error);
