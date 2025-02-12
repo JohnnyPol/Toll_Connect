@@ -94,6 +94,6 @@ deno test --allow-read --allow-write --allow-net
 - [Giorgos Doudounakis](https://github.com/...)
 - [Giannis Polychornopoulos](https://github.com/JohnnyPol)
 - [Katerina Michou](https://github.com/...)
-- [Angelii Ntalapera](https://github.com/...)
+- [Angeliki Ntalapera](https://github.com/...)
 - [Dimitris Balatos](https://github.com/...)
 
