@@ -64,6 +64,14 @@ deno task compile
 
 Documentation for CLI: [here](https://github.com/ntua/softeng24-17/blob/main/cli-client/README.md)
 
+## Dockerized Version
+To run the entire system's services with docker-compose execute the following at the root of the project:
+```
+docker compose build
+docker compose up -d
+```
+
+The API is exposed on port 9115 and the frontend is served by apache on port 80
 
 ## 📜 API Documentation
 The full API reference is available at:
