@@ -10,6 +10,7 @@ import { OperatorProvider } from '@/context/operator-context.tsx';
 import { Toaster } from '@/components/ui/toast.tsx';
 import { PaymentStatus } from '@/types/payments.ts';
 import { color } from 'highcharts';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 const columns = [
 	{
@@ -46,7 +47,7 @@ const columns = [
 		status: PaymentStatus.Validated,
 		isPayer: true,
 		isPayee: true,
-	}
+	},
 ];
 
 export default function CompanyPaymentsPage() {
@@ -58,6 +59,12 @@ export default function CompanyPaymentsPage() {
 			targets: 'all',
 		},
 	);
+
+	const { toggleSidebar } = useSidebar();
+
+	useEffect(() => {
+		toggleSidebar();
+	}, []);
 
 	return (
 		<>
