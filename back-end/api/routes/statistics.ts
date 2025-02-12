@@ -3,7 +3,10 @@ import { die, ErrorType, get_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
 import Toll from '@/models/toll.ts';
-import TollOperators, { TollOperatorDocument, UserLevel } from '@/models/toll_operator.ts';
+import TollOperators, {
+	TollOperatorDocument,
+	UserLevel,
+} from '@/models/toll_operator.ts';
 import Pass from '@/models/pass.ts';
 import Tag from '@/models/tag.ts';
 
@@ -49,6 +52,44 @@ export default function (oapi: Middleware): Router {
 
 	router.get(
 		'/heatmap',
+		oapi.path({
+			tags: ['Statistics'],
+			summary: 'Get heatmap data for toll locations.',
+			operationId: 'getHeatmapData',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+				{ $ref: '#definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of heatmap data.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										latitude: {
+											type: 'number',
+											format: 'float',
+										},
+										longitude: {
+											type: 'number',
+											format: 'float',
+										},
+										count: { type: 'integer' },
+									},
+								},
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (_req: Request, res: Response) => {
 			try {
 				const tolls = await Toll.find({}).sort('_id');
@@ -83,6 +124,52 @@ export default function (oapi: Middleware): Router {
 
 	router.get(
 		'/:toll_id/:start_date/:end_date',
+		oapi.path({
+			tags: ['Statistics'],
+			summary:
+				'Get detailed toll data for a specific toll station within a date range.',
+			operationId: 'getTollData',
+			parameters: [
+				{ $ref: '#definitions/TokenHeader' },
+				{
+					in: 'path',
+					name: 'toll_id',
+					schema: { type: 'string' },
+					required: true,
+					description: 'ID of the toll station.',
+				},
+				{
+					in: 'path',
+					name: 'start_date',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'Start date for filtering.',
+				},
+				{
+					in: 'path',
+					name: 'end_date',
+					schema: { type: 'string', format: 'date' },
+					required: true,
+					description: 'End date for filtering.',
+				},
+				{ $ref: '#definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of toll data.',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/GetTollDataResponse',
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			const tollID: string = req.params.toll_id;
 			const startDate: Date = get_date(req.params.start_date);
@@ -182,6 +269,33 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		oapi.path({
+			tags: ['Statistics'],
+			summary: 'Get timeseries data for incoming passes.',
+			operationId: 'getIncomingPassesTimeseries',
+			parameters: [
+				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
+				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
+				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{ $ref: '#/definitions/TokenHeader' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of timeseries Data.',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/TimeseriesResponse',
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to, true);
@@ -234,6 +348,33 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		oapi.path({
+			tags: ['Statistics'],
+			summary: 'Get timeseries data for outgoing passes.',
+			operationId: 'getOutgoingPassesTimeseries',
+			parameters: [
+				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
+				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
+				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{ $ref: '#/definitions/TokenHeader' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of timeseries Data.',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/TimeseriesResponse',
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			const date_from = get_date(req.params.date_from);
 			const date_to = get_date(req.params.date_to, true);
