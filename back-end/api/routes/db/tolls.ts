@@ -9,7 +9,36 @@ export default function (oapi: Middleware): Router {
 	 * GET /tolls
 	 * Retrieves all toll documents
 	 */
-	router.get('/', async (_req: Request, res: Response) => {
+	router.get(
+		'/', 
+		oapi.path({
+			tags: ['DB'],
+			summary: 'Retrieve all toll documents',
+			operationId: 'getAllTolls',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of toll documents',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/TollsSchema', 
+								},
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			}
+		}),
+		async (_req: Request, res: Response) => {
 		try {
 			const tolls = await Toll.find();
 			res.status(200).json(tolls);
@@ -23,7 +52,34 @@ export default function (oapi: Middleware): Router {
 	 * GET /tolls/:id
 	 * Retrieves a specific toll document by its ID
 	 */
-	router.get('/:id', async (req: Request, res: Response) => {
+	router.get(
+		'/:id', 
+		oapi.path({
+			tags: ['DB'],
+			summary: 'Retrieve toll document with specified id',
+			operationId: 'getTollWithID',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ in: 'path', name: 'id', schema: { type: 'string' }, required: true, description: 'Toll Id' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of payment document',
+					content: {
+						'application/json': {
+							schema: {
+									$ref: '#/definitions/TollsSchema', 
+								},
+							},
+						},
+					},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+				}
+		}),
+		async (req: Request, res: Response) => {
 		const { id } = req.params;
 
 		try {
@@ -42,6 +98,31 @@ export default function (oapi: Middleware): Router {
 	 */
 	router.get(
 		'/by_operator/:operator_id',
+		oapi.path({
+			tags: ['DB'],
+			summary: 'Retrieve toll documents belonging to specified operator',
+			operationId: 'getTollsByOp',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ in: 'path', name: 'operator_id', schema: { type: 'string' }, required: true, description: 'Operator Id' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of toll documents',
+					content: {
+						'application/json': {
+							schema: {
+									$ref: '#/definitions/TollByOpResponse', 
+								},
+							},
+						},
+					},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+				}
+		}),
 		async (req: Request, res: Response) => {
 			const { operator_id } = req.params;
 

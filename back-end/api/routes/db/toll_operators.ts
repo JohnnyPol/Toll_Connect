@@ -4,14 +4,43 @@ import TollOperator, { UserLevel } from '@/models/toll_operator.ts';
 
 const return_fields = ['_id', 'name', 'userLevel', 'email', 'VAT', 'address'];
 
-export default function (_oapi: Middleware): Router {
+export default function (oapi: Middleware): Router {
 	const router = new Router();
 
 	/**
 	 * GET /toll-operators
 	 * Retrieves all toll operator documents
 	 */
-	router.get('/', async (_req: Request, res: Response) => {
+	router.get(
+		'/', 
+		oapi.path({
+			tags: ['DB'],
+			summary: 'Retrieve all operator documents',
+			operationId: 'getAllOperators',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of operator documents',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/OperatorsSchema', 
+								},
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			}
+		}),
+		async (_req: Request, res: Response) => {
 		try {
 			const tollOperators = await TollOperator.find({
 				userLevel: UserLevel.Operator,
@@ -27,7 +56,34 @@ export default function (_oapi: Middleware): Router {
 	 * GET /toll-operators/:id
 	 * Retrieves a specific toll operator document by its ID
 	 */
-	router.get('/:id', async (req: Request, res: Response) => {
+	router.get(
+		'/:id', 
+		oapi.path({
+			tags: ['DB'],
+			summary: 'Retrieve operator document with specified id',
+			operationId: 'getOperatorWithID',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ in: 'path', name: 'id', schema: { type: 'string' }, required: true, description: 'Operator Id' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of operator document',
+					content: {
+						'application/json': {
+							schema: {
+									$ref: '#/definitions/OperatorsSchema', 
+								},
+							},
+						},
+					},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+				}
+		}),
+		async (req: Request, res: Response) => {
 		const { id } = req.params;
 
 		try {
@@ -56,6 +112,33 @@ export default function (_oapi: Middleware): Router {
 	 */
 	router.get(
 		'/admin/all',
+		oapi.path({
+			tags: ['DB'],
+			summary: 'Retrieve all operators id',
+			operationId: 'getAllOperatorsID',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of operators ids',
+					content: {
+						'application/json': {
+							schema: {
+									type: 'array',
+									items: {
+										type: 'string',
+									}
+								},
+							},
+						},
+					},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+				}
+		}),
 		check_admin,
 		async (_req: Request, res: Response) => {
 			try {

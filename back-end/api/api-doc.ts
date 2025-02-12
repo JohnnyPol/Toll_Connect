@@ -534,35 +534,49 @@ const apiDoc = {
 				__v: { type: 'integer', description: "Version number (Mongoose)" }
 			}
 		},
-		TollSchema: {
+		TollsSchema: {
 			type: 'object',
 			properties: {
-				_id: { type: 'string', description: "Unique identifier for the pass" },
-				tag: {
-					type: 'object',
-					description: "Details about the tag",
-					properties: {
-						_id: { type: 'string', description: "Unique identifier for the tag" },
-						tollOperator: { type: 'string', description: "The toll operator of the tag" }
-					},
-					required: ['_id', 'tollOperator']
+				_id: { type: 'string', description: "Unique identifier for the toll" },
+				name: { type: 'string' },
+				latitude: { type: 'number', format: 'double' },
+				longitude: { type: 'number', format: 'double' },
+				locality: { type: 'string', description: 'The area of the toll' },
+				price: {
+					type: 'array',
+					items: {
+						type: 'number'
+					}
 				},
-				toll: {
-					type: 'object',
-					description: "Details about the toll location",
-					properties: {
-						_id: { type: 'string', description: "Unique identifier for the toll" },
-						tollOperator: { type: 'string', description: "The toll operator of the toll" }
-					},
-					required: ['_id', 'tollOperator']
-				},
-				time: { type: 'string', format: 'date-time', description: "Date and time of the pass" },
-				charge: { type: 'number', format: 'double', description: "The charge for the pass" },
-				payment: { type: 'string', description: "ID of the payment associated with the pass" },
+				PM: { type: 'string' },
+				tollOperator: { type: 'string', description: 'The Id of the toll Operator' }, 
+				road: { type: 'string', description: 'The road where the toll is located' },
 				__v: { type: 'integer', description: "Version number (Mongoose)" }
 			},
-			required: ['_id', 'tag', 'toll', 'time', 'charge', 'payment', '__v']
-		}
+			required: ['_id', 'name', 'latitude', 'longitude', 'locality', 'price', 'PM', 'tollOperator', 'road', '__v']
+		},
+		TollByOpResponse: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string', description: "Unique identifier for the toll" },
+				name: { type: 'string' },
+				latitude: { type: 'number', format: 'double' },
+				longitude: { type: 'number', format: 'double' },
+			},
+			required: ['_id', 'name', 'latitude', 'longitude']
+		},
+		OperatorsSchema: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string', description: "Unique identifier for the operator/user" },
+				name: { type: 'string' },
+				userLevel: { type: 'number', description: "The level of access of the user" },
+				email: { type: 'string', description: "The email of the user" },
+				VAT: { type: 'string', description: "The VAT number of the operator" },
+				address: { type: 'string', description: "The address of the operator" }
+			},
+			required: ['_id', 'name', 'userLevel', 'email', 'VAT', 'address']
+		},
 	}
 };
 
