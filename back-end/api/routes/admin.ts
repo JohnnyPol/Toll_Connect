@@ -22,7 +22,7 @@ interface UserInput {
 	password: string;
 }
 
-const hashPassword = async (password: string): Promise<string> => {
+const _hashPassword = async (password: string): Promise<string> => {
 	try {
 		const encoder = new TextEncoder();
 		const data = encoder.encode(password);

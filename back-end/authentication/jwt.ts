@@ -11,6 +11,11 @@ import TollOperator, {
 } from '@/models/toll_operator.ts';
 
 if (!Deno.env.has('JWT_ENCODE')) {
+	const encode = Array.from(
+		crypto.getRandomValues(new Uint8Array(32)),
+		(byte) => byte.toString(16).padStart(2, '0')
+	).join();
+	await Deno.writeTextFile('.env', `JWT_ENCODE=${encode}\n`, { append: true });
 	console.error(
 		`Missing encode string for JWT: Add JWT_ENCODE to .env file`,
 	);
@@ -76,7 +81,7 @@ async function clearBlacklist(): Promise<void> {
 	const docs = await TollOperator.find({ blacklist: { $gt: [] } });
 	for (const doc of docs) {
 		const now = new Date().getTime() / 1000;
-		doc.blacklist = await Promise.all(doc.blacklist.map(
+		const tmp = await Promise.all(doc.blacklist.map(
 			async (token: string) => {
 				try {
 					const { exp } = await verify(token);
@@ -87,7 +92,7 @@ async function clearBlacklist(): Promise<void> {
 				}
 			}
 		));
-		doc.blacklist = doc.blacklist.filter((it) => it !== null);
+		doc.blacklist = tmp.filter((it) => it !== null);
 	}
 }
 
