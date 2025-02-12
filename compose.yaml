@@ -17,18 +17,12 @@ services:
   frontend:
     build:
       context: './front-end/'
-      target: production
-      
     depends_on:
       - backend
     networks:
       - frontend_net
     ports:
       - "80:80"
-    volumes:
-      - ./front-end/dist/:/var/www/html/
-      - ./front-end/ssl/certificate.crt:/etc/ssl/certs/certificate.crt
-      - ./front-end/ssl/private.key:/etc/ssl/private/private.key
     container_name: toll-connect-frontend
     restart: always 
   db:

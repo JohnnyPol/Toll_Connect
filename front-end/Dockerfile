@@ -1,9 +1,9 @@
 # Build Stage
 FROM denoland/deno:alpine AS build
 WORKDIR /app
-COPY deno.json .
-RUN deno install
-COPY . .
+COPY deno.json ./
+RUN deno cache deno.json
+COPY . ./
 RUN deno run build
 
 # Production Stage
