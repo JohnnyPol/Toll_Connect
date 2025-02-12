@@ -1,15 +1,88 @@
 {
 	"info": {
-		"_postman_id": "5e3b2ae4-939d-4b37-ad58-d7e3248b2506",
+		"_postman_id": "b03a7931-d02a-4bfd-a137-0a27b52426f3",
 		"name": "Toll Connect API Documentation",
 		"description": "# Toll Connect REST API Documentation\n\nThis is the public interface for interacting with the Toll Connect system.\n\n---\n\n_Toll Connect_ provides Toll Operators the ability to interconnect with each other, by recording passes between each other, aggregating statistics and allowing for payment settlements.\n\n## **Getting started guide**\n\n- The API returns request responses encoded in UTF-8 and in JSON or CSV format (JSON is the default). When an API request returns an error, it is sent in the response as an error key.\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- Time Series data in responses are always sorted in increasing timestamp.\n    \n\n## Authentication\n\nWe implement RBAC (Role-based Access Control) over JWT tokens. All API endpoints are protected using the JWT tokens that are obtained through the `login` operation.\n\n## Response Types\n\n- 200: Success\n    \n- 204: No Content (Successful but with an Empty Response)\n    \n- 400: Bad Request (Invalid Request Parameters)\n    \n- 401: Not Authorized\n    \n- 500: Internal Server Error\n    \n\n## Error Messages\n\nWith the exception of the error code 401 returned under /admin/healthcheck all the other APIs return error messages with the following parameters:  \n\\-`status`: (string) status of request  \n\\-`info`: (string) information about the failure\n\n## Common Parameters:\n\nAll APIs have these parameters:  \n**Header:**  \nAuthorization (string, required): Auth token (Does not apply to login)  \n**Query Parameter**  \nformat (string): Response format (Supported: json, csv). (Does not apply to logout)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "41983324"
+		"_exporter_id": "33038841"
 	},
 	"item": [
 		{
 			"name": "Auth",
 			"item": [
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/logout",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "**Description:** Logout\n\n**Method:** `POST`\n\n**URL:** `/logout`\n\n**Headers:**\n\n- `x-observatory-auth` (string, required): Token to invalidate.\n    \n\nSuccessful logout returns an empty response with code `200`"
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/logout",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "content-length",
+									"value": "0"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 16:50:27 GMT"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
 				{
 					"name": "Login",
 					"event": [
@@ -200,79 +273,6 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"message\": \"Error: User {{username}} not found\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Logout",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "X-OBSERVATORY-AUTH",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseURL}}/logout",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"logout"
-							]
-						},
-						"description": "**Description:** Logout\n\n**Method:** `POST`\n\n**URL:** `/logout`\n\n**Headers:**\n\n- `x-observatory-auth` (string, required): Token to invalidate.\n    \n\nSuccessful logout returns an empty response with code `200`"
-					},
-					"response": [
-						{
-							"name": "200 Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "X-OBSERVATORY-AUTH",
-										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "https://localhost:9115/api/logout",
-									"protocol": "https",
-									"host": [
-										"localhost"
-									],
-									"port": "9115",
-									"path": [
-										"api",
-										"logout"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "plain",
-							"header": [
-								{
-									"key": "x-powered-by",
-									"value": "Express"
-								},
-								{
-									"key": "access-control-allow-origin",
-									"value": "*"
-								},
-								{
-									"key": "content-length",
-									"value": "0"
-								},
-								{
-									"key": "date",
-									"value": "Thu, 06 Feb 2025 16:50:27 GMT"
-								}
-							],
-							"cookie": [],
-							"body": ""
 						}
 					]
 				}
@@ -3100,19 +3100,17 @@
 	"variable": [
 		{
 			"key": "baseURL",
-			"value": "https://localhost:9115/api"
+			"value": "http://localhost:9115/api"
 		},
 		{
 			"key": "username",
-			"value": "dummy@operator",
-			"type": "default",
-			"disabled": true
+			"value": "admin",
+			"type": "default"
 		},
 		{
 			"key": "password",
-			"value": "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
-			"type": "default",
-			"disabled": true
+			"value": "622cda4cd65c70f0995792814040421b062c7ca378b6223d3e958c65886b2cb62381a177e6acee4ee0b5ea555f0eda34ea30dca1e3ed48d6767e7039bbe507b6",
+			"type": "default"
 		},
 		{
 			"key": "token",
@@ -3123,44 +3121,37 @@
 		{
 			"key": "tollStationId",
 			"value": "OO01",
-			"type": "default",
-			"disabled": true
+			"type": "default"
 		},
 		{
-			"key": "data_from",
+			"key": "date_from",
 			"value": "20220101",
-			"type": "default",
-			"disabled": true
+			"type": "default"
 		},
 		{
 			"key": "date_to",
 			"value": "20220131",
-			"type": "default",
-			"disabled": true
+			"type": "default"
 		},
 		{
 			"key": "format",
-			"value": "",
-			"type": "default",
-			"disabled": true
+			"value": "json",
+			"type": "default"
 		},
 		{
 			"key": "stationOpID",
 			"value": "OO",
-			"type": "default",
-			"disabled": true
+			"type": "default"
 		},
 		{
 			"key": "tagOpID",
 			"value": "OO",
-			"type": "default",
-			"disabled": true
+			"type": "default"
 		},
 		{
 			"key": "tollOpID",
 			"value": "AM",
-			"type": "default",
-			"disabled": true
+			"type": "default"
 		},
 		{
 			"key": "token",
