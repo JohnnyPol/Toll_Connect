@@ -14,6 +14,8 @@ import api from './api/router.ts';
 import cors from 'cors';
 import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
 
+const dbUrl = Deno.env.get('DATABASE_URL');
+
 async function check_connection(): Promise<void> {
 	if (mongoose.connection.readyState === ConnectionStates.connected) {
 		console.log('OK db already connected');
@@ -21,7 +23,7 @@ async function check_connection(): Promise<void> {
 	}
 	try {
 		console.log('TRY connecting to db');
-		await connect('mongodb://softeng-mongodb:27017');
+		await connect(dbUrl);
 	} catch (err) {
 		console.error('ERR connecting to db:', err);
 	}
