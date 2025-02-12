@@ -5,12 +5,14 @@ import { getAuthToken, isValidFormat } from "@/src/utils.ts";
 /**
  * Fetches pass analysis data between two operators for a specific date range.
  */
-async function fetchPassAnalysis(stationop: string, tagop: string, from: string, to: string, format: string) {
+async function fetchPassAnalysis(stationop: string, tagop: string, from: string, to: string, format: string, beautify: boolean) {
     try {
         // Check if the --format option is valid
         if (!isValidFormat(format)) return;
 
-        console.log(`🔍 Fetching pass analysis between operators ${stationop} and ${tagop} from ${from} to ${to}...`);
+        if (beautify) {
+            console.log(`🔍 Fetching pass analysis between operators ${stationop} and ${tagop} from ${from} to ${to}...`);
+        }
 
         // Read authentication token
         const token = await getAuthToken();
@@ -42,6 +44,11 @@ async function fetchPassAnalysis(stationop: string, tagop: string, from: string,
             // Parse the response body
             const data = await response.json();
 
+            if (!beautify) {
+                console.log(data);
+                return;
+            }
+
             //console.log("Json data response: ", data);
 
             // deno-lint-ignore no-unused-vars
@@ -61,6 +68,12 @@ async function fetchPassAnalysis(stationop: string, tagop: string, from: string,
         else {
             // Read response body as text
             const csvText = await response.text();
+
+            if (!beautify) {
+                console.log(csvText);
+                return;
+            }
+
             // Split the CSV into rows and clean up empty lines
             const csvRows = csvText.split("\n").map(row => row.trim()).filter(row => row.length > 0);
 
@@ -103,7 +116,8 @@ export const passAnalysisCommand = (program: CommandOptions) => {
         .requiredOption("--from <from>", "Start date (YYYYMMDD)")
         .requiredOption("--to <to>", "End date (YYYYMMDD)")
         .option("--format <format>", "Response format (json/csv)")
-        .action(async ({ stationop, tagop, from, to, format }: { stationop: string; tagop: string; from: string; to: string, format: string }) => {
-            await fetchPassAnalysis(stationop, tagop, from, to, format || "csv");
+        .option("--beautify", "Flag to display beautiful data instead of raw")
+        .action(async ({ stationop, tagop, from, to, format, beautify }: { stationop: string; tagop: string; from: string; to: string; format?: string; beautify?: string}) => {
+            await fetchPassAnalysis(stationop, tagop, from, to, format || "csv", beautify ? true : false);
         });
 };
