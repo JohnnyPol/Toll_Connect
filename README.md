@@ -5,32 +5,35 @@
 📜 Table of Contents
 - [Introduction](#introduction)
 - [Installation and Setup](#installation-and-setup)
-  - [Prerequisites](#prerequisites) (here we show the tech stack)
-  - [Backend Setup](#Backend)
-  - [Frontend Setup](#Frontend)
-  - [CLI Setup](#CLI)
+  - [Prerequisites](#prerequisites)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+  - [CLI Setup](#cli-setup)
 - [Usage](#usage)
   - [Running the App](#running-the-app)
-- [API Documentation](#API-Documentation)
-- [Testing](#Testing)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
 - [Contributors](#contributors)
 ---
 
 ## 📝 Introduction
-Toll Connect is a software system for toll interoperability, managing transactions between different toll operators, calculating settlements, and analyzing toll usage data. The system consists of:
-- A backend with a REST API for handling toll transactions and interoperability.
-- A frontend (web interface) for data visualization and analysis.
-- A CLI tool for administrators to manage toll transactions and view reports.
-This system ensures interoperability between toll operators, allowing seamless transactions and automated cost settlements.
+Toll Connect is a **software system for toll interoperability**, managing transactions between different toll operators, calculating settlements, and analyzing toll usage data.  
 
-Full Documentation: ...
+The system consists of:  
+- **Backend**: REST API for handling toll transactions and interoperability.  
+- **Frontend**: Web interface for data visualization and analysis.  
+- **CLI Tool**: Administrator utility for managing toll transactions and viewing reports.  
 
-## ⚙ Installation
+
+📄 **Full Documentation SRS**: [here](https://github.com/ntua/softeng24-17/blob/main/documentation/SRS%20softeng24-17.docx)
+
+## ⚙ Installation and Setup 
 1️⃣ Clone the Repository
 ```sh
 git clone https://github.com/your-repo/softeng24-17.git
 cd softeng24-17
 ```
+...
 ---
 
 ## 🚀 Running the Project
@@ -59,7 +62,7 @@ deno task compile
 ./se2417 --help
 ```
 
-Documentation for CLI: Link to readme of cli
+Documentation for CLI: [here](https://github.com/ntua/softeng24-17/blob/main/cli-client/README.md)
 
 
 ## 📜 API Documentation

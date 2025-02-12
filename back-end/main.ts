@@ -21,7 +21,7 @@ async function check_connection(): Promise<void> {
 	}
 	try {
 		console.log('TRY connecting to db');
-		await connect('mongodb://localhost:27017');
+		await connect('mongodb://softeng-mongodb:27017');
 	} catch (err) {
 		console.error('ERR connecting to db:', err);
 	}
