@@ -1,4 +1,4 @@
-import { Middleware, Request, Response, Router } from 'npm:express';
+import { Middleware, Request, Response, Router } from 'express';
 import { die, ErrorType, get_date } from '../util.ts';
 
 import { difference } from 'jsr:@std/datetime';
