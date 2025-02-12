@@ -1,5 +1,6 @@
 import { DAY, format, MINUTE, parse } from '@std/datetime';
-import { Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { UserLevel } from '@/models/toll_operator.ts';
 
 /**                       MONGOOSE CONNECTION ENUM                            */
 
@@ -52,4 +53,12 @@ function die(
 	return json;
 }
 
-export { die, ErrorType, get_date, set_date };
+function check_admin(req: Request, res: Response, next: NextFunction) {
+	if (req.user == null || typeof req.user !== 'object' || req.user.level !== UserLevel.Admin) {
+		return die(res, ErrorType.BadRequest, 'Admin level required');
+	}
+	return next();
+};
+
+
+export { die, ErrorType, get_date, set_date, check_admin };

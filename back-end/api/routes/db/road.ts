@@ -1,17 +1,18 @@
-import { Middleware, Request, Response, Router } from 'npm:express';
-import { die, ErrorType } from '../../util.ts';
-import Road from '../../../models/road.ts';
+import { Middleware, Request, Response, Router } from 'express';
+import { die, ErrorType, check_admin } from '@/api/util.ts';
+import Road from '@/models/road.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
+	router.use(check_admin);
 
 	/**
 	 * GET /road
 	 * Retrieves all road documents
 	 */
-	router.get('/', async (req: Request, res: Response) => {
+	router.get('/', async (_req: Request, res: Response) => {
 		try {
-			const roads = await Road.find().lean();
+			const roads = await Road.find();
 			res.status(200).json(roads);
 		} catch (error) {
 			console.error('Error fetching roads:', error);
@@ -27,7 +28,7 @@ export default function (oapi: Middleware): Router {
 		const { id } = req.params;
 
 		try {
-			const road = await Road.findById(id).lean();
+			const road = await Road.findById(id);
 			if (!road) return die(res, ErrorType.BadRequest, 'Road not found');
 
 			res.status(200).json(road);

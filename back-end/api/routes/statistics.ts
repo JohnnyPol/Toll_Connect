@@ -473,6 +473,33 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		oapi.path({
+			tags: ['Statistics'],
+			summary: 'Get aggregated data for incoming passes.',
+			operationId: 'getAggregatedIncomingPasses',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
+				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
+				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of Aggregate Data.',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AggregatePassesResponse',
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			if (req.user.level === UserLevel.Anonymous) {
 				return die(res, ErrorType.Unauthorized, 'Unauthorized');
@@ -529,6 +556,33 @@ export default function (oapi: Middleware): Router {
 		 *  - If Admin perform the search with as_operator
 		 * 	- If Operator perform the search with JWT inferred operator
 		 */
+		oapi.path({
+			tags: ['Statistics'],
+			summary: 'Get aggregated data for outgoing passes.',
+			operationId: 'getAggregatedOutgoingPasses',
+			parameters: [
+				{ $ref: '#/definitions/TokenHeader' },
+				{ in: 'path', name: 'date_from', schema: { type: 'string', format: 'date' }, required: true, description: 'Start date.' },
+				{ in: 'path', name: 'date_to', schema: { type: 'string', format: 'date' }, required: true, description: 'End date.' },
+				{ in: 'query', name: 'as_operator', schema: { type: 'string' }, description: 'Operator ID (required for Admin).' },
+				{ $ref: '#/definitions/Format' },
+			],
+			responses: {
+				200: {
+					description: 'Successful retrieval of Aggregate Data.',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/AggregatePassesResponse',
+							},
+						},
+					},
+				},
+				400: { $ref: '#/definitions/BadRequestResponse' },
+				401: { $ref: '#/definitions/UnauthorizedResponse' },
+				500: { $ref: '#/definitions/InternalServerErrorResponse' },
+			},
+		}),
 		async (req: Request, res: Response) => {
 			if (req.user.level === UserLevel.Anonymous) {
 				return die(res, ErrorType.Unauthorized, 'Unauthorized');

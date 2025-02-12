@@ -13,7 +13,7 @@ export default function (_oapi: Middleware): Router {
 		try {
 			const tollOperators = await TollOperator.find({
 				userLevel: UserLevel.Operator,
-			}).lean();
+			});
 			res.status(200).json(tollOperators);
 		} catch (error) {
 			console.error('Error fetching toll operators:', error);
@@ -29,7 +29,7 @@ export default function (_oapi: Middleware): Router {
 		const { id } = req.params;
 
 		try {
-			const tollOperator = await TollOperator.findById(id).lean();
+			const tollOperator = await TollOperator.findById(id);
 			if (!tollOperator) {
 				return die(
 					res,
@@ -51,7 +51,7 @@ export default function (_oapi: Middleware): Router {
 	 */
 	router.get('/admin/all', async (_req: Request, res: Response) => {
 		try {
-			const tollOperators = await TollOperator.find().lean();
+			const tollOperators = await TollOperator.find();
 			res.status(200).json(tollOperators.map(op => op._id));
 		} catch (error) {
 			console.error('Error fetching toll operators:', error);

@@ -2,6 +2,8 @@ import { NextFunction, Router } from 'express';
 
 import authenticate from '@/authentication/middleware.ts';
 import parser from '@/api/parser.ts';
+import { UserLevel } from '@/models/toll_operator.ts';
+import { Token } from '@/authentication/jwt.ts';
 
 import admin from '@/api/routes/admin.ts';
 import charges_by from '@/api/routes/charges_by.ts';
@@ -40,12 +42,12 @@ export default function (oapi: NextFunction): Router {
 	router.use('/statistics', statistics(oapi));
 	router.use('/tollStationPasses', toll_passes(oapi));
 	/* CRUD API */
+	router.use('/db/toll-operators', toll_operators(oapi));
 	router.use('/db/tolls', tolls(oapi));
+	router.use('/db/road', road(oapi));
 	router.use('/db/pass', pass(oapi));
 	router.use('/db/payment', payment(oapi));
-	router.use('/db/road', road(oapi));
 	router.use('/db/tag', tag(oapi));
-	router.use('/db/toll-operators', toll_operators(oapi));
 
 	return router;
 }

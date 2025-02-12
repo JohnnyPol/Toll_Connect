@@ -16,7 +16,7 @@ import { insertTollsFromCSV } from '@/data-base_functions/inserts/toll_insert.ts
 import { insertPassesFromCSV } from '@/data-base_functions/inserts/pass_insert.ts';
 import { deleteCollection } from '@/data-base_functions/deletes/delete_collection.ts';
 import { insertTollOperators } from '@/data-base_functions/inserts/initialize_operators.ts';
-import { ConnectionStates, die, ErrorType, get_date } from '@/api/util.ts';
+import { ConnectionStates, die, ErrorType, get_date, check_admin } from '@/api/util.ts';
 
 import TollOperator, {
 	TollOperatorInput,
@@ -130,12 +130,7 @@ function validateCSVFile(csvContent: string): boolean {
 export default function (oapi: Middleware): Router {
 	const router = new Router();
 
-	router.use((req: Request, res: Response, next: NextFunction) => {
-		if (req.user.level !== UserLevel.Admin) {
-			return die(res, ErrorType.BadRequest, 'Admin level required');
-		}
-		return next();
-	});
+	router.use(check_admin);
 
 	// Healthcheck endpoint
 	router.get(

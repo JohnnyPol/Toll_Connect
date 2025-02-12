@@ -1,18 +1,18 @@
 import { Middleware, Request, Response, Router } from 'npm:express';
-import { die, ErrorType } from '../../util.ts';
+import { die, ErrorType, check_admin } from '../../util.ts';
 import Payment from '../../../models/payment.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
+	router.use(check_admin);
 
 	/**
 	 * GET /
 	 * Retrieves all payment documents
 	 */
-	router.get('/', async (req: Request, res: Response) => {
+	router.get('/', async (_req: Request, res: Response) => {
 		try {
-			const payments = await Payment.find().populate(['payer', 'payee'])
-				.lean();
+			const payments = await Payment.find();				;
 			res.status(200).json(payments);
 		} catch (error) {
 			console.error('Error fetching payments:', error);
@@ -28,10 +28,7 @@ export default function (oapi: Middleware): Router {
 		const { id } = req.params;
 
 		try {
-			const payment = await Payment.findById(id).populate([
-				'payer',
-				'payee',
-			]).lean();
+			const payment = await Payment.findById(id);
 			if (!payment) {
 				return die(res, ErrorType.BadRequest, 'Payment not found');
 			}

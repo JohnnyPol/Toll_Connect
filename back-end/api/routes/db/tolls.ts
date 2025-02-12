@@ -11,7 +11,7 @@ export default function (oapi: Middleware): Router {
 	 */
 	router.get('/', async (_req: Request, res: Response) => {
 		try {
-			const tolls = await Toll.find().lean();
+			const tolls = await Toll.find();
 			res.status(200).json(tolls);
 		} catch (error) {
 			console.error('Error fetching tolls:', error);
@@ -48,7 +48,7 @@ export default function (oapi: Middleware): Router {
 			try {
 				const tolls = await Toll.find({ tollOperator: operator_id })
 					.select('_id name latitude longitude')
-					.lean();
+					;
 
 				if (!tolls.length) {
 					return die(

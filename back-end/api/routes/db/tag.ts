@@ -1,17 +1,18 @@
 import { Middleware, Request, Response, Router } from 'npm:express';
-import { die, ErrorType } from '../../util.ts';
+import { die, ErrorType, check_admin } from '../../util.ts';
 import Tag from '../../../models/tag.ts';
 
 export default function (oapi: Middleware): Router {
 	const router = new Router();
+	router.use(check_admin);
 
 	/**
 	 * GET /tag
 	 * Retrieves all tag documents
 	 */
-	router.get('/', async (req: Request, res: Response) => {
+	router.get('/', async (_req: Request, res: Response) => {
 		try {
-			const tags = await Tag.find().populate('tollOperator').lean();
+			const tags = await Tag.find().populate('tollOperator');
 			res.status(200).json(tags);
 		} catch (error) {
 			console.error('Error fetching tags:', error);
@@ -27,7 +28,7 @@ export default function (oapi: Middleware): Router {
 		const { id } = req.params;
 
 		try {
-			const tag = await Tag.findById(id).populate('tollOperator').lean();
+			const tag = await Tag.findById(id).populate('tollOperator');
 			if (!tag) return die(res, ErrorType.BadRequest, 'Tag not found');
 
 			res.status(200).json(tag);
