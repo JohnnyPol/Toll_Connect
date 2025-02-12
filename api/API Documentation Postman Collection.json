@@ -20,7 +20,7 @@
 									"pm.test(\"Save response body to a variable\", function () {\r",
 									"    var responseBody = pm.response.json();\r",
 									"    console.log(responseBody)\r",
-									"    pm.collectionVariables.set(\"token\", responseBody.token);\r",
+									"    pm.environment.set(\"token\", responseBody.token);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3031,13 +3031,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}/db/toll_operators/admin/all",
+							"raw": "{{baseURL}}/db/toll-operators/admin/all",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"db",
-								"toll_operators",
+								"toll-operators",
 								"admin",
 								"all"
 							]
