@@ -50,7 +50,7 @@ async function logout(req: Request, res: Response): Promise<void> {
 				id,
 				{ $pull: { blacklist: token } },
 			);
-		}, (exp - new Date().getTime()) * 1000);
+		}, exp * 1000 - new Date().getTime());
 		res.status(200).send();
 	} catch (err) {
 		if (err instanceof Error) {

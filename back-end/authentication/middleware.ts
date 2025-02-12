@@ -3,6 +3,8 @@ import { Token, verify } from '@/authentication/jwt.ts';
 import { die, ErrorType } from '@/api/util.ts';
 import { UserLevel } from '@/models/toll_operator.ts';
 
+const ANON: Token = { level: UserLevel.Anonymous, id: '', exp: -1 };
+
 export default async function (
 	req: Request,
 	res: Response,
@@ -11,7 +13,7 @@ export default async function (
 	const token: string | undefined = req.get('x-observatory-auth');
 
 	if (token == null) {
-		req.user = <Token> { level: UserLevel.Anonymous, id: '', exp: -1 };
+		req.user = ANON;
 		console.log('INFO anonymous token:', req.user);
 		return next();
 	}

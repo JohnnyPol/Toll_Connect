@@ -61,26 +61,33 @@ async function create(obj: Omit<Token, 'exp'>): Promise<string> {
 }
 
 async function verify(str: string): Promise<Token> {
-	const token: Token = await djwt_verify(str, key);
-	const doc = await TollOperator.findById(token.id);
-	if (doc == null) throw Error('could not find id in database');
-	if (str in doc.blacklist) throw Error('blacklisted token');
-	return token;
+	try {
+		const token: Token = await djwt_verify(str, key);
+		const doc = await TollOperator.findById(token.id);
+		if (doc == null) throw Error('could not find id in database');
+		if (doc.blacklist.includes(str)) throw Error('blacklisted token');
+		return token;
+	} catch (err) {
+		throw err;
+	}
 }
 
 async function clearBlacklist(): Promise<void> {
 	const docs = await TollOperator.find({ blacklist: { $gt: [] } });
 	for (const doc of docs) {
-		const now = new Date().getTime();
-		doc.blacklist.filter(async (token: string) => {
-			try {
-				const { exp } = await verify(token);
-				return exp > now;
-			} catch (_err) {
-				return false;
+		const now = new Date().getTime() / 1000;
+		doc.blacklist = await Promise.all(doc.blacklist.map(
+			async (token: string) => {
+				try {
+					const { exp } = await verify(token);
+					return exp > now ? token : null;
+				} catch (err) {
+					console.error('ERR clear blacklist:', err);
+					return null;
+				}
 			}
-		});
-		await doc.save();
+		));
+		doc.blacklist = doc.blacklist.filter((it) => it !== null);
 	}
 }
 
