@@ -11,7 +11,7 @@ const apiDoc = {
 	// swagger: '2.0',
 	basePath: '/api',
 	info: {
-		title: 'TITLE', // TODO
+		title: 'Toll connect', 
 		description: 'API for SoftEng 2024 NTUA course',
 		version: '1.0.0',
 	},
