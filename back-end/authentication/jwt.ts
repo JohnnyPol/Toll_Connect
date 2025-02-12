@@ -2,11 +2,8 @@ import {
 	create as djwt_create,
 	getNumericDate,
 	Header,
-	Payload,
 	verify as djwt_verify,
 } from 'https://deno.land/x/djwt/mod.ts';
-import { Types } from 'mongoose';
-import { assert } from '@std/assert';
 
 import TollOperator, {
 	UserLevel,
@@ -57,7 +54,7 @@ async function clearBlacklist(): Promise<void> {
 			try {
 				const { exp } = await verify(token);
 				return exp > now;
-			} catch (err) {
+			} catch (_err) {
 				return false;
 			}
 		});
