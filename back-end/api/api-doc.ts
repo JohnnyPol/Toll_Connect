@@ -43,7 +43,7 @@ const apiDoc = {
 			type: 'object',
 			properties: {
 				username: { type: 'string' },
-				password: { type: 'number' },
+				password: { type: 'string' },
 			},
 			required: ['username', 'password'],
 		},
