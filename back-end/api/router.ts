@@ -2,8 +2,6 @@ import { NextFunction, Router } from 'express';
 
 import authenticate from '@/authentication/middleware.ts';
 import parser from '@/api/parser.ts';
-import { UserLevel } from '@/models/toll_operator.ts';
-import { Token } from '@/authentication/jwt.ts';
 
 import admin from '@/api/routes/admin.ts';
 import charges_by from '@/api/routes/charges_by.ts';

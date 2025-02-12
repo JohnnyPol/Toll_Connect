@@ -1,12 +1,5 @@
 // api/routes/admin.ts
-import {
-	Middleware,
-	NextFunction,
-	Request,
-	Response,
-	Router,
-	urlencoded,
-} from 'express';
+import { Middleware, Request, Response, Router, urlencoded } from 'express';
 import mongoose from 'mongoose';
 import multer, { FileFilterCallback } from 'multer';
 import { dirname, fromFileUrl, join } from '@std/path';

@@ -20,22 +20,25 @@ function check_empty(
 	};
 }
 
-const flatten = (obj: any, prefix = ''): Record<string, any> => {
-	return Object.keys(obj).reduce((acc: Record<string, any>, k: string) => {
-		const pre = prefix.length ? prefix + '_' : '';
-		if (
-			typeof obj[k] === 'object' && obj[k] !== null &&
-			!Array.isArray(obj[k])
-		) {
-			Object.assign(acc, flatten(obj[k], pre + k));
-		} else {
-			acc[pre + k] = obj[k];
-		}
-		return acc;
-	}, {});
-};
+function flatten(obj: object, prefix = ''): Record<string, unknown> {
+	return Object.keys(obj).reduce(
+		(acc: Record<string, unknown>, k: string) => {
+			const pre = prefix.length ? prefix + '_' : '';
+			if (
+				typeof obj[k] === 'object' && obj[k] !== null &&
+				!Array.isArray(obj[k])
+			) {
+				Object.assign(acc, flatten(obj[k], pre + k));
+			} else {
+				acc[pre + k] = obj[k];
+			}
+			return acc;
+		},
+		{},
+	);
+}
 
-function expandArrays(obj: Record<string, any>): Record<string, any>[] {
+function expandArrays(obj: Record<string, unknown>): Record<string, unknown>[] {
 	const arrayProps = Object.entries(obj).filter(([_, v]) => Array.isArray(v));
 	if (arrayProps.length === 0) return [obj];
 
@@ -44,8 +47,8 @@ function expandArrays(obj: Record<string, any>): Record<string, any>[] {
 	delete rest[key];
 
 	if (arr.length === 0) {
-    return [rest];
-  }
+		return [rest];
+	}
 
 	return arr.flatMap((item) => {
 		const flattenedItem = flatten(item);
@@ -58,7 +61,7 @@ function expandArrays(obj: Record<string, any>): Record<string, any>[] {
 	});
 }
 
-function convert_csv(
+function _convert_csv(
 	res: Response,
 ): (this: Response, json: Json) => Response | undefined {
 	return function (this, json) {
