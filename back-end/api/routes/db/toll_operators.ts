@@ -1,5 +1,5 @@
 import { Middleware, Request, Response, Router } from 'express';
-import { die, ErrorType } from '@/api/util.ts';
+import { check_admin, die, ErrorType } from '@/api/util.ts';
 import TollOperator, { UserLevel } from '@/models/toll_operator.ts';
 
 export default function (_oapi: Middleware): Router {
@@ -49,15 +49,19 @@ export default function (_oapi: Middleware): Router {
 	 * GET /toll-operators/all
 	 * Retrieves all toll operators
 	 */
-	router.get('/admin/all', async (_req: Request, res: Response) => {
-		try {
-			const tollOperators = await TollOperator.find();
-			res.status(200).json(tollOperators.map(op => op._id));
-		} catch (error) {
-			console.error('Error fetching toll operators:', error);
-			die(res, ErrorType.Internal, error);
-		}
-	});
+	router.get(
+		'/admin/all',
+		check_admin,
+		async (_req: Request, res: Response) => {
+			try {
+				const tollOperators = await TollOperator.find();
+				res.status(200).json(tollOperators.map((op) => op._id));
+			} catch (error) {
+				console.error('Error fetching toll operators:', error);
+				die(res, ErrorType.Internal, error);
+			}
+		},
+	);
 
 	return router;
 }
