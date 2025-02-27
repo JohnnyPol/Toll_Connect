@@ -1,0 +1,1831 @@
+{
+  "openapi": "3.0.0",
+  "basePath": "/api",
+  "info": {
+    "title": "Toll connect",
+    "version": "1.0.0",
+    "description": "API for SoftEng 2024 NTUA course"
+  },
+  "definitions": {
+    "TokenHeader": {
+      "in": "header",
+      "required": true,
+      "name": "x-observatory-auth",
+      "description": "authentication token",
+      "schema": { "type": "string" }
+    },
+    "Format": {
+      "in": "query",
+      "required": false,
+      "name": "format",
+      "description": "format specification",
+      "schema": { "type": "string", "enum": ["json", "csv"] }
+    },
+    "TollOperator": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "id": { "type": "string" }
+      },
+      "required": ["name", "address", "id"]
+    },
+    "Login": {
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "password": { "type": "string" }
+      },
+      "required": ["username", "password"]
+    },
+    "Token": {
+      "type": "object",
+      "properties": { "token": { "type": "string" } },
+      "required": ["token"]
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "info": { "type": "string" }
+      },
+      "required": ["status", "info"],
+      "additionalProperties": true
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "description": "OK" },
+        "info": { "type": "string", "description": "ok" }
+      },
+      "required": ["status", "info"]
+    },
+    "HealthcheckResponse": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "dbconnection": { "type": "string" },
+        "n_stations": { "type": "integer" },
+        "n_tags": { "type": "integer" },
+        "n_passes": { "type": "integer" }
+      }
+    },
+    "AdminResponse": {
+      "type": "object",
+      "properties": { "status": { "type": "string" } }
+    },
+    "AdminErrorResponse": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "dbconnection": { "type": "string" }
+      },
+      "required": ["status", "dbconnection"]
+    },
+    "UnauthorizedResponse": {
+      "description": "Unauthorized ",
+      "content": {
+        "application/json": { "schema": { "$ref": "#/definitions/Error" } }
+      }
+    },
+    "BadRequestResponse": {
+      "description": "Bad Request",
+      "content": {
+        "application/json": { "schema": { "$ref": "#/definitions/Error" } }
+      }
+    },
+    "InternalServerErrorResponse": {
+      "description": "Internal Server Error",
+      "content": {
+        "application/json": { "schema": { "$ref": "#/definitions/Error" } }
+      }
+    },
+    "TollStationPassesResponse": {
+      "type": "object",
+      "properties": {
+        "stationID": {
+          "type": "string",
+          "description": "The unique ID of the toll station"
+        },
+        "stationOperator": {
+          "type": "string",
+          "description": "The operator of the toll station"
+        },
+        "requestTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the request"
+        },
+        "periodFrom": {
+          "type": "string",
+          "format": "date",
+          "description": "The requested period (from)"
+        },
+        "periodTo": {
+          "type": "string",
+          "format": "date",
+          "description": "The requested period (to)"
+        },
+        "nPasses": {
+          "type": "integer",
+          "description": "Number of pass events in the period"
+        },
+        "passList": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PassItem" }
+        }
+      },
+      "required": [
+        "stationID",
+        "stationOperator",
+        "tollStationID",
+        "requestTimestamp",
+        "periodFrom",
+        "periodTo",
+        "nPasses",
+        "passList"
+      ]
+    },
+    "PassItem": {
+      "type": "object",
+      "properties": {
+        "passIndex": {
+          "type": "integer",
+          "description": "Serial number (1, 2, 3, ...)"
+        },
+        "passID": { "type": "string", "description": "ID of the pass event" },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the pass"
+        },
+        "tagID": { "type": "string", "description": "The ID of the pass tag" },
+        "tagProvider": {
+          "type": "string",
+          "description": "The provider of the pass tag"
+        },
+        "passType": {
+          "type": "string",
+          "enum": ["home", "visitor"],
+          "description": "Type of pass (\"home\" or \"visitor\")"
+        },
+        "passCharge": {
+          "type": "number",
+          "format": "float",
+          "description": "The cost of the pass"
+        }
+      },
+      "required": [
+        "passIndex",
+        "passID",
+        "timestamp",
+        "tagID",
+        "tagProvider",
+        "passType",
+        "passCharge"
+      ]
+    },
+    "PassAnalysisResponse": {
+      "type": "object",
+      "properties": {
+        "stationOpID": {
+          "type": "string",
+          "description": "The ID of the station operator"
+        },
+        "tagOpID": {
+          "type": "string",
+          "description": "The ID of the tag operator/provider"
+        },
+        "requestTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Request timestamp"
+        },
+        "periodFrom": {
+          "type": "string",
+          "format": "date",
+          "description": "Period from (YYYY-MM-DD)"
+        },
+        "periodTo": {
+          "type": "string",
+          "format": "date",
+          "description": "Period to (YYYY-MM-DD)"
+        },
+        "nPasses": {
+          "type": "integer",
+          "description": "Number of pass events"
+        },
+        "passList": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PassAnalysisItem" }
+        }
+      },
+      "required": [
+        "stationOpID",
+        "tagOpID",
+        "requestTimestamp",
+        "periodFrom",
+        "periodTo",
+        "nPasses",
+        "passList"
+      ]
+    },
+    "PassAnalysisItem": {
+      "type": "object",
+      "properties": {
+        "passIndex": { "type": "integer", "description": "Serial number" },
+        "passID": { "type": "string", "description": "Pass event ID" },
+        "stationID": { "type": "string", "description": "Station ID" },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Pass timestamp"
+        },
+        "tagID": { "type": "string", "description": "Tag ID" },
+        "passCharge": {
+          "type": "number",
+          "format": "float",
+          "description": "Pass cost"
+        }
+      },
+      "required": [
+        "passIndex",
+        "passID",
+        "stationID",
+        "timestamp",
+        "tagID",
+        "passCharge"
+      ]
+    },
+    "PassesCostResponse": {
+      "type": "object",
+      "properties": {
+        "tollOpID": {
+          "type": "string",
+          "description": "The ID of the toll station operator"
+        },
+        "tagOpID": {
+          "type": "string",
+          "description": "The ID of the tag provider"
+        },
+        "requestTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Request timestamp"
+        },
+        "periodFrom": {
+          "type": "string",
+          "format": "date",
+          "description": "Period from (YYYYMMDD)"
+        },
+        "periodTo": {
+          "type": "string",
+          "format": "date",
+          "description": "Period to (YYYYMMDD)"
+        },
+        "nPasses": {
+          "type": "integer",
+          "description": "Number of pass events"
+        },
+        "passesCost": {
+          "type": "number",
+          "format": "float",
+          "description": "Total cost of passes"
+        }
+      },
+      "required": [
+        "tollOpID",
+        "tagOpID",
+        "requestTimestamp",
+        "periodFrom",
+        "periodTo",
+        "nPasses",
+        "passesCost"
+      ]
+    },
+    "ChargesByResponse": {
+      "type": "object",
+      "properties": {
+        "tollOpID": {
+          "type": "string",
+          "description": "The ID of the operator"
+        },
+        "requestTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Request timestamp"
+        },
+        "periodFrom": {
+          "type": "string",
+          "format": "date",
+          "description": "Period from (YYYYMMDD)"
+        },
+        "periodTo": {
+          "type": "string",
+          "format": "date",
+          "description": "Period to (YYYYMMDD)"
+        },
+        "vOpList": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/VisitingOperator" },
+          "description": "List of visiting operators"
+        }
+      },
+      "required": [
+        "tollOpID",
+        "requestTimestamp",
+        "periodFrom",
+        "periodTo",
+        "vOpList"
+      ]
+    },
+    "VisitingOperator": {
+      "type": "object",
+      "properties": {
+        "visitingOpID": {
+          "type": "string",
+          "description": "The ID of the visiting operator"
+        },
+        "nPasses": {
+          "type": "integer",
+          "description": "Number of pass events"
+        },
+        "passesCost": {
+          "type": "number",
+          "format": "float",
+          "description": "Total cost"
+        }
+      },
+      "required": ["visitingOpID", "nPasses", "passesCost"]
+    },
+    "GetPaymentsResponse": {
+      "type": "object",
+      "properties": {
+        "total_pages": {
+          "type": "integer",
+          "description": "Total number of pages"
+        },
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Payment" }
+        }
+      },
+      "required": ["total_pages", "results"]
+    },
+    "Payment": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "payer": { "type": "string" },
+        "payee": { "type": "string" },
+        "dateofCharge": { "type": "string", "format": "date-time" },
+        "amount": {
+          "type": "number",
+          "description": "The amount of the payment"
+        },
+        "dateofPayment": { "type": "string", "format": "date-time" },
+        "dateofValidation": { "type": "string", "format": "date-time" },
+        "__v": { "type": "integer", "description": "Version number (Mongoose)" }
+      },
+      "required": [
+        "_id",
+        "payer",
+        "payee",
+        "amount",
+        "dateofCharge",
+        "dateofPayment",
+        "dateofValidation"
+      ]
+    },
+    "GetTollDataResponse": {
+      "type": "object",
+      "properties": {
+        "toll": { "type": "object" },
+        "avg_passes": { "type": "number" },
+        "operators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "operator": { "type": "string" },
+              "passes": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "TimeseriesResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "operator": { "type": "string" },
+                "passes": { "type": "integer" },
+                "cost": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AggregatePassesResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "operator": { "type": "string" },
+          "passes": { "type": "integer" },
+          "cost": { "type": "number" }
+        }
+      }
+    },
+    "PassesSchema": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "Unique identifier for the pass"
+        },
+        "tag": {
+          "type": "object",
+          "description": "Details about the tag",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Unique identifier for the tag"
+            },
+            "tollOperator": {
+              "type": "string",
+              "description": "The toll operator of the tag"
+            }
+          },
+          "required": ["_id", "tollOperator"]
+        },
+        "toll": {
+          "type": "object",
+          "description": "Details about the toll location",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Unique identifier for the toll"
+            },
+            "tollOperator": {
+              "type": "string",
+              "description": "The toll operator of the toll"
+            }
+          },
+          "required": ["_id", "tollOperator"]
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time of the pass"
+        },
+        "charge": {
+          "type": "number",
+          "format": "double",
+          "description": "The charge for the pass"
+        },
+        "payment": {
+          "type": "string",
+          "description": "ID of the payment associated with the pass"
+        },
+        "__v": { "type": "integer", "description": "Version number (Mongoose)" }
+      },
+      "required": ["_id", "tag", "toll", "time", "charge", "payment", "__v"]
+    },
+    "RoadsSchema": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "name": { "type": "string" },
+        "__v": { "type": "integer", "description": "Version number (Mongoose)" }
+      },
+      "required": ["_id", "name"]
+    },
+    "TagsSchema": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "tollOperator": {
+          "type": "string",
+          "description": "The Id of the Operator of the tag"
+        },
+        "__v": { "type": "integer", "description": "Version number (Mongoose)" }
+      }
+    },
+    "TollsSchema": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "Unique identifier for the toll"
+        },
+        "name": { "type": "string" },
+        "latitude": { "type": "number", "format": "double" },
+        "longitude": { "type": "number", "format": "double" },
+        "locality": { "type": "string", "description": "The area of the toll" },
+        "price": { "type": "array", "items": { "type": "number" } },
+        "PM": { "type": "string" },
+        "tollOperator": {
+          "type": "string",
+          "description": "The Id of the toll Operator"
+        },
+        "road": {
+          "type": "string",
+          "description": "The road where the toll is located"
+        },
+        "__v": { "type": "integer", "description": "Version number (Mongoose)" }
+      },
+      "required": [
+        "_id",
+        "name",
+        "latitude",
+        "longitude",
+        "locality",
+        "price",
+        "PM",
+        "tollOperator",
+        "road",
+        "__v"
+      ]
+    },
+    "TollByOpResponse": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "Unique identifier for the toll"
+        },
+        "name": { "type": "string" },
+        "latitude": { "type": "number", "format": "double" },
+        "longitude": { "type": "number", "format": "double" }
+      },
+      "required": ["_id", "name", "latitude", "longitude"]
+    },
+    "OperatorsSchema": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "Unique identifier for the operator/user"
+        },
+        "name": { "type": "string" },
+        "userLevel": {
+          "type": "number",
+          "description": "The level of access of the user"
+        },
+        "email": { "type": "string", "description": "The email of the user" },
+        "VAT": {
+          "type": "string",
+          "description": "The VAT number of the operator"
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the operator"
+        }
+      },
+      "required": ["_id", "name", "userLevel", "email", "VAT", "address"]
+    }
+  },
+  "paths": {
+    "/api/login": {
+      "post": {
+        "summary": "Login",
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/definitions/Login" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/Token" }
+              }
+            }
+          },
+          "400": {
+            "description": "Could not find user / Incorrect password",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "summary": "Logout",
+        "operationId": "logout",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "x-observatory-auth",
+            "description": "token to invalidate",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Logged out successfully" },
+          "400": { "description": "No token provided" }
+        }
+      }
+    },
+    "/api/admin/healthcheck": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Check system health",
+        "operationId": "getHealthcheck",
+        "parameters": [
+          { "$ref": "#definitions/TokenHeader" },
+          { "$ref": "#definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "System healthy",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/HealthcheckResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "System unhealthy",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/AdminErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/resetstations": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Reset stations data",
+        "operationId": "resetStations",
+        "parameters": [
+          { "$ref": "#definitions/TokenHeader" },
+          { "$ref": "#definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reset successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/AdminResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/admin/resetpasses": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Reset passes data",
+        "operationId": "resetPasses",
+        "parameters": [
+          { "$ref": "#definitions/TokenHeader" },
+          { "$ref": "#definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reset successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/AdminResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/admin/addpasses": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Add passes from CSV",
+        "operationId": "addPasses",
+        "parameters": [
+          { "$ref": "#definitions/TokenHeader" },
+          {
+            "in": "formData",
+            "name": "file",
+            "required": true,
+            "type": "file",
+            "description": "CSV file with passes data"
+          },
+          { "$ref": "#definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Passes added successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/AdminResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/admin/allpasses/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Returns all aggregated pass data in range between all pair of operators in both directions.",
+        "operationId": "getAllPasses",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "type": "string",
+            "format": "date",
+            "description": "Start date for the query (YYYY-MM-DD)"
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "type": "string",
+            "format": "date",
+            "description": "End date for the query (YYYY-MM-DD)"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tollOperator": { "type": "string" },
+                      "tagOperator": { "type": "string" },
+                      "passes": { "type": "integer" },
+                      "cost": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/admin/addadmin": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Add or update an admin user.",
+        "operationId": "addAdmin",
+        "parameters": [{ "$ref": "#/definitions/Format" }],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Username of the admin"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Password for the admin"
+                  }
+                },
+                "required": ["id", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Admin user created or updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "OK" },
+                    "info": { "type": "string", "example": "created" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/chargesBy/{operator_id}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Operations"],
+        "summary": "Passes and Charges of Other Operators",
+        "description": "Returns an object containing a list of pass events and their costs per visiting operator for the given period.",
+        "operationId": "getChargesBy",
+        "parameters": [
+          {
+            "name": "operator_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the operator"
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The start date of the period (YYYYMMDD)"
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The end date of the period (YYYYMMDD)"
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/ChargesByResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/passAnalysis/{operator_id}/{tag_id}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Operations"],
+        "summary": "Pass Analysis between Operators",
+        "description": "Returns an object containing a list of pass events made with tags from tagOpID at stations of stationOpID for the given period.",
+        "operationId": "getPassAnalysis",
+        "parameters": [
+          {
+            "name": "operator_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the station operator"
+          },
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the tag operator/provider"
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The start date of the period (YYYYMMDD)"
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The end date of the period (YYYYMMDD)"
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/PassAnalysisResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/passesCost/{operator_id}/{tag_id}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Operations"],
+        "summary": "Pass Cost between Operators",
+        "description": "Returns an object with the number of pass events and their cost for the given period.",
+        "operationId": "getPassesCost",
+        "parameters": [
+          {
+            "name": "operator_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the toll station operator"
+          },
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the tag provider"
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The start date of the period (YYYYMMDD)"
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The end date of the period (YYYYMMDD)"
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/PassesCostResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/payments/{status}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Get payments",
+        "operationId": "getPayments",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["Created", "Paid", "Validated"]
+            },
+            "description": "Payment status"
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date for filtering"
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date for filtering"
+          },
+          { "$ref": "#definitions/TokenHeader" },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": { "type": "integer" },
+            "description": "Number of results per page"
+          },
+          {
+            "in": "query",
+            "name": "page_number",
+            "schema": { "type": "integer" },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "target_op_id",
+            "schema": { "type": "string" },
+            "description": "Target operator ID (optional)"
+          },
+          {
+            "in": "query",
+            "name": "is_payer",
+            "schema": { "type": "boolean" },
+            "description": "Filter by payer (optional)"
+          },
+          {
+            "in": "query",
+            "name": "is_payee",
+            "schema": { "type": "boolean" },
+            "description": "Filter by payee (optional)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of payments",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/GetPaymentsResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/payments/pay/{id}": {
+      "put": {
+        "tags": ["Payments"],
+        "summary": "Pay a payment",
+        "operationId": "payPayment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID of the payment to be paid"
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment successfully paid",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/payments/validate/{id}": {
+      "put": {
+        "tags": ["Payments"],
+        "summary": "Validate a payment",
+        "operationId": "validatePayment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID of the payment to be validated"
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment successfully validated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/statistics/heatmap": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get heatmap data for toll locations.",
+        "operationId": "getHeatmapData",
+        "parameters": [
+          { "$ref": "#definitions/TokenHeader" },
+          { "$ref": "#definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of heatmap data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "latitude": { "type": "number", "format": "float" },
+                      "longitude": { "type": "number", "format": "float" },
+                      "count": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/statistics/{toll_id}/{start_date}/{end_date}": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get detailed toll data for a specific toll station within a date range.",
+        "operationId": "getTollData",
+        "parameters": [
+          {
+            "name": "toll_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID of the toll station."
+          },
+          {
+            "name": "start_date",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date for filtering."
+          },
+          {
+            "name": "end_date",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date for filtering."
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of toll data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/GetTollDataResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/statistics/timeseries/incomingPasses/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get timeseries data for incoming passes.",
+        "operationId": "getIncomingPassesTimeseries",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date."
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date."
+          },
+          {
+            "in": "query",
+            "name": "as_operator",
+            "schema": { "type": "string" },
+            "description": "Operator ID (required for Admin)."
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of timeseries Data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/TimeseriesResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/statistics/timeseries/outgoingPasses/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get timeseries data for outgoing passes.",
+        "operationId": "getOutgoingPassesTimeseries",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date."
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date."
+          },
+          {
+            "in": "query",
+            "name": "as_operator",
+            "schema": { "type": "string" },
+            "description": "Operator ID (required for Admin)."
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of timeseries Data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/TimeseriesResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/statistics/aggregate/incomingPasses/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get aggregated data for incoming passes.",
+        "operationId": "getAggregatedIncomingPasses",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date."
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date."
+          },
+          { "$ref": "#/definitions/TokenHeader" },
+          {
+            "in": "query",
+            "name": "as_operator",
+            "schema": { "type": "string" },
+            "description": "Operator ID (required for Admin)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of Aggregate Data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/AggregatePassesResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/statistics/aggregate/outgoingPasses/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get aggregated data for outgoing passes.",
+        "operationId": "getAggregatedOutgoingPasses",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date."
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date."
+          },
+          { "$ref": "#/definitions/TokenHeader" },
+          {
+            "in": "query",
+            "name": "as_operator",
+            "schema": { "type": "string" },
+            "description": "Operator ID (required for Admin)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of Aggregate Data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/AggregatePassesResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/tollStationPasses/{station_id}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["Operations"],
+        "summary": "Toll Station Passes",
+        "description": "Returns an object containing a list of pass details for the given toll station and period.",
+        "operationId": "getTollStationPasses",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The unique ID of the toll station"
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The start date of the period (YYYYMMDD)"
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "The end date of the period (YYYYMMDD)"
+          },
+          { "$ref": "#definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/TollStationPassesResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/toll-operators/": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all operator documents",
+        "operationId": "getAllOperators",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of operator documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/OperatorsSchema" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/toll-operators/{id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve operator document with specified id",
+        "operationId": "getOperatorWithID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Operator Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of operator document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/OperatorsSchema" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/toll-operators/admin/all": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all operators id",
+        "operationId": "getAllOperatorsID",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of operators ids",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/tolls/": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all toll documents",
+        "operationId": "getAllTolls",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of toll documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/TollsSchema" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/tolls/{id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve toll document with specified id",
+        "operationId": "getTollWithID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Toll Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of payment document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/TollsSchema" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/tolls/by_operator/{operator_id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve toll documents belonging to specified operator",
+        "operationId": "getTollsByOp",
+        "parameters": [
+          {
+            "name": "operator_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Operator Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of toll documents",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/TollByOpResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/road/": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all road documents",
+        "operationId": "getAllRoads",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of road documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/RoadsSchema" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/road/{id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve road document with specified id",
+        "operationId": "getRoadWithID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Road Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of road document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/RoadsSchema" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/pass/": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all pass documents",
+        "operationId": "getAllPasses",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/PassesSchema" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/pass/{id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve pass document with specified id",
+        "operationId": "getPassWithID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Pass Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of pass document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/PassesSchema" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/payment/": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all payment documents",
+        "operationId": "getAllPayments",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of payment documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Payment" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/payment/{id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve payment document with specified id",
+        "operationId": "getPaymentWithID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Payment Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of payment document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/Payment" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/tag/": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve all tag documents",
+        "operationId": "getAllTags",
+        "parameters": [
+          { "$ref": "#/definitions/TokenHeader" },
+          { "$ref": "#/definitions/Format" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of tag documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/TagsSchema" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    },
+    "/api/db/tag/{id}": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "Retrieve tag document with specified id",
+        "operationId": "getTagWithID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Tag Id"
+          },
+          { "$ref": "#/definitions/TokenHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of tag document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/definitions/TagsSchema" }
+              }
+            }
+          },
+          "400": { "$ref": "#/definitions/BadRequestResponse" },
+          "401": { "$ref": "#/definitions/UnauthorizedResponse" },
+          "500": { "$ref": "#/definitions/InternalServerErrorResponse" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "tasks": {
+    "compile": "deno compile --allow-net --allow-read --allow-write --allow-env --output se2417 ./cli.ts"
+    "test": "deno test --allow-net --allow-read --allow-write"
+  },
+
+  "imports": {
+    "@/": "./",
+    "@std/assert": "jsr:@std/assert@1",
+    "data-forge": "npm:data-forge@^1.10.2"
+  }
+}

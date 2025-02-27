@@ -1,0 +1,3161 @@
+{
+	"info": {
+		"_postman_id": "b03a7931-d02a-4bfd-a137-0a27b52426f3",
+		"name": "Toll Connect API Documentation",
+		"description": "# Toll Connect REST API Documentation\n\nThis is the public interface for interacting with the Toll Connect system.\n\n---\n\n_Toll Connect_ provides Toll Operators the ability to interconnect with each other, by recording passes between each other, aggregating statistics and allowing for payment settlements.\n\n## **Getting started guide**\n\n- The API returns request responses encoded in UTF-8 and in JSON or CSV format (JSON is the default). When an API request returns an error, it is sent in the response as an error key.\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- Time Series data in responses are always sorted in increasing timestamp.\n    \n\n## Authentication\n\nWe implement RBAC (Role-based Access Control) over JWT tokens. All API endpoints are protected using the JWT tokens that are obtained through the `login` operation.\n\n## Response Types\n\n- 200: Success\n    \n- 204: No Content (Successful but with an Empty Response)\n    \n- 400: Bad Request (Invalid Request Parameters)\n    \n- 401: Not Authorized\n    \n- 500: Internal Server Error\n    \n\n## Error Messages\n\nWith the exception of the error code 401 returned under /admin/healthcheck all the other APIs return error messages with the following parameters:  \n\\-`status`: (string) status of request  \n\\-`info`: (string) information about the failure\n\n## Common Parameters:\n\nAll APIs have these parameters:  \n**Header:**  \nAuthorization (string, required): Auth token (Does not apply to login)  \n**Query Parameter**  \nformat (string): Response format (Supported: json, csv). (Does not apply to logout)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33038841"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/logout",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "**Description:** Logout\n\n**Method:** `POST`\n\n**URL:** `/logout`\n\n**Headers:**\n\n- `x-observatory-auth` (string, required): Token to invalidate.\n    \n\nSuccessful logout returns an empty response with code `200`"
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/logout",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "content-length",
+									"value": "0"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 16:50:27 GMT"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Save response body to a variable\", function () {\r",
+									"    var responseBody = pm.response.json();\r",
+									"    console.log(responseBody)\r",
+									"    pm.environment.set(\"token\", responseBody.token);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "**Description:** Login\n\n**Method:** `POST`\n\n**URL:** `/login`\n\n**Request Body (x-www-form-urlencoded):**\n\n\\-`username`: (string) The username of the user  \n\\-`password`: (string) The password Hash of the user's password"
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "dummy@operator",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://localhost:9115/api/login",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"d0-311bHbXEuEoPjMb1wngRLMj0JNA\""
+								},
+								{
+									"key": "content-encoding",
+									"value": "br"
+								},
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 16:45:57 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"token\": \"eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ\"\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"2b-/P/yYLxwXo6Z3kypsalXWbEuroY\""
+								},
+								{
+									"key": "content-encoding",
+									"value": "br"
+								},
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 16:48:18 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Error: User {{username}} not found\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Here are the endpoints controlling user access.",
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Administration",
+			"item": [
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/admin/healthcheck",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admin",
+								"healthcheck"
+							]
+						},
+						"description": "**Description:** Check system health.\n\n**Method:** `GET`\n\n**URL:** `/healthcheck`\n\n**Response Parameters (200 OK):**\n\n- `status` (string): Overall system health status.\n    \n- `dbconnection` (string): Database connection status.\n    \n- `n_stations` (integer): Number of toll stations.\n    \n- `n_tags` (integer): Number of tags.\n    \n- `n_passes` (integer): Number of passes.\n    \n\n**Response Parameters (401 Unauthorized):**\n\n- `Status` (string): Error message.\n    \n- `dbconnection` (string): Additional details about the error."
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/admin/healthcheck",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"admin",
+										"healthcheck"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "content-security-policy",
+									"value": "default-src 'none'"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "content-encoding",
+									"value": "br"
+								},
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 16:55:50 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\":\"OK\",\n    \"dbconnection\": {{connection string}},\n    \"n_stations\": {{n_of_toll_stations}},\n    \"n_tags\" : {{n_of_tags}},\n    \"n_passes\": {{n_of_passes}}\n}"
+						},
+						{
+							"name": "401 Not Authorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/admin/healthcheck",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"healthcheck"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{ \r\n    \"status\":\"failed\",\r\n    \"dbconnection\": {{connection string}}\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Reset Stations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/admin/resetstations",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admin",
+								"resetstations"
+							]
+						},
+						"description": "**Description:** Reset stations data.\n\n**Method:** `POST`\n\n**URL:** `/resetstations`\n\n**Response Parameters (200 OK):**\n\n- `status` (string): OK"
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/admin/resetstations",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"admin",
+										"resetstations"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"OK\"\r\n}"
+						},
+						{
+							"name": "401 Not Authorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/admin/resetstations",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"resetstations"
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/admin/resetstations",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"resetstations"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Reset Passes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/admin/resetpasses",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admin",
+								"resetpasses"
+							]
+						},
+						"description": "**Description:** Reset passes and related data.\n\n**Method:** `POST`\n\n**URL:** `/resetpasses`\n\n**Response Parameters (200 OK):**\n\n- `status` (string): OK"
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/admin/resetpasses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"admin",
+										"resetpasses"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"OK\"\r\n}"
+						},
+						{
+							"name": "401 Not Authorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/admin/resetpasses",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"resetpasses"
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/admin/resetpasses",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"resetpasses"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Add Passes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"contentType": "text/csv",
+									"type": "file",
+									"src": "/C:/personal files/ant/programming/softeng24-17/back-end/data-base_functions/inserts/passes-sample.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/admin/addpasses",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admin",
+								"addpasses"
+							]
+						},
+						"description": "**Description:** Add passes from CSV.\n\n**Method:** `POST`\n\n**URL:** `/addpasses`\n\n**Request Body (formData):**\n\n- `file` (file, required): CSV file with passes data.\n    \n\n**Response Parameters (200 OK):**\n\n- `status` (string): OK\n    \n\nThe CSV file should have the following format:\n\n```\ntimestamp,tollID,tagRef,tagHomeID,charge\n2022-01-01 00:23,NAO30,NAO5ZJA8DZ,NAO,2.5\n2022-01-01 01:02,NO03,NOXFGCAQV,NO,3.25\n...\n\n ```"
+					},
+					"response": [
+						{
+							"name": "200 Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"contentType": "text/csv",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "https://localhost:9115/api/admin/addpasses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"admin",
+										"addpasses"
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"OK\",\r\n    \"info\": \"Inserted {{n_of_passes}} passes\"\r\n}"
+						},
+						{
+							"name": "401 Not Authorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"contentType": "text/csv",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURL}}/admin/addpasses",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"addpasses"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"failed\",\n    \"info\": \"{{reason}}\"\n}"
+						},
+						{
+							"name": "500 (No File Uploaded)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"contentType": "text/csv",
+											"type": "file",
+											"src": []
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/admin/addpasses",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"admin",
+										"addpasses"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"2d-jsRs0N/kwZ9TyBZZ6WeS7+WMq9c\""
+								},
+								{
+									"key": "content-encoding",
+									"value": "br"
+								},
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "date",
+									"value": "Thu, 06 Feb 2025 18:29:25 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"failed\",\n    \"info\": \"{{reason}}\"\n}"
+						}
+					]
+				},
+				{
+					"name": "All Passes",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURL}}/admin/allpasses/{{date_from}}/{{date_to}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admin",
+								"allpasses",
+								"{{date_from}}",
+								"{{date_to}}"
+							]
+						},
+						"description": "**Description:** Returns all aggregated pass data in range between all pair of operators in both directions.\n\n**Method:** `GET`\n\n**URL:** `/allpasses/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `date_from` (string, required, YYYYMMDD): Start date for the query.\n- `date_to` (string, required, YYYYMMDD): End date for the query.\n\n**Response Parameters (200 OK):**\n\n- `allPassesData` (array): An array of aggregated pass data between all operator pairs. Each element in the array is an `AggregatedPassData` object (see below).\n\n**AggregatedPassData Object:**\n\n- `tollOperator` (string): The ID of the toll operator.\n- `tagOperator` (string): The ID of the tag operator.\n- `passes` (integer): The total number of passes between these operators.\n- `cost` (number): The total cost of the passes between these operators.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id",
+									"value": "{{username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/admin/addadmin",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admin",
+								"addadmin"
+							]
+						},
+						"description": "**Description:** Add or update an admin user.\n\n**Method:** `POST`\n\n**URL:** `/addadmin`\n\n**Request Body (x-www-form-urlencoded):**\n\n- `id` (string, required): Username of the admin.\n- `password` (string, required): Password for the admin.\n\n**Response Parameters (200 OK):**\n\n- `status` (string): Status of the operation (e.g., \"OK\").\n- `info` (string): Information about the operation (e.g., \"created\" or \"updated\")."
+					},
+					"response": []
+				}
+			],
+			"description": "Here are endpoints for controlling the entire system.\n\nOnly users with JWT Tokens with Admin User Type have access to these.\n\nAPIs are found under `\\admin`"
+		},
+		{
+			"name": "Operations",
+			"item": [
+				{
+					"name": "Toll Station Passes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function parseJsonResponse(response) {\r",
+									"    try {\r",
+									"        return pm.response.json();\r",
+									"    } catch (error) {\r",
+									"        console.error(\"Failed to parse JSON response:\", error);\r",
+									"        pm.expect.fail(\"Response is not valid JSON\");\r",
+									"        return null;\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Toll Station Passes - Success (200)\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"stationID\", \"stationOperator\", \"requestTimestamp\", \"periodFrom\", \"periodTo\", \"nPasses\", \"passList\");\r",
+									"        pm.expect(jsonData.passList).to.be.an(\"array\"); \r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Toll Station Passes - Bad Request (400)\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Toll Station Passes - Unauthorized (401)\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"        pm.expect(jsonData.info).to.include(\"Error: Invalid JWT\");\r",
+									"        pm.expect(jsonData.info).to.match(/Error: Invalid JWT, (.*)/);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Toll Station Passes - Internal Server Error (500)\", function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/tollStationPasses/{{tollStationId}}/{{date_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"tollStationPasses",
+								"{{tollStationId}}",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "**Description:** Gets a list of passes for the specified station and time period.\n\n**Method:** `GET`\n\n**URL:** `/tollStationPasses/:tollStationID/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `tollStationID` (string, required): The unique ID of the toll station.\n    \n- `date_from`(string, required, YYYYMMDD): The start date of the period.\n    \n- `date_to` (string, required, YYYYMMDD): The end date of the period.\n    \n\n**Response Parameters (200 OK):**\n\n- `stationID` (string): The unique ID of the toll station.\n    \n- `stationOperator` (string): The operator of the toll station.\n    \n- `tollStationID` (string): The ID of the toll station (same as stationID).\n    \n- `requestTimestamp` (string): Timestamp of the API request.\n    \n- `periodFrom` (string): The start date of the requested period.\n    \n- `periodTo` (string): The end date of the requested period.\n    \n- `nPasses` (integer): The total number of passes in the period.\n    \n- `passList` (array): A list of individual pass events. Each element in the array is a `Pass` object (see below).\n    \n\n**Pass Object:**\n\n- `passIndex` (integer): Serial number of the pass event (1, 2, 3,...).\n    \n- `passID` (string): Unique ID of the pass event.\n    \n- `timestamp` (string): Timestamp of the pass event.\n    \n- `tagID` (string): The ID of the tag used for the pass.\n    \n- `tagProvider` (string): The provider of the tag.\n    \n- `passType` (string): Type of pass (\"home\" or \"visitor\").\n    \n- `passCharge` (number): The cost of the pass."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/tollStationPasses/OO01/20220101/20220131?format=json",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"tollStationPasses",
+										"OO01",
+										"20220101",
+										"20220131"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"stationID\": \"OO01\",\n    \"stationOperator\": \"olympiaodos\",\n    \"requestTimestamp\": \"2025-02-06 19:35\",\n    \"periodFrom\": \"20220101\",\n    \"periodTo\": \"20220131\",\n    \"nPasses\": 10,\n    \"passList\": [\n        {\n            \"passIndex\": 1,\n            \"passID\": \"129\",\n            \"timestamp\": \"2022-01-02 23:31\",\n            \"tagID\": \"AMLJH75LX\",\n            \"tagProvider\": \"AM\",\n            \"passType\": \"visitor\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 2,\n            \"passID\": \"222\",\n            \"timestamp\": \"2022-01-04 07:49\",\n            \"tagID\": \"EGYTJXEPQ\",\n            \"tagProvider\": \"EG\",\n            \"passType\": \"visitor\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 3,\n            \"passID\": \"398\",\n            \"timestamp\": \"2022-01-06 20:56\",\n            \"tagID\": \"OO7PZE9VI\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 4,\n            \"passID\": \"438\",\n            \"timestamp\": \"2022-01-07 10:29\",\n            \"tagID\": \"NORCBPLJD\",\n            \"tagProvider\": \"NO\",\n            \"passType\": \"visitor\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 5,\n            \"passID\": \"608\",\n            \"timestamp\": \"2022-01-09 17:56\",\n            \"tagID\": \"OO1B0Z3NX\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 6,\n            \"passID\": \"747\",\n            \"timestamp\": \"2022-01-11 06:38\",\n            \"tagID\": \"OOZSJ49IT\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 7,\n            \"passID\": \"826\",\n            \"timestamp\": \"2022-01-12 12:10\",\n            \"tagID\": \"OO7PZE9VI\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 8,\n            \"passID\": \"830\",\n            \"timestamp\": \"2022-01-12 12:50\",\n            \"tagID\": \"OOZSJ49IT\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 9,\n            \"passID\": \"865\",\n            \"timestamp\": \"2022-01-13 01:44\",\n            \"tagID\": \"OOZSJ49IT\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        },\n        {\n            \"passIndex\": 10,\n            \"passID\": \"892\",\n            \"timestamp\": \"2022-01-13 12:09\",\n            \"tagID\": \"OO3KKV9RF\",\n            \"tagProvider\": \"OO\",\n            \"passType\": \"home\",\n            \"passCharge\": 2.3\n        }\n    ]\n}"
+						},
+						{
+							"name": "200 Success (CSV)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/tollStationPasses/{{tollStationId}}/{{date_from}}/{{date_to}}?format=csv",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tollStationPasses",
+										"{{tollStationId}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [],
+							"body": "stationId,stationOperator,requestTimestamp,periodFrom,periodTo,nPasses,passIndex,passID,timestamp,tagID,tagProvider,passType,passCharge\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,1,129,2022-01-02 23:31,AMLJH75LX,AM,visitor,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,2,222,2022-01-04 07:49,EGYTJXEPQ,EG,visitor,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,3,398,2022-01-06 20:56,OO7PZE9VI,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,4,438,2022-01-07 10:29,NORCBPLJD,NO,visitor,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,5,608,2022-01-09 17:56,OO1B0Z3NX,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,6,747,2022-01-11 06:38,OOZSJ49IT,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,7,826,2022-01-12 12:10,OO7PZE9VI,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,8,830,2022-01-12 12:50,OOZSJ49IT,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,9,865,2022-01-13 01:44,OOZSJ49IT,OO,home,2.3\r\nOO01,olympiaodos,2025-02-06 19:35,20220101,20220131,10,10,892,2022-01-13 12:09,OO3KKV9RF,OO,home,2.3"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/tollStationPasses/{{tollStationId}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tollStationPasses",
+										"{{tollStationId}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"failed\",\n    \"info\": \"{{reason}}\"\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/tollStationPasses/{{tollStationId}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tollStationPasses",
+										"{{tollStationId}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"failed\",\n    \"info\": \"{{reason}}\"\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/tollStationPasses/{{tollStationId}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tollStationPasses",
+										"{{tollStationId}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"Internal Server Error\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Pass Analysis",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function parseJsonResponse(response) {\r",
+									"    try {\r",
+									"        return pm.response.json();\r",
+									"    } catch (error) {\r",
+									"        console.error(\"Failed to parse JSON response:\", error);\r",
+									"        pm.expect.fail(\"Response is not valid JSON\");\r",
+									"        return null;\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Pass Analysis - Success (200)\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"stationOpID\", \"tagOpID\", \"requestTimestamp\", \"periodFrom\", \"periodTo\", \"nPasses\", \"passList\");\r",
+									"        pm.expect(jsonData.passList).to.be.an(\"array\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Pass Analysis - Bad Request (400)\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Pass Analysis - Unauthorized (401)\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"        pm.expect(jsonData.info).to.include(\"Error: Invalid JWT\");\r",
+									"        pm.expect(jsonData.info).to.match(/Error: Invalid JWT, (.*)/);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Pass Analysis - Internal Server Error (500)\", function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"passAnalysis",
+								"{{stationOpID}}",
+								"{{tagOpID}}",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "**Description:** Provides a list of passes from clients (tags) of tagOpID in stations of stationOpID\n\n**Method:** `GET`\n\n**URL:** `/passAnalysis/:stationOpID/:tagOpID/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `stationOpID` (string, required): The ID of the station operator.\n    \n- `tagOpID` (string, required): The ID of the tag operator/provider.\n    \n- `date_from` (string, required, YYYYMMDD): The start date of the period.\n    \n- `date_to` (string, required, YYYYMMDD): The end date of the period.\n    \n\n**Response Parameters (200 OK):**\n\n- `stationOpID` (string): The ID of the station operator.\n    \n- `tagOpID` (string): The ID of the tag operator/provider.\n    \n- `requestTimestamp` (string): Timestamp of the API request.\n    \n- `periodFrom` (string): The start date of the requested period.\n    \n- `periodTo` (string): The end date of the requested period.\n    \n- `nPasses` (integer): The total number of passes in the period.\n    \n- `passList` (array): A list of individual pass events. Each element in the array is a `PassAnalysisItem` object (see below).\n    \n\n**PassAnalysisItem Object:**\n\n- `passIndex` (integer): Serial number of the pass event.\n    \n- `passID` (string): Unique ID of the pass event.\n    \n- `stationID` (string): The ID of the station where the pass occurred.\n    \n- `timestamp` (string): Timestamp of the pass event.\n    \n- `tagID` (string): The ID of the tag used for the pass.\n    \n- `passCharge` (number): The cost of the pass."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/passAnalysis/OO/OO/20220101/20220131?format=",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"passAnalysis",
+										"OO",
+										"OO",
+										"20220101",
+										"20220131"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": ""
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"stationOpID\": \"OO\",\r\n    \"tagOpID\": \"AM\",\r\n    \"requestTimestamp\": \"2025-02-09 01:40\",\r\n    \"periodFrom\": \"20220101\",\r\n    \"periodTo\": \"20220131\",\r\n    \"nPasses\": 6,\r\n    \"passList\": [\r\n        {\r\n            \"passIndex\": 1,\r\n            \"passID\": \"129\",\r\n            \"stationID\": \"OO01\",\r\n            \"timestamp\": \"2022-01-02 23:31\",\r\n            \"tagID\": \"AMLJH75LX\",\r\n            \"passCharge\": 2.3\r\n        },\r\n        {\r\n            \"passIndex\": 2,\r\n            \"passID\": \"134\",\r\n            \"stationID\": \"OO10\",\r\n            \"timestamp\": \"2022-01-03 01:29\",\r\n            \"tagID\": \"AMLJH75LX\",\r\n            \"passCharge\": 2.5\r\n        },\r\n        {\r\n            \"passIndex\": 3,\r\n            \"passID\": \"255\",\r\n            \"stationID\": \"OO03\",\r\n            \"timestamp\": \"2022-01-04 19:41\",\r\n            \"tagID\": \"AMXAJI0Y6\",\r\n            \"passCharge\": 2.4\r\n        },\r\n        {\r\n            \"passIndex\": 4,\r\n            \"passID\": \"348\",\r\n            \"stationID\": \"OO05\",\r\n            \"timestamp\": \"2022-01-06 05:34\",\r\n            \"tagID\": \"AMHJ7XVG0\",\r\n            \"passCharge\": 3.5\r\n        },\r\n        {\r\n            \"passIndex\": 5,\r\n            \"passID\": \"748\",\r\n            \"stationID\": \"OO08\",\r\n            \"timestamp\": \"2022-01-11 07:00\",\r\n            \"tagID\": \"AMNT3W5UZ\",\r\n            \"passCharge\": 1.9\r\n        },\r\n        {\r\n            \"passIndex\": 6,\r\n            \"passID\": \"775\",\r\n            \"stationID\": \"OO10\",\r\n            \"timestamp\": \"2022-01-11 17:30\",\r\n            \"tagID\": \"AMHJ7XVG0\",\r\n            \"passCharge\": 2.5\r\n        }\r\n    ]\r\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passAnalysis",
+										"{{stationOpID}}",
+										"{{tagOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passAnalysis",
+										"{{stationOpID}}",
+										"{{tagOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passAnalysis/{{stationOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passAnalysis",
+										"{{stationOpID}}",
+										"{{tagOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"Internal Server Error\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Passes Cost",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function parseJsonResponse(response) {\r",
+									"    try {\r",
+									"        return pm.response.json();\r",
+									"    } catch (error) {\r",
+									"        console.error(\"Failed to parse JSON response:\", error);\r",
+									"        pm.expect.fail(\"Response is not valid JSON\");\r",
+									"        return null;\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Passes Cost - Success (200)\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"tollOpID\", \"tagOpID\", \"requestTimestamp\", \"periodFrom\", \"periodTo\", \"nPasses\", \"passesCost\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Passes Cost - Bad Request (400)\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Passes Cost - Unauthorized (401)\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"        pm.expect(jsonData.info).to.include(\"Error: Invalid JWT\");\r",
+									"        pm.expect(jsonData.info).to.match(/Error: Invalid JWT, (.*)/);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Passes Cost - Internal Server Error (500)\", function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/passesCost/{{tollOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"passesCost",
+								"{{tollOpID}}",
+								"{{tagOpID}}",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "### GET /passesCost/{{tollOpID}}/{{tagOpID}}/{{data_from}}/{{date_to}\n\n**Description:** Retrieves the number of pass events and their total cost between operators for a given period.\n\n**Method:** `GET`\n\n**URL:** `/passesCost/:tollOpID/:tagOpID/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `tollOpID` (string, required): The ID of the station operator.\n    \n- `tagOpID` (string, required): The ID of the tag operator/provider.\n    \n- `date_from` (string, required, YYYYMMDD): The start date of the period.\n    \n- `date_to` (string, required, YYYYMMDD): The end date of the period.\n    \n\n**Response Parameters (200 OK):**\n\n- `tollOpID` (string): The station operation ID.\n    \n- `tagOpID` (string): The tag operation ID.\n    \n- `requestTimestamp` (string): The timestamp of the request.\n    \n- `periodFrom` (string): The start date for the period.\n    \n- `periodTo` (string): The end date for the period.\n    \n- `nPasses` (integer): The number of passes.\n    \n- `passesCost` (integer): The total cost of passes."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/passesCost/OO/OO/20220101/20220131?format=",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"passesCost",
+										"OO",
+										"OO",
+										"20220101",
+										"20220131"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": ""
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"tollOpID\": \"OO\",\n    \"tagOpID\": \"AM\",\n    \"requestTimestamp\": \"2025-02-09 01:50\",\n    \"periodFrom\": \"20220101\",\n    \"periodTo\": \"20220131\",\n    \"nPasses\": 6,\n    \"passesCost\": 15.1\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passesCost/{{tollOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passesCost",
+										"{{tollOpID}}",
+										"{{tagOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passesCost/{{tollOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passesCost",
+										"{{tollOpID}}",
+										"{{tagOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/passesCost/{{tollOpID}}/{{tagOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"passesCost",
+										"{{tollOpID}}",
+										"{{tagOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"Internal Server Error\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Charges By (Everyone)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function parseJsonResponse(response) {\r",
+									"    try {\r",
+									"        return pm.response.json();\r",
+									"    } catch (error) {\r",
+									"        console.error(\"Failed to parse JSON response:\", error);\r",
+									"        pm.expect.fail(\"Response is not valid JSON\");\r",
+									"        return null;\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Charges By - Success (200)\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"tollOpID\", \"requestTimestamp\", \"periodFrom\", \"periodTo\", \"vOpList\");\r",
+									"        pm.expect(jsonData.vOpList).to.be.an(\"array\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Charges By - Bad Request (400)\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Charges By - Unauthorized (401)\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"        pm.expect(jsonData.info).to.include(\"Error: Invalid JWT\");\r",
+									"        pm.expect(jsonData.info).to.match(/Error: Invalid JWT, (.*)/);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Charges By - Internal Server Error (500)\", function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"    const jsonData = parseJsonResponse(pm.response);\r",
+									"    if (jsonData) {\r",
+									"        pm.expect(jsonData).to.have.all.keys(\"status\", \"info\");\r",
+									"        pm.expect(jsonData.status).to.eql(\"failed\");\r",
+									"        pm.expect(jsonData.info).to.be.a(\"string\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/chargesBy/{{tollOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"chargesBy",
+								"{{tollOpID}}",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}"
+								}
+							]
+						},
+						"description": "**Description:** Provides aggregate charges for passes by clients of all other operators on stations of tollOpID for the time period\n\n**Method:** `GET`\n\n**URL:** `/chargesBy/:tollOpID/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `tollOpID` (string, required): The ID of the station operator.\n    \n- `date_from` (string, required, YYYYMMDD): The start date of the period.\n    \n- `date_to` (string, required, YYYYMMDD): The end date of the period.\n    \n\n**Response Parameters (200 OK):**\n\n- `tollOpID` (string): The ID of the toll operator.\n    \n- `requestTimestamp` (string): Timestamp of the API request.\n    \n- `periodFrom` (string): The start date of the requested period.\n    \n- `periodTo` (string): The end date of the requested period.\n    \n- `vOpList` (array): List of visiting operators and their charges. Each element in the array is a `VisitingOperator` object (see below).\n    \n\n**VisitingOperator Object:**\n\n- `visitingOpID` (string): The ID of the visiting operator.\n    \n- `nPasses` (integer): The number of passes from this visiting operator.\n    \n- `passesCost` (number): The total cost of passes from this visiting operator."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/chargesBy/AM/20220101/20220131?format=",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"chargesBy",
+										"AM",
+										"20220101",
+										"20220131"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": ""
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"tollOpID\": \"OO\",\r\n    \"requestTimestamp\": \"2025-02-09 02:56\",\r\n    \"periodFrom\": \"20220101\",\r\n    \"periodTo\": \"20220131\",\r\n    \"vOpList\": [\r\n        {\r\n            \"visitingOpID\": \"AM\",\r\n            \"nPasses\": 6,\r\n            \"passesCost\": 15.1 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"EG\",\r\n            \"nPasses\": 12,\r\n            \"passesCost\": 31.9 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"GE\",\r\n            \"nPasses\": 0,\r\n            \"passesCost\": 0\r\n        },\r\n        {\r\n            \"visitingOpID\": \"KO\",\r\n            \"nPasses\": 5,\r\n            \"passesCost\": 14.3 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"MO\",\r\n            \"nPasses\": 2,\r\n            \"passesCost\": 5.4 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"NAO\",\r\n            \"nPasses\": 13,\r\n            \"passesCost\": 30.6 \r\n        },\r\n        {\r\n            \"visitingOpID\": \"NO\",\r\n            \"nPasses\": 6,\r\n            \"passesCost\": 16.3\r\n        }\r\n    ]\r\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/chargesBy/{{tollOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"chargesBy",
+										"{{tollOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/chargesBy/{{tollOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"chargesBy",
+										"{{tollOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/chargesBy/{{tollOpID}}/{{date_from}}/{{date_to}}?format={{format}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"chargesBy",
+										"{{tollOpID}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "{{format}}"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						}
+					]
+				}
+			],
+			"description": "Basic Operations Requested for the application.\n\nAPIs are found under `\\`"
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Return payments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/payments/{{status}}/{{date_from}}/{{date_to}}?page_size={{page_size}}&page_number={{page_number}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"payments",
+								"{{status}}",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "page_size",
+									"value": "{{page_size}}"
+								},
+								{
+									"key": "page_number",
+									"value": "{{page_number}}"
+								},
+								{
+									"key": "target_op_id",
+									"value": "{{target_op_id}}",
+									"disabled": true
+								},
+								{
+									"key": "is_payer",
+									"value": "{{is_payer}}",
+									"disabled": true
+								},
+								{
+									"key": "is_payee",
+									"value": "{{is_payee}}",
+									"disabled": true
+								},
+								{
+									"key": "format",
+									"value": "{{format}}",
+									"disabled": true
+								}
+							]
+						},
+						"description": "**Description:** Get payments for the specified parameters\n\n**Method:** `GET`\n\n**URL:** `/{status}/{date_from}/{date_to}`\n\n**Path Parameters:**\n\n- `status` (string, required, \\[Created, Paid, Validated\\]): Payment status\n    \n- `date_from` (string, required, YYYYMMDD): Start date.\n    \n- `date_to` (string, required, YYYYMMDD): End date.\n    \n\n**Query Parameters:**\n\n- `page_size` (integer): Number of results per page.\n    \n- `page_number` (integer): Page number.\n    \n- `target_op_id` (string): Target operator ID (optional).\n    \n- `is_payer` (boolean): Filter by payer (optional).\n    \n- `is_payee` (boolean): Filter by payee (optional).\n    \n\n**Response (200 OK):**\n\n- `total_pages` (integer): Total number of pages.\n    \n- `results` (array): Array of Payment objects (see below).\n    \n\n**Payment Object:**\n\n- `_id` (string): Payment ID.\n    \n- `payer` (string): Payer ID.\n    \n- `payee` (string): Payee ID.\n    \n- `dateofCharge` (string, datetime): Date of charge.\n    \n- `amount` (number): Payment amount.\n    \n- `dateofPayment` (string, datetime): Date of payment (optional).\n    \n- `dateofValidation` (string, datetime): Date of validation (optional)."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/payments//20220101/20220131?page_size=&page_number=",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"payments",
+										"",
+										"20220101",
+										"20220131"
+									],
+									"query": [
+										{
+											"key": "page_size",
+											"value": ""
+										},
+										{
+											"key": "page_number",
+											"value": ""
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"total_pages\": 5,\n    \"results\": [\n        {\n            \"_id\": \"67abb16dbbca26dba40a64df\",\n            \"payer\": \"AM\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64f7\",\n            \"payer\": \"OO\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 3.3,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64b5\",\n            \"payer\": \"EG\",\n            \"payee\": \"AM\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 9.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64d1\",\n            \"payer\": \"OO\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 3.25,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64bf\",\n            \"payer\": \"MO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 3.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64a9\",\n            \"payer\": \"EG\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64ed\",\n            \"payer\": \"NO\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 7.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6493\",\n            \"payer\": \"OO\",\n            \"payee\": \"MO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 1.35,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64fd\",\n            \"payer\": \"EG\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 3.25,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6497\",\n            \"payer\": \"OO\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 4.15,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64cd\",\n            \"payer\": \"OO\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 0.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64c5\",\n            \"payer\": \"NAO\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 12.55,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64a5\",\n            \"payer\": \"OO\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64d5\",\n            \"payer\": \"AM\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.3,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a648f\",\n            \"payer\": \"OO\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 2.8,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64e3\",\n            \"payer\": \"NAO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 4.8,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64af\",\n            \"payer\": \"AM\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64f1\",\n            \"payer\": \"EG\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6481\",\n            \"payer\": \"NO\",\n            \"payee\": \"MO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 2.05,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64fb\",\n            \"payer\": \"AM\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64bb\",\n            \"payer\": \"NO\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64bd\",\n            \"payer\": \"AM\",\n            \"payee\": \"MO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.7,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6483\",\n            \"payer\": \"NAO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 4.7,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64c1\",\n            \"payer\": \"KO\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 3.25,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6499\",\n            \"payer\": \"EG\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64cb\",\n            \"payer\": \"OO\",\n            \"payee\": \"AM\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.8,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64c7\",\n            \"payer\": \"NO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.4,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64a1\",\n            \"payer\": \"NAO\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 7.8,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64cf\",\n            \"payer\": \"NAO\",\n            \"payee\": \"MO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 3.15,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a648b\",\n            \"payer\": \"NAO\",\n            \"payee\": \"AM\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 2,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64d3\",\n            \"payer\": \"NAO\",\n            \"payee\": \"AM\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 3.6,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64a7\",\n            \"payer\": \"EG\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 6.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64db\",\n            \"payer\": \"NAO\",\n            \"payee\": \"KO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 3.7,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a647f\",\n            \"payer\": \"EG\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 4.2,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64e1\",\n            \"payer\": \"AM\",\n            \"payee\": \"KO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 5.25,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64ab\",\n            \"payer\": \"OO\",\n            \"payee\": \"KO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 6.35,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64eb\",\n            \"payer\": \"OO\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6491\",\n            \"payer\": \"EG\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 7.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64ef\",\n            \"payer\": \"NAO\",\n            \"payee\": \"AM\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 2,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64b3\",\n            \"payer\": \"NO\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 3.8,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64f5\",\n            \"payer\": \"KO\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6479\",\n            \"payer\": \"NAO\",\n            \"payee\": \"GE\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 14.7,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64f9\",\n            \"payer\": \"NO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-02T22:00:00.000Z\",\n            \"amount\": 3.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64b7\",\n            \"payer\": \"NAO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 2.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6495\",\n            \"payer\": \"AM\",\n            \"payee\": \"NO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 3.25,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6473\",\n            \"payer\": \"NO\",\n            \"payee\": \"AM\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 3.1,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a647b\",\n            \"payer\": \"MO\",\n            \"payee\": \"NAO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a6487\",\n            \"payer\": \"MO\",\n            \"payee\": \"OO\",\n            \"dateofCharge\": \"2021-12-31T22:00:00.000Z\",\n            \"amount\": 1.9,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a649f\",\n            \"payer\": \"KO\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 1.4,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67abb16dbbca26dba40a64c9\",\n            \"payer\": \"AM\",\n            \"payee\": \"EG\",\n            \"dateofCharge\": \"2022-01-01T22:00:00.000Z\",\n            \"amount\": 1.5,\n            \"dateofPayment\": \"1970-01-01T00:00:00.000Z\",\n            \"dateofValidation\": \"1970-01-01T00:00:00.000Z\",\n            \"__v\": 0\n        }\n    ]\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/{{status}}/{{date_from}}/{{date_to}}?page_size={{page_size}}&page_number={{page_number}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"{{status}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "page_size",
+											"value": "{{page_size}}"
+										},
+										{
+											"key": "page_number",
+											"value": "{{page_number}}"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/{{status}}/{{date_from}}/{{date_to}}?page_size={{page_size}}&page_number={{page_number}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"{{status}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "page_size",
+											"value": "{{page_size}}"
+										},
+										{
+											"key": "page_number",
+											"value": "{{page_number}}"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/{{status}}/{{date_from}}/{{date_to}}?page_size={{page_size}}&page_number={{page_number}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"{{status}}",
+										"{{date_from}}",
+										"{{date_to}}"
+									],
+									"query": [
+										{
+											"key": "page_size",
+											"value": "{{page_size}}"
+										},
+										{
+											"key": "page_number",
+											"value": "{{page_number}}"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Pay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/payments/pay/{{id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"payments",
+								"pay",
+								"{{id}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}",
+									"disabled": true
+								}
+							]
+						},
+						"description": "**Description:** Pay the specified payment\n\n**Method:** `GET`\n\n**URL:** `/{{id}}`\n\n**Path Parameters:**\n\n- `id` (string, required): Id for the payment to be paid.\n    \n\n**Response (200 OK):**\n\n- `status` (string): OK.\n    \n- `info` (string): ok."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/payments/pay/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"payments",
+										"pay",
+										""
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"info\": \"ok\"\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/pay/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"pay",
+										"{{id}}"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/pay/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"pay",
+										"{{id}}"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/pay/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"pay",
+										"{{id}}"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Validate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/payments/validate/{{id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"payments",
+								"validate",
+								"{{id}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "{{format}}",
+									"disabled": true
+								}
+							]
+						},
+						"description": "**Description:** Validate the specified payment\n\n**Method:** `GET`\n\n**URL:** `/{{id}}`\n\n**Path Parameters:**\n\n- `id` (string, required): Id for the payment to be validated.\n    \n\n**Response (200 OK):**\n\n- `status` (string): OK.\n    \n- `info` (string): ok."
+					},
+					"response": [
+						{
+							"name": "200 Success (JSON)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aR...",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:9115/api/payments/validate/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "9115",
+									"path": [
+										"api",
+										"payments",
+										"validate",
+										""
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"info\": \"ok\"\n}"
+						},
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/pay/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"pay",
+										"{{id}}"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/pay/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"pay",
+										"{{id}}"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						},
+						{
+							"name": "500 Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/payments/validate/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"payments",
+										"validate",
+										"{{id}}"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\r\n    \"status\": \"failed\",\r\n    \"info\": \"{{reason}}\"\r\n}"
+						}
+					]
+				}
+			],
+			"description": "Requests related to payment retrival and status update\n\nAPIs available under `\\payments`"
+		},
+		{
+			"name": "Statistics",
+			"item": [
+				{
+					"name": "Heatmap",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/statistics/heatmap",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"statistics",
+								"heatmap"
+							]
+						},
+						"description": "**Description:** Gets heatmap data for toll locations.\n\n**Method:** `GET`\n\n**URL:** `/heatmap`\n\n**Headers:**\n\n- `Authorization` (string, required): Auth token\n    \n- `format` (string): Response format (e.g., json, xml).\n    \n\n**Response Parameters (200 OK):**\n\n- `heatmapData` (array): A list of heatmap data points. Each element in the array is a `HeatmapDataPoint\\` object (see below).\n    \n**HeatmapDataPoint Object:**\n\n- `latitude` (number, float): Latitude of the toll location.\n    \n- `longitude` (number, float): Longitude of the toll location.\n    \n- `count` (integer): Number of passes at this location.EndFragment"
+					},
+					"response": []
+				},
+				{
+					"name": "Toll By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/statistics/{{tollStationId}}/{{date_from}}/{{date_to}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"statistics",
+								"{{tollStationId}}",
+								"{{date_from}}",
+								"{{date_to}}"
+							]
+						},
+						"description": "**Description:** Get detailed toll data for a specific toll station within a date range.\n\n**Method:** `GET`\n\n**URL:** `/:toll_id/:start_date/:end_date`\n\n**Headers:**\n\n- `Authorization` (string, required): Auth token\n       \n\n**Path Parameters:**\n\n- `toll_id` (string, required): ID of the toll station.\n    \n- `start_date` (string, required, YYYYMMDD): Start date for filtering.\n    \n- `end_date` (string, required, YYYYMMDD): End date for filtering.\n\n**Query Parameters:**\n\n- `format` (string): Response format (Supported: json, csv).\n\n**Response Parameters (200 OK):**\n\n- `toll` (object): Detailed information about the toll station.\n    \n- `avg_passes` (number): Average number of passes through the station during the period.\n    \n- `operators` (array): A list of operator statistics. Each element in the array is an `OperatorStats` object.\n    \n\n**OperatorStats Object:**\n\n- `operator` (string): The ID of the operator.\n    \n- `passes` (integer): The number of passes for this operator."
+					},
+					"response": []
+				},
+				{
+					"name": "Timeseries Incoming",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/statistics/timeseries/incomingPasses/{{date_from}}/{{date_to}}?as_operator={{tollOpID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"statistics",
+								"timeseries",
+								"incomingPasses",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "as_operator",
+									"value": "{{tollOpID}}"
+								}
+							]
+						},
+						"description": "**Description:** Returns incoming pass data (on tolls of identified operator) for all other visiting operators (tags) for each date in range.\n\n**Method:** `GET`\n\n**URL:** `/timeseries/incomingPasses/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `date_from` (string, required, YYYYMMDD): Start date.\n    \n- `date_to` (string, required, YYYYMMDD): End date.\n    \n\n**Query Parameters:**\n\n- `as_operator` (string): Operator ID (required for Admin).\n    \n\n**Response Parameters (200 OK):**\n\n- `timeseriesData` (array): An array of timeseries data points. Each element in the array is a `TimeseriesDataPoint` object (see below).\n    \n\n**TimeseriesDataPoint Object:**\n\n- `date` (string, date): The date of the data point.\n    \n- `operators` (array): An array of operator statistics for that date. Each element in the array is an `OperatorStats` object (see below).\n    \n\n**OperatorStats Object:**\n\n- `operator` (string): The ID of the operator.\n    \n- `passes` (integer): The number of passes for this operator on that date.\n    \n- `cost` (number): The total cost of passes for this operator on that date."
+					},
+					"response": []
+				},
+				{
+					"name": "Timeseries Outgoing",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/statistics/timeseries/outgoingPasses/{{date_from}}}/{{date_to}}?as_operator={{tollOpID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"statistics",
+								"timeseries",
+								"outgoingPasses",
+								"{{date_from}}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "as_operator",
+									"value": "{{tollOpID}}"
+								}
+							]
+						},
+						"description": "**Description:** Returns outgoing pass data (on tolls of other operators) for all other operators for each date in range.\n\n**Method:** `GET`\n\n**URL:** `/timeseries/incomingPasses/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `date_from` (string, required, YYYYMMDD): Start date.\n    \n- `date_to` (string, required, YYYYMMDD): End date.\n    \n\n**Query Parameters:**\n\n- `as_operator` (string): Operator ID (required for Admin).\n    \n\n**Response Parameters (200 OK):**\n\n- `timeseriesData` (array): An array of timeseries data points. Each element in the array is a `TimeseriesDataPoint` object (see below).\n    \n\n**TimeseriesDataPoint Object:**\n\n- `date` (string, date): The date of the data point.\n    \n- `operators` (array): An array of operator statistics for that date. Each element in the array is an `OperatorStats` object (see below).\n    \n\n**OperatorStats Object:**\n\n- `operator` (string): The ID of the operator.\n    \n- `passes` (integer): The number of passes for this operator on that date.\n    \n- `cost` (number): The total cost of passes for this operator on that date."
+					},
+					"response": []
+				},
+				{
+					"name": "Aggregate Incoming",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/statistics/aggregate/incomingPasses/{{date_from}}/{{date_to}}?as_operator={{tollOpID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"statistics",
+								"aggregate",
+								"incomingPasses",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "as_operator",
+									"value": "{{tollOpID}}"
+								}
+							]
+						},
+						"description": "**Description:** Returns aggregated incoming pass data (on tolls of identified operator) for all other visiting operators (tags) in range.\n\n**Method:** `GET`\n\n**URL:** `/aggregate/incomingPasses/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `date_from` (string, required, YYYY-MM-DD): Start date.\n    \n- `date_to` (string, required, YYYY-MM-DD): End date.\n    \n\n**Query Parameters:**\n\n- `as_operator` (string): Operator ID (required for Admin).\n    \n\n**Response Parameters (200 OK):**\n\n- `aggregatedPasses` (array): An array of aggregated pass data. Each element in the array is an `AggregatedPassData` object (see below).\n    \n\n**AggregatedPassData Object:**\n\n- `operator` (string): The ID of the operator.\n    \n- `passes` (integer): The total number of passes for this operator.\n    \n- `cost` (number): The total cost of the passes for this operator."
+					},
+					"response": []
+				},
+				{
+					"name": "Aggregate Outgoing",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/statistics/aggregate/outgoingPasses/{{date_from}}/{{date_to}}?as_operator={{tollOpID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"statistics",
+								"aggregate",
+								"outgoingPasses",
+								"{{date_from}}",
+								"{{date_to}}"
+							],
+							"query": [
+								{
+									"key": "as_operator",
+									"value": "{{tollOpID}}"
+								}
+							]
+						},
+						"description": "**Description:** Returns aggregated incoming pass data (on tolls of identified operator) for all other visiting operators (tags) in range.\n\n**Method:** `GET`\n\n**URL:** `/aggregate/incomingPasses/:date_from/:date_to`\n\n**Path Parameters:**\n\n- `date_from` (string, required, YYYY-MM-DD): Start date.\n    \n- `date_to` (string, required, YYYY-MM-DD): End date.\n    \n\n**Query Parameters:**\n\n- `as_operator` (string): Operator ID (required for Admin).\n    \n\n**Response Parameters (200 OK):**\n\n- `aggregatedPasses` (array): An array of aggregated pass data. Each element in the array is an `AggregatedPassData` object (see below).\n    \n\n**AggregatedPassData Object:**\n\n- `operator` (string): The ID of the operator.\n    \n- `passes` (integer): The total number of passes for this operator.\n    \n- `cost` (number): The total cost of the passes for this operator."
+					},
+					"response": []
+				}
+			],
+			"description": "Requests related to statistics retrival\n\nAPIs available under `\\statistics`"
+		},
+		{
+			"name": "DB",
+			"item": [
+				{
+					"name": "Operators All",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/db/toll-operators/admin/all",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"db",
+								"toll-operators",
+								"admin",
+								"all"
+							]
+						},
+						"description": "**Description:** Retrieve all operators IDs.\n\n**Method:** `GET`\n\n**URL:** `toll_operators/admin/all`\n\n**Response Parameters (200 OK):**\n\n- `operatorIds` (array): An array of operator IDs (strings).\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Tolls by Operator",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/db/tolls/by_operator/{{tollOpID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"db",
+								"tolls",
+								"by_operator",
+								"{{tollOpID}}"
+							]
+						},
+						"description": "**Description:** Retrieve toll documents belonging to specified operator.\n\n**Method:** `GET`\n\n**URL:** `/tolls/by_operator/:operator_id`\n\n**Path Parameters:**\n\n- `operator_id` (string, required): Operator ID.\n\n**Response Parameters (200 OK):**\n\n- `tolls` (array): An array of toll documents. Each element in the array is a `TollDocument` object (see below).\n\n**TollDocument Object:**\n\n- `_id` (string): Unique identifier for the toll.\n- `name` (string): Name of the toll.\n- `latitude` (number, double): Latitude of the toll location.\n- `longitude` (number, double): Longitude of the toll location.\n"
+					},
+					"response": []
+				}
+			],
+			"description": "Handles requests relating to CRUD operations on db.\n\nAPIs are available under `/db`"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:9115/api"
+		},
+		{
+			"key": "username",
+			"value": "admin",
+			"type": "default"
+		},
+		{
+			"key": "password",
+			"value": "622cda4cd65c70f0995792814040421b062c7ca378b6223d3e958c65886b2cb62381a177e6acee4ee0b5ea555f0eda34ea30dca1e3ed48d6767e7039bbe507b6",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzUxMiIsInR5cGUiOiJKV1QifQ.eyJsZXZlbCI6MSwibmFtZSI6ImR1bW15QG9wZXJhdG9yIiwiZXhwIjoxNzM4ODYzOTU3fQ.0KGs4S7_Y3Nbr8qR7gRMuN0R3aRiBpmRciFOWI6NCmtJiQ-okXf-XgYIwTs_7qWfQgrt54-taeDfSEj7oscaBQ",
+			"type": "default",
+			"disabled": true
+		},
+		{
+			"key": "tollStationId",
+			"value": "OO01",
+			"type": "default"
+		},
+		{
+			"key": "date_from",
+			"value": "20220101",
+			"type": "default"
+		},
+		{
+			"key": "date_to",
+			"value": "20220131",
+			"type": "default"
+		},
+		{
+			"key": "format",
+			"value": "json",
+			"type": "default"
+		},
+		{
+			"key": "stationOpID",
+			"value": "OO",
+			"type": "default"
+		},
+		{
+			"key": "tagOpID",
+			"value": "OO",
+			"type": "default"
+		},
+		{
+			"key": "tollOpID",
+			"value": "AM",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

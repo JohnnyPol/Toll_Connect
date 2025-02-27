@@ -1,0 +1,44 @@
+services:
+  backend:
+    container_name: toll-connect-backend
+    restart: always
+    build: 
+      context: './back-end/'
+      target: base
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mongodb://softeng-mongodb:27017
+    ports:
+      - "9115:9115"
+    networks:
+      - frontend_net
+      - backend_net
+  frontend:
+    build:
+      context: './front-end/'
+    depends_on:
+      - backend
+    networks:
+      - frontend_net
+    ports:
+      - "80:80"
+    container_name: toll-connect-frontend
+    restart: always 
+  db:
+    image: mongodb/mongodb-community-server:latest
+    restart: always
+    volumes:
+      - db-data:/data/db
+    ports:
+      - "27017:27017"
+    container_name: softeng-mongodb
+    networks:
+      - backend_net
+networks:
+  frontend_net:
+    name: toll-connect-frontend-net
+  backend_net:
+    name: toll-connect-backend-net
+volumes:
+  db-data:
