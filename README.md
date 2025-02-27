@@ -1,23 +1,20 @@
-<<<<<<< HEAD
-# Toll_Connect
-Interoperable Toll Management &amp; Data Analysis System
-=======
 # **🚗 Toll Management System - Toll Connect**
 *Interoperable Toll Management & Data Analysis System*
 
 
 📜 Table of Contents
-- [Introduction](#introduction)
-- [Installation and Setup](#installation-and-setup)
-  - [Prerequisites](#prerequisites)
-  - [Backend Setup](#backend-setup)
-  - [Frontend Setup](#frontend-setup)
-  - [CLI Setup](#cli-setup)
-- [Usage](#usage)
-  - [Running the App](#running-the-app)
-- [API Documentation](#api-documentation)
-- [Testing](#testing)
-- [Contributors](#contributors)
+- [**🚗 Toll Management System - Toll Connect**](#-toll-management-system---toll-connect)
+  - [📝 Introduction](#-introduction)
+  - [⚙ Installation and Setup](#-installation-and-setup)
+  - [...](#)
+  - [🚀 Running the Project](#-running-the-project)
+    - [Backend Setup](#backend-setup)
+    - [Frontend Setup](#frontend-setup)
+    - [CLI Setup](#cli-setup)
+  - [Dockerized Version](#dockerized-version)
+  - [📜 API Documentation](#-api-documentation)
+  - [🧪 Testing](#-testing)
+  - [👨‍💻 Contributors](#-contributors)
 ---
 
 ## 📝 Introduction
@@ -101,4 +98,3 @@ deno test --allow-read --allow-write --allow-net
 - [Angeliki Ntalapera](https://github.com/...)
 - [Dimitris Balatos](https://github.com/...)
 
->>>>>>> r1remote/main
